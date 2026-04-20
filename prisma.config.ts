@@ -6,6 +6,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: "file:./prisma/chatify.db",
+    url: process.env.DATABASE_URL!,
   },
 });
