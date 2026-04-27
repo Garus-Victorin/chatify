@@ -29,11 +29,13 @@ export type AggregateMessage = {
 export type MessageAvgAggregateOutputType = {
   likesCount: number | null
   dislikesCount: number | null
+  embedding: number | null
 }
 
 export type MessageSumAggregateOutputType = {
   likesCount: number | null
   dislikesCount: number | null
+  embedding: number[]
 }
 
 export type MessageMinAggregateOutputType = {
@@ -68,6 +70,7 @@ export type MessageCountAggregateOutputType = {
   webSearch: number
   likesCount: number
   dislikesCount: number
+  embedding: number
   createdAt: number
   chatId: number
   _all: number
@@ -77,11 +80,13 @@ export type MessageCountAggregateOutputType = {
 export type MessageAvgAggregateInputType = {
   likesCount?: true
   dislikesCount?: true
+  embedding?: true
 }
 
 export type MessageSumAggregateInputType = {
   likesCount?: true
   dislikesCount?: true
+  embedding?: true
 }
 
 export type MessageMinAggregateInputType = {
@@ -116,6 +121,7 @@ export type MessageCountAggregateInputType = {
   webSearch?: true
   likesCount?: true
   dislikesCount?: true
+  embedding?: true
   createdAt?: true
   chatId?: true
   _all?: true
@@ -215,6 +221,7 @@ export type MessageGroupByOutputType = {
   webSearch: boolean
   likesCount: number
   dislikesCount: number
+  embedding: number[]
   createdAt: Date
   chatId: string
   _count: MessageCountAggregateOutputType | null
@@ -250,6 +257,7 @@ export type MessageWhereInput = {
   webSearch?: Prisma.BoolFilter<"Message"> | boolean
   likesCount?: Prisma.IntFilter<"Message"> | number
   dislikesCount?: Prisma.IntFilter<"Message"> | number
+  embedding?: Prisma.FloatNullableListFilter<"Message">
   createdAt?: Prisma.DateTimeFilter<"Message"> | Date | string
   chatId?: Prisma.StringFilter<"Message"> | string
   chat?: Prisma.XOR<Prisma.ChatScalarRelationFilter, Prisma.ChatWhereInput>
@@ -263,6 +271,7 @@ export type MessageOrderByWithRelationInput = {
   webSearch?: Prisma.SortOrder
   likesCount?: Prisma.SortOrder
   dislikesCount?: Prisma.SortOrder
+  embedding?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   chatId?: Prisma.SortOrder
   chat?: Prisma.ChatOrderByWithRelationInput
@@ -279,6 +288,7 @@ export type MessageWhereUniqueInput = Prisma.AtLeast<{
   webSearch?: Prisma.BoolFilter<"Message"> | boolean
   likesCount?: Prisma.IntFilter<"Message"> | number
   dislikesCount?: Prisma.IntFilter<"Message"> | number
+  embedding?: Prisma.FloatNullableListFilter<"Message">
   createdAt?: Prisma.DateTimeFilter<"Message"> | Date | string
   chatId?: Prisma.StringFilter<"Message"> | string
   chat?: Prisma.XOR<Prisma.ChatScalarRelationFilter, Prisma.ChatWhereInput>
@@ -292,6 +302,7 @@ export type MessageOrderByWithAggregationInput = {
   webSearch?: Prisma.SortOrder
   likesCount?: Prisma.SortOrder
   dislikesCount?: Prisma.SortOrder
+  embedding?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   chatId?: Prisma.SortOrder
   _count?: Prisma.MessageCountOrderByAggregateInput
@@ -312,6 +323,7 @@ export type MessageScalarWhereWithAggregatesInput = {
   webSearch?: Prisma.BoolWithAggregatesFilter<"Message"> | boolean
   likesCount?: Prisma.IntWithAggregatesFilter<"Message"> | number
   dislikesCount?: Prisma.IntWithAggregatesFilter<"Message"> | number
+  embedding?: Prisma.FloatNullableListFilter<"Message">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Message"> | Date | string
   chatId?: Prisma.StringWithAggregatesFilter<"Message"> | string
 }
@@ -324,6 +336,7 @@ export type MessageCreateInput = {
   webSearch?: boolean
   likesCount?: number
   dislikesCount?: number
+  embedding?: Prisma.MessageCreateembeddingInput | number[]
   createdAt?: Date | string
   chat: Prisma.ChatCreateNestedOneWithoutMessagesInput
 }
@@ -336,6 +349,7 @@ export type MessageUncheckedCreateInput = {
   webSearch?: boolean
   likesCount?: number
   dislikesCount?: number
+  embedding?: Prisma.MessageCreateembeddingInput | number[]
   createdAt?: Date | string
   chatId: string
 }
@@ -348,6 +362,7 @@ export type MessageUpdateInput = {
   webSearch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   dislikesCount?: Prisma.IntFieldUpdateOperationsInput | number
+  embedding?: Prisma.MessageUpdateembeddingInput | number[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   chat?: Prisma.ChatUpdateOneRequiredWithoutMessagesNestedInput
 }
@@ -360,6 +375,7 @@ export type MessageUncheckedUpdateInput = {
   webSearch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   dislikesCount?: Prisma.IntFieldUpdateOperationsInput | number
+  embedding?: Prisma.MessageUpdateembeddingInput | number[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   chatId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -372,6 +388,7 @@ export type MessageCreateManyInput = {
   webSearch?: boolean
   likesCount?: number
   dislikesCount?: number
+  embedding?: Prisma.MessageCreateembeddingInput | number[]
   createdAt?: Date | string
   chatId: string
 }
@@ -384,6 +401,7 @@ export type MessageUpdateManyMutationInput = {
   webSearch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   dislikesCount?: Prisma.IntFieldUpdateOperationsInput | number
+  embedding?: Prisma.MessageUpdateembeddingInput | number[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -395,6 +413,7 @@ export type MessageUncheckedUpdateManyInput = {
   webSearch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   dislikesCount?: Prisma.IntFieldUpdateOperationsInput | number
+  embedding?: Prisma.MessageUpdateembeddingInput | number[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   chatId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -409,6 +428,14 @@ export type MessageOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type FloatNullableListFilter<$PrismaModel = never> = {
+  equals?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
+  has?: number | Prisma.FloatFieldRefInput<$PrismaModel> | null
+  hasEvery?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  hasSome?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
 export type MessageCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -417,6 +444,7 @@ export type MessageCountOrderByAggregateInput = {
   webSearch?: Prisma.SortOrder
   likesCount?: Prisma.SortOrder
   dislikesCount?: Prisma.SortOrder
+  embedding?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   chatId?: Prisma.SortOrder
 }
@@ -424,6 +452,7 @@ export type MessageCountOrderByAggregateInput = {
 export type MessageAvgOrderByAggregateInput = {
   likesCount?: Prisma.SortOrder
   dislikesCount?: Prisma.SortOrder
+  embedding?: Prisma.SortOrder
 }
 
 export type MessageMaxOrderByAggregateInput = {
@@ -453,6 +482,7 @@ export type MessageMinOrderByAggregateInput = {
 export type MessageSumOrderByAggregateInput = {
   likesCount?: Prisma.SortOrder
   dislikesCount?: Prisma.SortOrder
+  embedding?: Prisma.SortOrder
 }
 
 export type MessageCreateNestedManyWithoutChatInput = {
@@ -497,16 +527,17 @@ export type MessageUncheckedUpdateManyWithoutChatNestedInput = {
   deleteMany?: Prisma.MessageScalarWhereInput | Prisma.MessageScalarWhereInput[]
 }
 
+export type MessageCreateembeddingInput = {
+  set: number[]
+}
+
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type MessageUpdateembeddingInput = {
+  set?: number[]
+  push?: number | number[]
 }
 
 export type MessageCreateWithoutChatInput = {
@@ -517,6 +548,7 @@ export type MessageCreateWithoutChatInput = {
   webSearch?: boolean
   likesCount?: number
   dislikesCount?: number
+  embedding?: Prisma.MessageCreateembeddingInput | number[]
   createdAt?: Date | string
 }
 
@@ -528,6 +560,7 @@ export type MessageUncheckedCreateWithoutChatInput = {
   webSearch?: boolean
   likesCount?: number
   dislikesCount?: number
+  embedding?: Prisma.MessageCreateembeddingInput | number[]
   createdAt?: Date | string
 }
 
@@ -568,6 +601,7 @@ export type MessageScalarWhereInput = {
   webSearch?: Prisma.BoolFilter<"Message"> | boolean
   likesCount?: Prisma.IntFilter<"Message"> | number
   dislikesCount?: Prisma.IntFilter<"Message"> | number
+  embedding?: Prisma.FloatNullableListFilter<"Message">
   createdAt?: Prisma.DateTimeFilter<"Message"> | Date | string
   chatId?: Prisma.StringFilter<"Message"> | string
 }
@@ -580,6 +614,7 @@ export type MessageCreateManyChatInput = {
   webSearch?: boolean
   likesCount?: number
   dislikesCount?: number
+  embedding?: Prisma.MessageCreateembeddingInput | number[]
   createdAt?: Date | string
 }
 
@@ -591,6 +626,7 @@ export type MessageUpdateWithoutChatInput = {
   webSearch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   dislikesCount?: Prisma.IntFieldUpdateOperationsInput | number
+  embedding?: Prisma.MessageUpdateembeddingInput | number[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -602,6 +638,7 @@ export type MessageUncheckedUpdateWithoutChatInput = {
   webSearch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   dislikesCount?: Prisma.IntFieldUpdateOperationsInput | number
+  embedding?: Prisma.MessageUpdateembeddingInput | number[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -613,6 +650,7 @@ export type MessageUncheckedUpdateManyWithoutChatInput = {
   webSearch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   likesCount?: Prisma.IntFieldUpdateOperationsInput | number
   dislikesCount?: Prisma.IntFieldUpdateOperationsInput | number
+  embedding?: Prisma.MessageUpdateembeddingInput | number[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -626,6 +664,7 @@ export type MessageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   webSearch?: boolean
   likesCount?: boolean
   dislikesCount?: boolean
+  embedding?: boolean
   createdAt?: boolean
   chatId?: boolean
   chat?: boolean | Prisma.ChatDefaultArgs<ExtArgs>
@@ -639,6 +678,7 @@ export type MessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   webSearch?: boolean
   likesCount?: boolean
   dislikesCount?: boolean
+  embedding?: boolean
   createdAt?: boolean
   chatId?: boolean
   chat?: boolean | Prisma.ChatDefaultArgs<ExtArgs>
@@ -652,6 +692,7 @@ export type MessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   webSearch?: boolean
   likesCount?: boolean
   dislikesCount?: boolean
+  embedding?: boolean
   createdAt?: boolean
   chatId?: boolean
   chat?: boolean | Prisma.ChatDefaultArgs<ExtArgs>
@@ -665,11 +706,12 @@ export type MessageSelectScalar = {
   webSearch?: boolean
   likesCount?: boolean
   dislikesCount?: boolean
+  embedding?: boolean
   createdAt?: boolean
   chatId?: boolean
 }
 
-export type MessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "role" | "content" | "sources" | "webSearch" | "likesCount" | "dislikesCount" | "createdAt" | "chatId", ExtArgs["result"]["message"]>
+export type MessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "role" | "content" | "sources" | "webSearch" | "likesCount" | "dislikesCount" | "embedding" | "createdAt" | "chatId", ExtArgs["result"]["message"]>
 export type MessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   chat?: boolean | Prisma.ChatDefaultArgs<ExtArgs>
 }
@@ -693,6 +735,7 @@ export type $MessagePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     webSearch: boolean
     likesCount: number
     dislikesCount: number
+    embedding: number[]
     createdAt: Date
     chatId: string
   }, ExtArgs["result"]["message"]>
@@ -1126,6 +1169,7 @@ export interface MessageFieldRefs {
   readonly webSearch: Prisma.FieldRef<"Message", 'Boolean'>
   readonly likesCount: Prisma.FieldRef<"Message", 'Int'>
   readonly dislikesCount: Prisma.FieldRef<"Message", 'Int'>
+  readonly embedding: Prisma.FieldRef<"Message", 'Float[]'>
   readonly createdAt: Prisma.FieldRef<"Message", 'DateTime'>
   readonly chatId: Prisma.FieldRef<"Message", 'String'>
 }

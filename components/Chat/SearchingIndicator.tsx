@@ -2,8 +2,13 @@
 
 import { motion } from "framer-motion";
 import { GlobeAltIcon } from "@heroicons/react/24/outline";
+import { useChatStore } from "@/store/chatStore";
+import { useT } from "@/lib/i18n";
 
 export default function SearchingIndicator({ query }: { query?: string }) {
+  const language = useChatStore((s) => s.language);
+  const tr = useT(language);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -11,10 +16,7 @@ export default function SearchingIndicator({ query }: { query?: string }) {
       exit={{ opacity: 0, y: -6 }}
       transition={{ duration: 0.2 }}
       className="flex items-center gap-3 px-4 py-2.5 rounded-xl w-fit shadow-soft"
-      style={{
-        background: "#f0f9ff",
-        border: "1px solid rgba(56,189,248,0.2)",
-      }}
+      style={{ background: "#f0f9ff", border: "1px solid rgba(56,189,248,0.2)" }}
     >
       <motion.div
         animate={{ rotate: 360 }}
@@ -24,7 +26,7 @@ export default function SearchingIndicator({ query }: { query?: string }) {
       </motion.div>
 
       <div>
-        <p className="text-xs font-medium text-sky-500">Searching the web…</p>
+        <p className="text-xs font-medium text-sky-500">{tr.searchingWeb}</p>
         {query && (
           <p className="text-[10px] text-[#9ca3af] truncate max-w-[180px] mt-0.5">{query}</p>
         )}

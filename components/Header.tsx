@@ -5,23 +5,27 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
-  ChevronDownIcon,
-  ArrowRightOnRectangleIcon, UserCircleIcon,
+  ChevronDownIcon, ArrowRightOnRectangleIcon, UserCircleIcon, Cog6ToothIcon,
+  Bars3Icon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "@/lib/useAuth";
 import { getAvatarColor, getInitial } from "@/lib/avatar";
+import { useChatStore } from "@/store/chatStore";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   chatTitle?: string;
+  onOpenSidebar?: () => void;
 }
 
-export default function Header({ chatTitle }: Props) {
+export default function Header({ chatTitle, onOpenSidebar }: Props) {
   const { user, logout } = useAuth();
   const [open, setOpen]  = useState(false);
   const ref              = useRef<HTMLDivElement>(null);
   const router           = useRouter();
+  const language         = useChatStore((s) => s.language);
+  const tr               = useT(language);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -30,45 +34,45 @@ export default function Header({ chatTitle }: Props) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const initials = user?.name
-    ? user.name.slice(0, 2).toUpperCase()
-    : user?.email.slice(0, 2).toUpperCase() ?? "?";
-
   const color   = getAvatarColor(user?.name ?? user?.email ?? "");
   const initial = getInitial(user?.name, user?.email);
 
   return (
     <header
-      className="shrink-0 flex items-center justify-between px-5 py-3 bg-white"
+      className="shrink-0 flex items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3 bg-white"
       style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}
     >
-      {/* Left — logo + chat title */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        {/* Hamburger — mobile only */}
+        {onOpenSidebar && (
+          <button
+            onClick={onOpenSidebar}
+            className="w-8 h-8 rounded-lg flex items-center justify-center t-fast md:hidden
+                       text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb] shrink-0"
+          >
+            <Bars3Icon className="w-5 h-5" />
+          </button>
+        )}
         <div className="w-7 h-7 rounded-xl overflow-hidden shrink-0">
           <Image src="/chatify.png" alt="Chatify" width={28} height={28} className="w-full h-full object-cover" />
         </div>
-        <span className="text-sm font-medium text-[#0a0a0a] truncate max-w-[280px]">
+        <span className="text-sm font-medium text-[#0a0a0a] truncate max-w-[140px] sm:max-w-[280px]">
           {chatTitle ?? "Chatify"}
         </span>
       </div>
 
-      {/* Right — model badge + user menu */}
       <div className="flex items-center gap-3">
         <span className="text-[11px] text-[#9ca3af] font-medium hidden sm:block">
           LLaMA 3.3 · 70B
         </span>
 
-        {/* User menu */}
         <div className="relative" ref={ref}>
           <button
             onClick={() => setOpen((v) => !v)}
-            className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl t-fast
-                       hover:bg-[#f5f7fb]"
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl t-fast hover:bg-[#f5f7fb]"
             style={{ border: "1px solid rgba(0,0,0,0.07)" }}
           >
-            {/* Avatar */}
-            <div className="w-6 h-6 rounded-lg flex items-center justify-center
-                            text-[10px] font-bold"
+            <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold"
                  style={{ background: color.bg, color: color.text }}>
               {initial}
             </div>
@@ -78,7 +82,6 @@ export default function Header({ chatTitle }: Props) {
             <ChevronDownIcon className="w-3 h-3 text-[#9ca3af]" />
           </button>
 
-          {/* Dropdown */}
           <AnimatePresence>
             {open && (
               <motion.div
@@ -87,39 +90,38 @@ export default function Header({ chatTitle }: Props) {
                 exit={{ opacity: 0, y: -6, scale: 0.97 }}
                 transition={{ duration: 0.15 }}
                 className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl z-50 overflow-hidden"
-                style={{
-                  border: "1px solid rgba(0,0,0,0.08)",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
-                }}
+                style={{ border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 8px 24px rgba(0,0,0,0.1)" }}
               >
-                {/* User info */}
                 <div className="px-4 py-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center
-                                    text-sm font-bold shrink-0"
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
                          style={{ background: color.bg, color: color.text }}>
                       {initial}
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-[#0a0a0a] truncate">
-                        {user?.name ?? "User"}
+                        {user?.name ?? "Utilisateur"}
                       </p>
                       <p className="text-[10px] text-[#9ca3af] truncate">{user?.email}</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Menu items */}
                 <div className="p-1.5">
                   <MenuItem
                     icon={<UserCircleIcon className="w-4 h-4" />}
-                    label="Profile"
+                    label={tr.profile}
                     onClick={() => { setOpen(false); router.push("/profile"); }}
+                  />
+                  <MenuItem
+                    icon={<Cog6ToothIcon className="w-4 h-4" />}
+                    label={tr.settings}
+                    onClick={() => { setOpen(false); router.push("/settings"); }}
                   />
                   <div className="my-1" style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }} />
                   <MenuItem
                     icon={<ArrowRightOnRectangleIcon className="w-4 h-4" />}
-                    label="Sign out"
+                    label={tr.signOut}
                     danger
                     onClick={() => { setOpen(false); logout(); }}
                   />
@@ -133,13 +135,8 @@ export default function Header({ chatTitle }: Props) {
   );
 }
 
-function MenuItem({
-  icon, label, onClick, danger = false,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  danger?: boolean;
+function MenuItem({ icon, label, onClick, danger = false }: {
+  icon: React.ReactNode; label: string; onClick: () => void; danger?: boolean;
 }) {
   return (
     <button

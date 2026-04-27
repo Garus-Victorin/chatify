@@ -1,29 +1,26 @@
 import { NextRequest } from "next/server";
-import Groq from "groq-sdk";
 import { buildRAGContext } from "@/lib/rag";
 import { SearchResult } from "@/lib/search";
-
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+import { getSession } from "@/lib/auth";
+import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
+import { checkQuota, incrementUsage } from "@/lib/quota";
+import { summarizeConversation } from "@/lib/memory";
+import { PERSONALITY_PROMPTS, Personality } from "@/lib/toolTypes";
+import { logger } from "@/lib/logger";
+import { generateResponse } from "@/lib/llmRouter";
 
 export const runtime = "nodejs";
 
 // ─── Post-processing ───────────────────────────────────────────────────────────
 
-/**
- * Remove repeated consecutive words (e.g. "the the", "La La La")
- */
 function removeRepeatedWords(text: string): string {
   return text.replace(/\b(\w+)(\s+\1){2,}/gi, "$1");
 }
 
-/**
- * Remove duplicate consecutive sentences
- */
 function removeDuplicateSentences(text: string): string {
   const lines = text.split("\n");
   const seen = new Set<string>();
   const result: string[] = [];
-
   for (const line of lines) {
     const key = line.trim().toLowerCase();
     if (!key || !seen.has(key)) {
@@ -31,39 +28,47 @@ function removeDuplicateSentences(text: string): string {
       result.push(line);
     }
   }
-
   return result.join("\n");
 }
 
-/**
- * Fix common spacing and formatting issues
- */
 function fixFormatting(text: string): string {
-  return text
-    .replace(/\n{3,}/g, "\n\n")          // Max 2 consecutive newlines
-    .replace(/[ \t]+$/gm, "")             // Trailing spaces
-    .replace(/^\s+/, "")                  // Leading whitespace
-    .trim();
+  return text.replace(/\n{3,}/g, "\n\n").replace(/[ \t]+$/gm, "").replace(/^\s+/, "").trim();
 }
 
-/**
- * Full post-processing pipeline
- */
 function postProcess(text: string): string {
-  let result = text;
-  result = removeRepeatedWords(result);
-  result = removeDuplicateSentences(result);
-  result = fixFormatting(result);
-  return result;
+  return fixFormatting(removeDuplicateSentences(removeRepeatedWords(text)));
 }
 
 // ─── Route handler ─────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
-  const { messages, forceSearch } = await req.json();
+  const start = Date.now();
+
+  const session    = await getSession();
+  const identifier = session?.userId ?? (req.headers.get("x-forwarded-for") ?? "anonymous");
+
+  // Rate limiting
+  const rl = rateLimit(identifier, "chat");
+  if (!rl.allowed) {
+    logger.warn("[chat] Rate limit exceeded", { userId: identifier, reason: rl.reason });
+    return rateLimitResponse(rl);
+  }
+
+  const {
+    messages,
+    forceSearch,
+    chatId,
+    memoryEnabled = true,
+    personality = "default" as Personality,
+  } = await req.json();
 
   const lastUserMsg: string =
     [...messages].reverse().find((m: { role: string }) => m.role === "user")?.content ?? "";
+
+  const recentMessages = messages
+    .filter((m: { role: string }) => m.role !== "system")
+    .slice(-8)
+    .map((m: { role: string; content: string }) => ({ role: m.role, content: m.content }));
 
   const encoder = new TextEncoder();
 
@@ -73,57 +78,99 @@ export async function POST(req: NextRequest) {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
 
       try {
-        // ── 1. RAG pipeline ──────────────────────────────────────────────────
         if (lastUserMsg) send({ type: "status", status: "detecting" });
 
-        const rag = await buildRAGContext(lastUserMsg, forceSearch ?? false);
+        // ── RAG pipeline ──────────────────────────────────────────────────
+        const rag = await buildRAGContext({
+          query: lastUserMsg,
+          forceSearch: forceSearch ?? false,
+          chatId,
+          userId: session?.userId,
+          recentMessages,
+          memoryEnabled,
+        });
+
+        // ── Quota check ───────────────────────────────────────────────────
+        if (session?.userId) {
+          const quota = await checkQuota(session.userId, rag.needsSearch);
+          if (!quota.allowed) {
+            const msg =
+              quota.reason === "searches"
+                ? `Daily web search limit reached. Resets at ${quota.resetAt.toUTCString()}.`
+                : `Daily message limit reached. Resets at ${quota.resetAt.toUTCString()}.`;
+            send({ type: "error", error: msg });
+            controller.close();
+            return;
+          }
+        }
 
         if (rag.needsSearch) {
           send({ type: "searching", query: lastUserMsg });
           send({ type: "sources", sources: rag.sources });
         }
 
-        // ── 2. Build messages ────────────────────────────────────────────────
-        const finalMessages = [
-          { role: "system", content: rag.systemPrompt },
-          ...messages.filter((m: { role: string }) => m.role !== "system"),
-        ];
-
-        // ── 3. Stream LLM response ───────────────────────────────────────────
-        send({ type: "stream_start" });
-
-        const completion = await groq.chat.completions.create({
-          model: "llama-3.3-70b-versatile",
-          messages: finalMessages,
-          stream: true,
-          max_tokens: 1024,
-          temperature: 0.4,       // Lower = more focused, less hallucination
-          top_p: 0.9,
-          frequency_penalty: 0.5, // Penalize repeated tokens
-          presence_penalty: 0.3,  // Encourage topic diversity
-        });
-
-        // ── 4. Stream with buffered post-processing ────────────────────────
-        let accumulated = "";
-
-        for await (const chunk of completion) {
-          const delta = chunk.choices[0]?.delta?.content ?? "";
-          if (delta) {
-            accumulated += delta;
-            send({ type: "delta", delta });
-          }
+        if (rag.longTermMemory.length > 0) {
+          send({ type: "memory", count: rag.longTermMemory.length });
         }
 
-        // Final post-processing pass — send corrected full content
+        // ── Inject personality into system prompt ─────────────────────────
+        const personalityNote = personality !== "default"
+          ? `\n\n## PERSONALITY MODE\n${PERSONALITY_PROMPTS[personality as Personality]}`
+          : "";
+
+        const finalSystemPrompt = rag.systemPrompt + personalityNote;
+
+        const finalMessages = [
+          { role: "system", content: finalSystemPrompt },
+          { role: "user",   content: lastUserMsg },
+        ];
+
+        send({ type: "stream_start" });
+
+        const temperature =
+          personality === "fun" ? 0.7 : personality === "technical" ? 0.2 : 0.4;
+
+        const { stream, provider, fromCache } = await generateResponse(finalMessages, {
+          max_tokens:        1024,
+          temperature,
+          top_p:             0.9,
+          frequency_penalty: 0.5,
+          presence_penalty:  0.3,
+        });
+
+        if (provider !== "groq" && !fromCache) {
+          send({ type: "status", status: "fallback", provider });
+        }
+
+        let accumulated = "";
+
+        for await (const delta of stream) {
+          accumulated += delta;
+          send({ type: "delta", delta });
+        }
+
         const cleaned = postProcess(accumulated);
         if (cleaned !== accumulated) {
-          // Send a replace event so the client can swap the full content
           send({ type: "replace", content: cleaned });
+          accumulated = cleaned;
         }
 
         send({ type: "done" });
+
+        // ── Async post-tasks ──────────────────────────────────────────────
+        if (session?.userId) incrementUsage(session.userId, rag.needsSearch);
+        if (chatId && memoryEnabled) summarizeConversation(chatId).catch(() => {});
+
+        logger.info("[chat] Request completed", {
+          userId: identifier,
+          duration: Date.now() - start,
+          usedSearch: rag.needsSearch,
+          memoriesUsed: rag.longTermMemory.length,
+          personality,
+        });
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : "Unknown error";
+        logger.error("[chat] Stream error", err, { userId: identifier });
         send({ type: "error", error: msg });
       } finally {
         controller.close();

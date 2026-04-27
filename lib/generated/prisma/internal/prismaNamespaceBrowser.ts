@@ -77,6 +77,10 @@ export const UserScalarFieldEnum = {
   email: 'email',
   passwordHash: 'passwordHash',
   name: 'name',
+  role: 'role',
+  dailyMessages: 'dailyMessages',
+  dailySearches: 'dailySearches',
+  dailyReset: 'dailyReset',
   createdAt: 'createdAt'
 } as const
 
@@ -86,6 +90,7 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const ChatScalarFieldEnum = {
   id: 'id',
   title: 'title',
+  summary: 'summary',
   createdAt: 'createdAt',
   userId: 'userId'
 } as const
@@ -101,6 +106,7 @@ export const MessageScalarFieldEnum = {
   webSearch: 'webSearch',
   likesCount: 'likesCount',
   dislikesCount: 'dislikesCount',
+  embedding: 'embedding',
   createdAt: 'createdAt',
   chatId: 'chatId'
 } as const

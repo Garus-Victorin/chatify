@@ -1,4 +1,4 @@
-import { SearchResult } from "./search";
+import type { SearchResult } from "./search";
 
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
@@ -8,20 +8,13 @@ export interface ChatMessage {
 export interface StreamCallbacks {
   onSearching?: (query: string) => void;
   onSources?: (sources: SearchResult[]) => void;
+  onMemory?: (count: number) => void;
   onChunk: (delta: string) => void;
   onReplace?: (content: string) => void;
   onDone: () => void;
   onError: (err: string) => void;
 }
 
-// System prompt is now fully managed server-side in rag.ts
-// We still prepend a minimal marker so the server can strip it
-const SYSTEM: ChatMessage = {
-  role: "system",
-  content: "__client_placeholder__",
-};
-
-/** Remove repeated consecutive words client-side as a safety net */
 function cleanDelta(text: string): string {
   return text.replace(/\b(\w+)(\s+\1){2,}/gi, "$1");
 }
@@ -29,9 +22,14 @@ function cleanDelta(text: string): string {
 export async function streamChat(
   messages: ChatMessage[],
   callbacks: StreamCallbacks,
-  forceSearch = false
+  forceSearch = false,
+  options: {
+    chatId?: string;
+    memoryEnabled?: boolean;
+    personality?: string;
+    signal?: AbortSignal;
+  } = {}
 ) {
-  // Strip the placeholder — server builds the real system prompt
   const payload = messages.filter((m) => m.content !== "__client_placeholder__");
 
   let res: Response;
@@ -39,9 +37,17 @@ export async function streamChat(
     res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: payload, forceSearch }),
+      body: JSON.stringify({
+        messages: payload,
+        forceSearch,
+        chatId: options.chatId,
+        memoryEnabled: options.memoryEnabled ?? true,
+        personality: options.personality ?? "default",
+      }),
+      signal: options.signal,
     });
-  } catch {
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") return; // cancelled
     callbacks.onError("Network error — could not reach the server.");
     return;
   }
@@ -56,7 +62,15 @@ export async function streamChat(
   let buffer    = "";
 
   while (true) {
-    const { done, value } = await reader.read();
+    let done: boolean;
+    let value: Uint8Array | undefined;
+
+    try {
+      ({ done, value } = await reader.read());
+    } catch {
+      break; // AbortError or network drop
+    }
+
     if (done) break;
 
     buffer += decoder.decode(value, { stream: true });
@@ -70,30 +84,16 @@ export async function streamChat(
 
       try {
         const event = JSON.parse(raw);
-
         switch (event.type) {
-          case "searching":
-            callbacks.onSearching?.(event.query);
-            break;
-          case "sources":
-            callbacks.onSources?.(event.sources);
-            break;
-          case "delta":
-            callbacks.onChunk(cleanDelta(event.delta));
-            break;
-          case "replace":
-            callbacks.onReplace?.(event.content);
-            break;
-          case "done":
-            callbacks.onDone();
-            return;
-          case "error":
-            callbacks.onError(event.error);
-            return;
+          case "searching":  callbacks.onSearching?.(event.query);   break;
+          case "sources":    callbacks.onSources?.(event.sources);   break;
+          case "memory":     callbacks.onMemory?.(event.count);      break;
+          case "delta":      callbacks.onChunk(cleanDelta(event.delta)); break;
+          case "replace":    callbacks.onReplace?.(event.content);   break;
+          case "done":       callbacks.onDone(); return;
+          case "error":      callbacks.onError(event.error); return;
         }
-      } catch {
-        /* skip malformed lines */
-      }
+      } catch { /* skip malformed */ }
     }
   }
 

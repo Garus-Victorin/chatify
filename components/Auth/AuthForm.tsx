@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
+import { useT } from "@/lib/i18n";
+import { useChatStore } from "@/store/chatStore";
 
 interface Props {
   mode: "login" | "register";
@@ -14,6 +16,8 @@ interface Props {
 export default function AuthForm({ mode }: Props) {
   const router = useRouter();
   const isLogin = mode === "login";
+  const language = useChatStore((s) => s.language);
+  const tr = useT(language);
 
   const [name,     setName]     = useState("");
   const [email,    setEmail]    = useState("");
@@ -28,9 +32,7 @@ export default function AuthForm({ mode }: Props) {
     setLoading(true);
 
     try {
-      const body = isLogin
-        ? { email, password }
-        : { email, password, name };
+      const body = isLogin ? { email, password } : { email, password, name };
 
       const res = await fetch(`/api/auth/${mode}`, {
         method: "POST",
@@ -41,14 +43,14 @@ export default function AuthForm({ mode }: Props) {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error ?? "Something went wrong");
+        setError(data.error ?? tr.failedToUpdate);
         return;
       }
 
       router.push("/");
       router.refresh();
     } catch {
-      setError("Network error — please try again");
+      setError(tr.networkError);
     } finally {
       setLoading(false);
     }
@@ -70,12 +72,10 @@ export default function AuthForm({ mode }: Props) {
           </div>
           <div className="text-center">
             <h1 className="text-2xl font-semibold text-[#0a0a0a] tracking-tight">
-              {isLogin ? "Welcome back" : "Create account"}
+              {isLogin ? tr.welcomeBack : tr.createAccount}
             </h1>
             <p className="text-sm text-[#9ca3af] mt-1">
-              {isLogin
-                ? "Sign in to your Chatify account"
-                : "Start chatting with AI today"}
+              {isLogin ? tr.signInSubtitle : tr.registerSubtitle}
             </p>
           </div>
         </div>
@@ -89,19 +89,16 @@ export default function AuthForm({ mode }: Props) {
             {!isLogin && (
               <div>
                 <label className="block text-xs font-medium text-[#4b5563] mb-1.5">
-                  Name
+                  {tr.name}
                 </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
+                  placeholder={tr.namePlaceholder}
                   className="w-full px-4 py-2.5 rounded-xl text-sm text-[#0a0a0a]
                              placeholder:text-[#9ca3af] outline-none t-all"
-                  style={{
-                    border: "1px solid rgba(0,0,0,0.1)",
-                    background: "#fafafa",
-                  }}
+                  style={{ border: "1px solid rgba(0,0,0,0.1)", background: "#fafafa" }}
                   onFocus={(e) => {
                     e.currentTarget.style.borderColor = "#38bdf8";
                     e.currentTarget.style.boxShadow = "0 0 0 3px rgba(56,189,248,0.12)";
@@ -117,7 +114,7 @@ export default function AuthForm({ mode }: Props) {
             {/* Email */}
             <div>
               <label className="block text-xs font-medium text-[#4b5563] mb-1.5">
-                Email
+                {tr.email}
               </label>
               <input
                 type="email"
@@ -142,14 +139,14 @@ export default function AuthForm({ mode }: Props) {
             {/* Password */}
             <div>
               <label className="block text-xs font-medium text-[#4b5563] mb-1.5">
-                Password
+                {tr.password}
               </label>
               <div className="relative">
                 <input
                   type={showPwd ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder={isLogin ? "Your password" : "Min. 8 characters"}
+                  placeholder={isLogin ? tr.passwordPlaceholder : tr.passwordMinPlaceholder}
                   required
                   minLength={8}
                   className="w-full px-4 py-2.5 pr-10 rounded-xl text-sm text-[#0a0a0a]
@@ -170,9 +167,7 @@ export default function AuthForm({ mode }: Props) {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af]
                              hover:text-[#4b5563] t-fast"
                 >
-                  {showPwd
-                    ? <EyeSlashIcon className="w-4 h-4" />
-                    : <EyeIcon      className="w-4 h-4" />}
+                  {showPwd ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
                 </button>
               </div>
             </div>
@@ -195,22 +190,18 @@ export default function AuthForm({ mode }: Props) {
               type="submit"
               disabled={loading}
               className="w-full py-2.5 rounded-xl text-sm font-medium text-white t-all
-                         disabled:opacity-60 disabled:cursor-not-allowed
-                         active:scale-[0.98]"
-              style={{
-                background: "#38bdf8",
-                boxShadow: "0 2px 8px rgba(56,189,248,0.35)",
-              }}
+                         disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98]"
+              style={{ background: "#38bdf8", boxShadow: "0 2px 8px rgba(56,189,248,0.35)" }}
               onMouseEnter={(e) => !loading && ((e.currentTarget as HTMLElement).style.background = "#0ea5e9")}
               onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "#38bdf8")}
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white anim-spin" />
-                  {isLogin ? "Signing in…" : "Creating account…"}
+                  {isLogin ? tr.signingIn : tr.creatingAccount}
                 </span>
               ) : (
-                isLogin ? "Sign in" : "Create account"
+                isLogin ? tr.signIn : tr.createAccount
               )}
             </button>
           </form>
@@ -218,12 +209,12 @@ export default function AuthForm({ mode }: Props) {
 
         {/* Toggle */}
         <p className="text-center text-sm text-[#9ca3af] mt-5">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+          {isLogin ? tr.noAccount : tr.alreadyAccount}{" "}
           <Link
             href={isLogin ? "/register" : "/login"}
             className="text-sky-500 font-medium hover:text-sky-600 t-fast"
           >
-            {isLogin ? "Sign up" : "Sign in"}
+            {isLogin ? tr.signUp : tr.signIn}
           </Link>
         </p>
       </motion.div>

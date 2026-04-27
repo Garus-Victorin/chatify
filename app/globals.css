@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* ─── Base ────────────────────────────────────────────────────────────────── */
+/* Base */
 *, *::before, *::after { box-sizing: border-box; }
 
 html, body {
@@ -12,19 +12,20 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
+/* Scrollbar */
 ::-webkit-scrollbar        { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track  { background: transparent; }
 ::-webkit-scrollbar-thumb  { background: rgba(0,0,0,0.1); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.18); }
 
-/* ─── Selection ───────────────────────────────────────────────────────────── */
+/* Selection */
 ::selection { background: rgba(56,189,248,0.18); color: #0284c7; }
 
-/* ─── Focus ───────────────────────────────────────────────────────────────── */
+/* Focus */
 *:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; border-radius: 8px; }
+textarea:focus-visible { outline: none; }
 
-/* ─── Animations ──────────────────────────────────────────────────────────── */
+/* Animations */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -50,7 +51,7 @@ html, body {
 .anim-spin     { animation: spin    1.2s linear infinite; }
 .anim-pulse    { animation: pulse-soft 1.8s ease-in-out infinite; }
 
-/* ─── Prose overrides ─────────────────────────────────────────────────────── */
+/* Prose overrides */
 .prose { max-width: none; }
 .prose pre  { background: transparent !important; padding: 0 !important; margin: 0 !important; }
 .prose code { font-size: 0.85em; }
@@ -59,16 +60,16 @@ html, body {
 .prose li   { margin-top: 0.2em; margin-bottom: 0.2em; }
 .prose h1, .prose h2, .prose h3 { letter-spacing: -0.02em; }
 
-/* ─── Chat bubble reset ───────────────────────────────────────────────────── */
+/* Chat bubble reset */
 .chat-bubble { max-width: 100%; }
 
-/* ─── Input glow ──────────────────────────────────────────────────────────── */
+/* Input glow */
 .input-glow:focus-within {
   box-shadow: 0 0 0 3px rgba(56,189,248,0.18);
   border-color: #38bdf8 !important;
 }
 
-/* ─── Reusable component classes ─────────────────────────────────────────── */
+/* Reusable component classes */
 .btn-primary {
   display: flex;
   align-items: center;
@@ -143,6 +144,20 @@ html, body {
   box-shadow: 0 0 0 3px rgba(56,189,248,0.12);
 }
 
-/* ─── Smooth transitions ──────────────────────────────────────────────────── */
+/* Smooth transitions */
 .t-all  { transition: all 0.18s cubic-bezier(0.4,0,0.2,1); }
 .t-fast { transition: all 0.12s cubic-bezier(0.4,0,0.2,1); }
+
+/* Loader 3-dots */
+.chatify-loader {
+  width: 15px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: chatify-l5 1s infinite linear alternate;
+}
+@keyframes chatify-l5 {
+  0%   { box-shadow: 20px 0 #38bdf8, -20px 0 #38bdf82a; background: #38bdf8; }
+  33%  { box-shadow: 20px 0 #38bdf8, -20px 0 #38bdf82a; background: #38bdf82a; }
+  66%  { box-shadow: 20px 0 #38bdf82a, -20px 0 #38bdf8; background: #38bdf82a; }
+  100% { box-shadow: 20px 0 #38bdf82a, -20px 0 #38bdf8; background: #38bdf8; }
+}

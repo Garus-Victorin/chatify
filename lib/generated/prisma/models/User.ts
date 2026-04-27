@@ -20,8 +20,20 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
+}
+
+export type UserAvgAggregateOutputType = {
+  dailyMessages: number | null
+  dailySearches: number | null
+}
+
+export type UserSumAggregateOutputType = {
+  dailyMessages: number | null
+  dailySearches: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -29,6 +41,10 @@ export type UserMinAggregateOutputType = {
   email: string | null
   passwordHash: string | null
   name: string | null
+  role: string | null
+  dailyMessages: number | null
+  dailySearches: number | null
+  dailyReset: Date | null
   createdAt: Date | null
 }
 
@@ -37,6 +53,10 @@ export type UserMaxAggregateOutputType = {
   email: string | null
   passwordHash: string | null
   name: string | null
+  role: string | null
+  dailyMessages: number | null
+  dailySearches: number | null
+  dailyReset: Date | null
   createdAt: Date | null
 }
 
@@ -45,16 +65,34 @@ export type UserCountAggregateOutputType = {
   email: number
   passwordHash: number
   name: number
+  role: number
+  dailyMessages: number
+  dailySearches: number
+  dailyReset: number
   createdAt: number
   _all: number
 }
 
+
+export type UserAvgAggregateInputType = {
+  dailyMessages?: true
+  dailySearches?: true
+}
+
+export type UserSumAggregateInputType = {
+  dailyMessages?: true
+  dailySearches?: true
+}
 
 export type UserMinAggregateInputType = {
   id?: true
   email?: true
   passwordHash?: true
   name?: true
+  role?: true
+  dailyMessages?: true
+  dailySearches?: true
+  dailyReset?: true
   createdAt?: true
 }
 
@@ -63,6 +101,10 @@ export type UserMaxAggregateInputType = {
   email?: true
   passwordHash?: true
   name?: true
+  role?: true
+  dailyMessages?: true
+  dailySearches?: true
+  dailyReset?: true
   createdAt?: true
 }
 
@@ -71,6 +113,10 @@ export type UserCountAggregateInputType = {
   email?: true
   passwordHash?: true
   name?: true
+  role?: true
+  dailyMessages?: true
+  dailySearches?: true
+  dailyReset?: true
   createdAt?: true
   _all?: true
 }
@@ -113,6 +159,18 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: UserAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: UserSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -143,6 +201,8 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
+  _avg?: UserAvgAggregateInputType
+  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
@@ -152,8 +212,14 @@ export type UserGroupByOutputType = {
   email: string
   passwordHash: string
   name: string | null
+  role: string
+  dailyMessages: number
+  dailySearches: number
+  dailyReset: Date
   createdAt: Date
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
@@ -181,6 +247,10 @@ export type UserWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   passwordHash?: Prisma.StringFilter<"User"> | string
   name?: Prisma.StringNullableFilter<"User"> | string | null
+  role?: Prisma.StringFilter<"User"> | string
+  dailyMessages?: Prisma.IntFilter<"User"> | number
+  dailySearches?: Prisma.IntFilter<"User"> | number
+  dailyReset?: Prisma.DateTimeFilter<"User"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   chats?: Prisma.ChatListRelationFilter
 }
@@ -190,6 +260,10 @@ export type UserOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
+  role?: Prisma.SortOrder
+  dailyMessages?: Prisma.SortOrder
+  dailySearches?: Prisma.SortOrder
+  dailyReset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   chats?: Prisma.ChatOrderByRelationAggregateInput
 }
@@ -202,6 +276,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   passwordHash?: Prisma.StringFilter<"User"> | string
   name?: Prisma.StringNullableFilter<"User"> | string | null
+  role?: Prisma.StringFilter<"User"> | string
+  dailyMessages?: Prisma.IntFilter<"User"> | number
+  dailySearches?: Prisma.IntFilter<"User"> | number
+  dailyReset?: Prisma.DateTimeFilter<"User"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   chats?: Prisma.ChatListRelationFilter
 }, "id" | "email">
@@ -211,10 +289,16 @@ export type UserOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
+  role?: Prisma.SortOrder
+  dailyMessages?: Prisma.SortOrder
+  dailySearches?: Prisma.SortOrder
+  dailyReset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
+  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
+  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -225,6 +309,10 @@ export type UserScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
   name?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  role?: Prisma.StringWithAggregatesFilter<"User"> | string
+  dailyMessages?: Prisma.IntWithAggregatesFilter<"User"> | number
+  dailySearches?: Prisma.IntWithAggregatesFilter<"User"> | number
+  dailyReset?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
 
@@ -233,6 +321,10 @@ export type UserCreateInput = {
   email: string
   passwordHash: string
   name?: string | null
+  role?: string
+  dailyMessages?: number
+  dailySearches?: number
+  dailyReset?: Date | string
   createdAt?: Date | string
   chats?: Prisma.ChatCreateNestedManyWithoutUserInput
 }
@@ -242,6 +334,10 @@ export type UserUncheckedCreateInput = {
   email: string
   passwordHash: string
   name?: string | null
+  role?: string
+  dailyMessages?: number
+  dailySearches?: number
+  dailyReset?: Date | string
   createdAt?: Date | string
   chats?: Prisma.ChatUncheckedCreateNestedManyWithoutUserInput
 }
@@ -251,6 +347,10 @@ export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dailyMessages?: Prisma.IntFieldUpdateOperationsInput | number
+  dailySearches?: Prisma.IntFieldUpdateOperationsInput | number
+  dailyReset?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   chats?: Prisma.ChatUpdateManyWithoutUserNestedInput
 }
@@ -260,6 +360,10 @@ export type UserUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dailyMessages?: Prisma.IntFieldUpdateOperationsInput | number
+  dailySearches?: Prisma.IntFieldUpdateOperationsInput | number
+  dailyReset?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   chats?: Prisma.ChatUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -269,6 +373,10 @@ export type UserCreateManyInput = {
   email: string
   passwordHash: string
   name?: string | null
+  role?: string
+  dailyMessages?: number
+  dailySearches?: number
+  dailyReset?: Date | string
   createdAt?: Date | string
 }
 
@@ -277,6 +385,10 @@ export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dailyMessages?: Prisma.IntFieldUpdateOperationsInput | number
+  dailySearches?: Prisma.IntFieldUpdateOperationsInput | number
+  dailyReset?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -285,6 +397,10 @@ export type UserUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dailyMessages?: Prisma.IntFieldUpdateOperationsInput | number
+  dailySearches?: Prisma.IntFieldUpdateOperationsInput | number
+  dailyReset?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -293,7 +409,16 @@ export type UserCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  dailyMessages?: Prisma.SortOrder
+  dailySearches?: Prisma.SortOrder
+  dailyReset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type UserAvgOrderByAggregateInput = {
+  dailyMessages?: Prisma.SortOrder
+  dailySearches?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -301,6 +426,10 @@ export type UserMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  dailyMessages?: Prisma.SortOrder
+  dailySearches?: Prisma.SortOrder
+  dailyReset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -309,7 +438,16 @@ export type UserMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  dailyMessages?: Prisma.SortOrder
+  dailySearches?: Prisma.SortOrder
+  dailyReset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type UserSumOrderByAggregateInput = {
+  dailyMessages?: Prisma.SortOrder
+  dailySearches?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -323,6 +461,14 @@ export type StringFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -348,6 +494,10 @@ export type UserCreateWithoutChatsInput = {
   email: string
   passwordHash: string
   name?: string | null
+  role?: string
+  dailyMessages?: number
+  dailySearches?: number
+  dailyReset?: Date | string
   createdAt?: Date | string
 }
 
@@ -356,6 +506,10 @@ export type UserUncheckedCreateWithoutChatsInput = {
   email: string
   passwordHash: string
   name?: string | null
+  role?: string
+  dailyMessages?: number
+  dailySearches?: number
+  dailyReset?: Date | string
   createdAt?: Date | string
 }
 
@@ -380,6 +534,10 @@ export type UserUpdateWithoutChatsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dailyMessages?: Prisma.IntFieldUpdateOperationsInput | number
+  dailySearches?: Prisma.IntFieldUpdateOperationsInput | number
+  dailyReset?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -388,6 +546,10 @@ export type UserUncheckedUpdateWithoutChatsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dailyMessages?: Prisma.IntFieldUpdateOperationsInput | number
+  dailySearches?: Prisma.IntFieldUpdateOperationsInput | number
+  dailyReset?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -427,6 +589,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   email?: boolean
   passwordHash?: boolean
   name?: boolean
+  role?: boolean
+  dailyMessages?: boolean
+  dailySearches?: boolean
+  dailyReset?: boolean
   createdAt?: boolean
   chats?: boolean | Prisma.User$chatsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -437,6 +603,10 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   passwordHash?: boolean
   name?: boolean
+  role?: boolean
+  dailyMessages?: boolean
+  dailySearches?: boolean
+  dailyReset?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -445,6 +615,10 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   passwordHash?: boolean
   name?: boolean
+  role?: boolean
+  dailyMessages?: boolean
+  dailySearches?: boolean
+  dailyReset?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -453,10 +627,14 @@ export type UserSelectScalar = {
   email?: boolean
   passwordHash?: boolean
   name?: boolean
+  role?: boolean
+  dailyMessages?: boolean
+  dailySearches?: boolean
+  dailyReset?: boolean
   createdAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "name" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "name" | "role" | "dailyMessages" | "dailySearches" | "dailyReset" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   chats?: boolean | Prisma.User$chatsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -474,6 +652,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     email: string
     passwordHash: string
     name: string | null
+    role: string
+    dailyMessages: number
+    dailySearches: number
+    dailyReset: Date
     createdAt: Date
   }, ExtArgs["result"]["user"]>
   composites: {}
@@ -903,6 +1085,10 @@ export interface UserFieldRefs {
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
   readonly name: Prisma.FieldRef<"User", 'String'>
+  readonly role: Prisma.FieldRef<"User", 'String'>
+  readonly dailyMessages: Prisma.FieldRef<"User", 'Int'>
+  readonly dailySearches: Prisma.FieldRef<"User", 'Int'>
+  readonly dailyReset: Prisma.FieldRef<"User", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     

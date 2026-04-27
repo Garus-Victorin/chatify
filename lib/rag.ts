@@ -1,76 +1,40 @@
+/**
+ * RAG pipeline — Hybrid retrieval-augmented generation.
+ *
+ * Flow:
+ *   1. detectSearchIntent()     — LLaMA 3.1 8B classifier (YES/NO)
+ *   2. generateEmbedding()      — embed the query
+ *   3. multiQuerySearch()       — vector search in conversation history
+ *   4. rerankResults()          — cross-encoder reranking (top 3)
+ *   5. searchWeb() [optional]   — Tavily if needsSearch
+ *   6. getOrCreateSummary()     — fetch/generate conversation summary
+ *   7. buildContext()           — fuse all sources into system prompt
+ *
+ * Tavily is preserved as-is and remains the web search backbone.
+ * Vector search adds long-term memory on top of it.
+ */
+
 import Groq from "groq-sdk";
-import { searchWeb, formatContext, SearchResult } from "./search";
+import { searchWeb, SearchResult } from "./search";
+import { generateEmbedding } from "./embeddings";
+import { multiQuerySearch, rerankResults, ScoredMessage } from "./vectorSearch";
+import { buildContext, ConversationMessage } from "./contextBuilder";
+import { getOrCreateSummary } from "./memory";
+import { logger } from "./logger";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+// ─── Types ─────────────────────────────────────────────────────────────────────
 
 export interface RAGContext {
   needsSearch: boolean;
   sources: SearchResult[];
   systemPrompt: string;
+  // Extended fields for the new pipeline
+  longTermMemory: ScoredMessage[];
+  hasSummary: boolean;
+  tokenEstimate: number;
 }
-
-// ─── System prompts ────────────────────────────────────────────────────────────
-
-const BASE_SYSTEM = `You are Chatify, a professional AI assistant. You ALWAYS respond in clean Markdown format.
-
-## OUTPUT FORMAT (STRICT — ALWAYS FOLLOW)
-
-Your responses MUST use Markdown formatting:
-- Use **bold** for key terms and important concepts
-- Use # ## ### headings to structure long answers
-- Use bullet lists (- item) for enumerations
-- Use numbered lists (1. item) for steps or ranked items
-- Use \`inline code\` for technical terms, commands, variables
-- Use fenced code blocks with language tag for all code:
-  \`\`\`python
-  # code here
-  \`\`\`
-- Use > blockquotes for notes, warnings, or citations
-- Use tables for comparisons or structured data
-- Use --- horizontal rules to separate major sections
-
-## RESPONSE STRUCTURE
-
-For factual/informational questions:
-## [Short Title]
-
-[1-2 sentence summary]
-
-### Key Points
-- Point 1
-- Point 2
-
-For code questions:
-Brief explanation, then a properly tagged code block.
-
-For conversational questions:
-Respond naturally but still use **bold** for emphasis.
-
-## QUALITY RULES
-- Never output plain unformatted paragraphs for structured content
-- Never repeat words, phrases, or sentences
-- Never produce incomplete or broken text
-- Be direct and factual — no filler phrases
-- Do not hallucinate — if unsure, say so explicitly
-- Keep responses concise but complete`;
-
-const WEB_SYSTEM = (contextBlock: string) =>
-  `${BASE_SYSTEM}
-
-## WEB SEARCH CONTEXT
-The following results were retrieved from the web. Use them to answer accurately.
-Cite sources using [1], [2], etc. when referencing specific facts.
-If results are outdated or irrelevant, rely on your training knowledge and say so.
-
----
-${contextBlock}
----
-
-## IMPORTANT
-- Synthesize the sources — do not copy them verbatim
-- Only cite sources that are directly relevant
-- If sources contradict each other, mention it
-- Always end with a brief, clear conclusion`;
 
 // ─── Intent detection ──────────────────────────────────────────────────────────
 
@@ -113,44 +77,110 @@ function keywordDetect(query: string): boolean {
 
 // ─── Main RAG pipeline ─────────────────────────────────────────────────────────
 
+export interface BuildRAGOptions {
+  query: string;
+  forceSearch?: boolean;
+  chatId?: string;
+  userId?: string;
+  recentMessages?: ConversationMessage[];
+  memoryEnabled?: boolean;
+}
+
 export async function buildRAGContext(
-  query: string,
+  queryOrOptions: string | BuildRAGOptions,
   forceSearch = false
 ): Promise<RAGContext> {
-  const needsSearch = forceSearch || (await detectSearchIntent(query));
+  // Support both legacy call signature (string) and new options object
+  const options: BuildRAGOptions =
+    typeof queryOrOptions === "string"
+      ? { query: queryOrOptions, forceSearch }
+      : queryOrOptions;
 
-  if (!needsSearch) {
-    return { needsSearch: false, sources: [], systemPrompt: BASE_SYSTEM };
+  const {
+    query,
+    forceSearch: fs = false,
+    chatId,
+    userId,
+    recentMessages = [],
+    memoryEnabled = true,
+  } = options;
+
+  const start = Date.now();
+
+  // ── Step 1: Detect search intent ──────────────────────────────────────────
+  const needsSearch = fs || (await detectSearchIntent(query));
+
+  // ── Step 2: Parallel retrieval ────────────────────────────────────────────
+  // Run embedding, vector search, web search, and summary in parallel
+  const [queryEmbedding, rawMemories, webResults, summary] = await Promise.allSettled([
+    // Embed query (used for vector search)
+    generateEmbedding(query),
+
+    // Vector search in conversation history
+    memoryEnabled && (chatId || userId)
+      ? multiQuerySearch(query, {
+          chatId,
+          userId,
+          limit: 8,
+          threshold: 0.70,
+          // Exclude messages already in recentMessages to avoid duplication
+          excludeMessageIds: [],
+        })
+      : Promise.resolve([] as ScoredMessage[]),
+
+    // Web search (only if needed)
+    needsSearch
+      ? searchWeb(query).then((r) => r.results).catch(() => [] as SearchResult[])
+      : Promise.resolve([] as SearchResult[]),
+
+    // Conversation summary
+    memoryEnabled && chatId
+      ? getOrCreateSummary(chatId)
+      : Promise.resolve(null as string | null),
+  ]);
+
+  // Extract settled values with fallbacks
+  const memories = rawMemories.status === "fulfilled" ? rawMemories.value : [];
+  const sources  = webResults.status  === "fulfilled" ? webResults.value  : [];
+  const summaryText = summary.status  === "fulfilled" ? summary.value     : null;
+
+  if (rawMemories.status === "rejected") {
+    logger.warn("[RAG] Vector search failed", { error: rawMemories.reason });
+  }
+  if (webResults.status === "rejected") {
+    logger.warn("[RAG] Web search failed", { error: webResults.reason });
   }
 
-  try {
-    const { results } = await searchWeb(query);
+  // ── Step 3: Rerank long-term memories ─────────────────────────────────────
+  const rerankedMemories = memories.length > 3
+    ? await rerankResults(query, memories, 3)
+    : memories;
 
-    if (results.length === 0) {
-      return {
-        needsSearch: true,
-        sources: [],
-        systemPrompt:
-          BASE_SYSTEM +
-          "\n\n> Web search returned no relevant results. Answer from training knowledge.",
-      };
-    }
+  // ── Step 4: Build fused context ───────────────────────────────────────────
+  const context = buildContext({
+    query,
+    recentMessages,
+    longTermMemory: rerankedMemories,
+    webSources: sources,
+    conversationSummary: summaryText ?? undefined,
+    memoryEnabled,
+  });
 
-    const contextBlock = formatContext(results);
+  logger.info("[RAG] Pipeline complete", {
+    duration: Date.now() - start,
+    needsSearch,
+    memoriesFound: rerankedMemories.length,
+    webSourcesFound: sources.length,
+    hasSummary: context.hasSummary,
+    tokenEstimate: context.tokenEstimate,
+  });
 
-    return {
-      needsSearch: true,
-      sources: results,
-      systemPrompt: WEB_SYSTEM(contextBlock),
-    };
-  } catch (err) {
-    console.error("[RAG] Search failed:", err);
-    return {
-      needsSearch: true,
-      sources: [],
-      systemPrompt:
-        BASE_SYSTEM +
-        "\n\n> Web search is currently unavailable. Answering from training data only.",
-    };
-  }
+  return {
+    needsSearch,
+    sources,
+    systemPrompt: context.systemPrompt,
+    longTermMemory: rerankedMemories,
+    hasSummary: context.hasSummary,
+    tokenEstimate: context.tokenEstimate,
+  };
 }

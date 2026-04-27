@@ -5,6 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GlobeAltIcon, ChevronDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { SearchResult } from "@/lib/search";
 
+import { useChatStore } from "@/store/chatStore";
+import { useT } from "@/lib/i18n";
+
 function getDomain(url: string) {
   try { return new URL(url).hostname.replace("www.", ""); } catch { return url; }
 }
@@ -14,11 +17,12 @@ function getFavicon(url: string) {
 
 export default function SourcesPanel({ sources }: { sources: SearchResult[] }) {
   const [open, setOpen] = useState(false);
+  const language = useChatStore((s) => s.language);
+  const tr = useT(language);
   if (!sources.length) return null;
 
   return (
     <div className="mt-3">
-      {/* Divider */}
       <div className="flex items-center gap-3 mb-2">
         <div className="flex-1 h-px" style={{ background: "rgba(0,0,0,0.06)" }} />
         <button
@@ -26,7 +30,7 @@ export default function SourcesPanel({ sources }: { sources: SearchResult[] }) {
           className="flex items-center gap-1.5 text-xs t-fast text-[#9ca3af] hover:text-sky-500"
         >
           <GlobeAltIcon className="w-3.5 h-3.5" />
-          {sources.length} source{sources.length > 1 ? "s" : ""}
+          {sources.length} {sources.length > 1 ? tr.sourcesPlural : tr.sources}
           <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
             <ChevronDownIcon className="w-3 h-3" />
           </motion.div>
