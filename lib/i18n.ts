@@ -296,7 +296,7 @@ export function getTranslations(lang: Language): Translations & {
   resetDesc: string;
   deleteTitle: string;
   deleteDesc: string;
-  personalities: Record<string, { label: string; desc: string }>;
+  personalities: Record<string, { label: string; desc: string }> | readonly { id: string; label: string; desc: string }[];
 } {
   const base = t[lang] as Translations;
 
@@ -395,7 +395,7 @@ export function getTranslations(lang: Language): Translations & {
     },
   };
 
-  return { ...base, ...extra[lang] } as ReturnType<typeof getTranslations>;
+  return { ...base, ...extra[lang] } as unknown as ReturnType<typeof getTranslations>;
 }
 
 // ─── LANGUAGES list ────────────────────────────────────────────────────────────
