@@ -22,7 +22,11 @@ import { buildContext, ConversationMessage } from "./contextBuilder";
 import { getOrCreateSummary } from "./memory";
 import { logger } from "./logger";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+let _groq: Groq | null = null;
+function getGroq(): Groq {
+  if (!_groq) _groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  return _groq;
+}
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -40,7 +44,7 @@ export interface RAGContext {
 
 async function detectSearchIntent(query: string): Promise<boolean> {
   try {
-    const res = await groq.chat.completions.create({
+    const res = await getGroq().chat.completions.create({
       model: "llama-3.1-8b-instant",
       max_tokens: 3,
       temperature: 0,

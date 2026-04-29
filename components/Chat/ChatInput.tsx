@@ -27,7 +27,7 @@ const SLASH_COMMANDS = [
 // ─── Props ─────────────────────────────────────────────────────────────────────
 
 interface Props {
-  onSend: (msg: string, forceSearch?: boolean, fileContent?: string) => void;
+  onSend: (msg: string, forceSearch?: boolean, fileContent?: string, fileData?: { dataUrl: string; mimeType: string; name: string }) => void;
   onRegenerate: () => void;
   loading: boolean;
 }
@@ -38,8 +38,9 @@ interface FilePreview {
   name: string;
   size: string;
   type: string;
-  content: string;
+  content: string;   // text content OR base64 data URL for images
   icon: string;
+  isImage: boolean;
 }
 
 function formatSize(bytes: number): string {
@@ -112,7 +113,11 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
     const text = input.trim();
     if (!text || loading) return;
     addToCommandHistory(text);
-    onSend(text, false, filePreview?.content);
+    if (filePreview?.isImage) {
+      onSend(text, false, undefined, { dataUrl: filePreview.content, mimeType: filePreview.type, name: filePreview.name });
+    } else {
+      onSend(text, false, filePreview?.content);
+    }
     setInput("");
     setFilePreview(null);
     setHistoryIdx(-1);
@@ -154,6 +159,7 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
 
   // ── File handling ─────────────────────────────────────────────────────────────
   const processFile = (file: File) => {
+    const isImage = file.type.startsWith("image/");
     const reader = new FileReader();
     reader.onload = (ev) => {
       const content = ev.target?.result as string;
@@ -163,10 +169,18 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
         type: file.type,
         content,
         icon: fileIcon(file.type),
+        isImage,
       });
-      setInput(`/pdf Analyser ce document : ${file.name}`);
+      setInput(isImage
+        ? `Analyse cette image : ${file.name}`
+        : `/pdf Analyser ce document : ${file.name}`
+      );
     };
-    reader.readAsText(file);
+    if (isImage) {
+      reader.readAsDataURL(file);
+    } else {
+      reader.readAsText(file);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -239,7 +253,13 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
               className="flex items-center gap-3 mb-2 px-3 py-2 rounded-xl"
               style={{ background: "#f0f9ff", border: "1px solid rgba(56,189,248,0.2)" }}
             >
-              <span className="text-xl shrink-0">{filePreview.icon}</span>
+              {filePreview.isImage ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={filePreview.content} alt={filePreview.name}
+                     className="w-10 h-10 rounded-lg object-cover shrink-0" />
+              ) : (
+                <span className="text-xl shrink-0">{filePreview.icon}</span>
+              )}
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-sky-700 truncate">{filePreview.name}</p>
                 <p className="text-[10px] text-[#9ca3af]">{filePreview.size}</p>

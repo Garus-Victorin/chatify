@@ -60,6 +60,7 @@ export async function POST(req: NextRequest) {
     chatId,
     memoryEnabled = true,
     personality = "default" as Personality,
+    fileData,
   } = await req.json();
 
   const lastUserMsg: string =
@@ -120,9 +121,24 @@ export async function POST(req: NextRequest) {
 
         const finalSystemPrompt = rag.systemPrompt + personalityNote;
 
+        // ── Build final messages (multimodal if image) ──────────────────
+        let userMessageContent: import("@/lib/llmRouter").LLMMessage["content"];
+
+        if (fileData?.dataUrl && fileData.mimeType.startsWith("image/")) {
+          // Extract base64 from data URL (strip "data:image/...;base64,")
+          const base64 = fileData.dataUrl.split(",")[1];
+          // Groq vision: content as array of parts
+          userMessageContent = [
+            { type: "text", text: lastUserMsg },
+            { type: "image_url", image_url: { url: `data:${fileData.mimeType};base64,${base64}` } },
+          ] as unknown as string;
+        } else {
+          userMessageContent = lastUserMsg;
+        }
+
         const finalMessages: import("@/lib/llmRouter").LLMMessage[] = [
           { role: "system", content: finalSystemPrompt },
-          { role: "user",   content: lastUserMsg },
+          { role: "user",   content: userMessageContent as string },
         ];
 
         send({ type: "stream_start" });
@@ -130,12 +146,15 @@ export async function POST(req: NextRequest) {
         const temperature =
           personality === "fun" ? 0.7 : personality === "technical" ? 0.2 : 0.4;
 
+        const isVision = !!(fileData?.dataUrl && fileData.mimeType?.startsWith("image/"));
+
         const { stream, provider, fromCache } = await generateResponse(finalMessages, {
           max_tokens:        1024,
           temperature,
           top_p:             0.9,
           frequency_penalty: 0.5,
           presence_penalty:  0.3,
+          visionModel:       isVision,
         });
 
         if (provider !== "groq" && !fromCache) {
@@ -170,7 +189,7 @@ export async function POST(req: NextRequest) {
         });
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : "Unknown error";
-        logger.error("[chat] Stream error", err, { userId: identifier });
+        logger.error("[chat] Stream error", { error: msg, stack: err instanceof Error ? err.stack : undefined }, { userId: identifier });
         send({ type: "error", error: msg });
       } finally {
         controller.close();

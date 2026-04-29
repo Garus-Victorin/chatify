@@ -11,7 +11,7 @@ import { logger } from "@/lib/logger";
 
 export interface LLMMessage {
   role: "system" | "user" | "assistant";
-  content: string;
+  content: string | Array<{ type: string; text?: string; image_url?: { url: string } }>;
 }
 
 export interface LLMOptions {
@@ -20,6 +20,7 @@ export interface LLMOptions {
   top_p?: number;
   frequency_penalty?: number;
   presence_penalty?: number;
+  visionModel?: boolean;
 }
 
 interface Provider {
@@ -85,15 +86,19 @@ function makeGroqProvider(): Provider {
       const apiKey = process.env.GROQ_API_KEY;
       if (!apiKey) throw new Error("GROQ_API_KEY is not set");
       const client = new Groq({ apiKey });
+      const model = opts.visionModel
+        ? "llama-3.2-11b-vision-preview"
+        : "llama-3.3-70b-versatile";
       const stream = await client.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
-        messages,
+        model,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        messages: messages as any[],
         stream: true,
         max_tokens:        opts.max_tokens        ?? 1024,
         temperature:       opts.temperature       ?? 0.4,
         top_p:             opts.top_p             ?? 0.9,
-        frequency_penalty: opts.frequency_penalty ?? 0.5,
-        presence_penalty:  opts.presence_penalty  ?? 0.3,
+        frequency_penalty: opts.visionModel ? undefined : (opts.frequency_penalty ?? 0.5),
+        presence_penalty:  opts.visionModel ? undefined : (opts.presence_penalty  ?? 0.3),
       });
 
       return (async function* () {
@@ -117,7 +122,8 @@ function makeOpenAIProvider(): Provider | null {
 
       const stream = await client.chat.completions.create({
         model: "gpt-4o-mini",
-        messages,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        messages: messages as any[],
         stream: true,
         max_tokens:  opts.max_tokens  ?? 1024,
         temperature: opts.temperature ?? 0.4,
@@ -145,7 +151,8 @@ function makeMistralProvider(): Provider | null {
 
       const stream = await client.chat.stream({
         model: "mistral-small-latest",
-        messages,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        messages: messages as any[],
         maxTokens:   opts.max_tokens  ?? 1024,
         temperature: opts.temperature ?? 0.4,
         topP:        opts.top_p       ?? 0.9,

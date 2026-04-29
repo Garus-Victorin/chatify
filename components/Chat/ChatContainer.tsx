@@ -200,7 +200,7 @@ export default function ChatContainer({ onOpenSidebar }: ChatContainerProps) {
     }
   };
 
-  const sendViaLLM = async (text: string, forceSearch = false) => {
+  const sendViaLLM = async (text: string, forceSearch = false, fileData?: { dataUrl: string; mimeType: string; name: string }) => {
     await addMessage({ role: "user", content: text });
     setLoading(true);
     await addMessage({ role: "assistant", content: "" });
@@ -244,16 +244,16 @@ export default function ChatContainer({ onOpenSidebar }: ChatContainerProps) {
         },
       },
       forceSearch,
-      { chatId: activeSessionId, memoryEnabled, personality, signal: ac.signal }
+      { chatId: activeSessionId, memoryEnabled, personality, signal: ac.signal, fileData }
     );
   };
 
-  const sendMessage = async (text: string, forceSearch = false, fileContent?: string) => {
+  const sendMessage = async (text: string, forceSearch = false, fileContent?: string, fileData?: { dataUrl: string; mimeType: string; name: string }) => {
     if (loading) return;
     if (agentMode) { await sendViaAgent(text, fileContent); return; }
     const pluginHandled = await sendViaPlugin(text, fileContent);
     if (pluginHandled) return;
-    await sendViaLLM(text, forceSearch);
+    await sendViaLLM(text, forceSearch, fileData);
   };
 
   const regenerate = async () => {

@@ -28,6 +28,7 @@ export async function streamChat(
     memoryEnabled?: boolean;
     personality?: string;
     signal?: AbortSignal;
+    fileData?: { dataUrl: string; mimeType: string; name: string };
   } = {}
 ) {
   const payload = messages.filter((m) => m.content !== "__client_placeholder__");
@@ -43,6 +44,7 @@ export async function streamChat(
         chatId: options.chatId,
         memoryEnabled: options.memoryEnabled ?? true,
         personality: options.personality ?? "default",
+        fileData: options.fileData,
       }),
       signal: options.signal,
     });
