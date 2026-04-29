@@ -12,16 +12,7 @@ dotenv.config();
 
 import { defineConfig } from "prisma/config";
 
-const url = process.env.DATABASE_URL;
-
-if (!url) {
-  throw new Error(
-    "\n\n❌ DATABASE_URL is not set.\n" +
-    "Create a .env file at the project root with:\n\n" +
-    '  DATABASE_URL="postgresql://user:password@host:5432/chatify"\n\n' +
-    "See .env.example for all required variables.\n"
-  );
-}
+const url = process.env.DATABASE_URL ?? "postgresql://localhost:5432/chatify";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
