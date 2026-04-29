@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
 
         const finalSystemPrompt = rag.systemPrompt + personalityNote;
 
-        const finalMessages = [
+        const finalMessages: import("@/lib/llmRouter").LLMMessage[] = [
           { role: "system", content: finalSystemPrompt },
           { role: "user",   content: lastUserMsg },
         ];
