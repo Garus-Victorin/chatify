@@ -152,7 +152,8 @@ function makeMistralProvider(): Provider | null {
 
       return (async function* () {
         for await (const chunk of stream) {
-          const delta = chunk.data.choices[0]?.delta?.content ?? "";
+          const raw = chunk.data.choices[0]?.delta?.content ?? "";
+          const delta = typeof raw === "string" ? raw : "";
           if (delta) yield delta;
         }
       })();
