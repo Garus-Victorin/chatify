@@ -10,7 +10,7 @@ const PUBLIC_PATHS = ["/login", "/register", "/api/auth/login", "/api/auth/regis
 // Routes restricted to admin role
 const ADMIN_PATHS = ["/api/admin"];
 
-interface JWTPayload {
+interface AppJWTPayload {
   userId: string;
   email: string;
   role?: string;
@@ -43,10 +43,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  let payload: JWTPayload;
+  let payload: AppJWTPayload;
   try {
     const { payload: p } = await jwtVerify(token, SECRET);
-    payload = p as JWTPayload;
+    payload = p as unknown as AppJWTPayload;
   } catch {
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
