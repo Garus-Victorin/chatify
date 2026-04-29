@@ -124,7 +124,10 @@ export default function SettingsPage() {
               <div className="space-y-1.5">
                 {PERSONALITIES.map((p) => {
                   const active = personality === p.id;
-                  const labels = t.personalities[p.id];
+                  const personalitiesMap = Array.isArray(t.personalities)
+                    ? Object.fromEntries(t.personalities.map((x: { id: string; label: string; desc: string }) => [x.id, x]))
+                    : t.personalities as Record<string, { label: string; desc: string }>;
+                  const labels = personalitiesMap[p.id];
                   return (
                     <button key={p.id} onClick={() => setPersonality(p.id)}
                             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left t-fast
