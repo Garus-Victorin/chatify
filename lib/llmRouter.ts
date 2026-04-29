@@ -79,11 +79,12 @@ async function* singleChunkStream(content: string): AsyncIterable<string> {
 // ─── Providers ─────────────────────────────────────────────────────────────────
 
 function makeGroqProvider(): Provider {
-  const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
   return {
     id: "groq",
     async call(messages, opts) {
+      const apiKey = process.env.GROQ_API_KEY;
+      if (!apiKey) throw new Error("GROQ_API_KEY is not set");
+      const client = new Groq({ apiKey });
       const stream = await client.chat.completions.create({
         model: "llama-3.3-70b-versatile",
         messages,
