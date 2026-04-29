@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-type Params = { params: Promise<{ id: string; msgId: string }> };
-
 // PATCH /api/sessions/[id]/messages/[msgId] — update message content or reactions
-export async function PATCH(req: NextRequest, { params }: Params) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string; msgId: string }> }) {
   const { msgId } = await params;
   const body = await req.json();
 
@@ -26,7 +24,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 // DELETE /api/sessions/[id]/messages/[msgId] — delete a message
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string; msgId: string }> }) {
   const { msgId } = await params;
   await prisma.message.delete({ where: { id: msgId } });
   return NextResponse.json({ ok: true });
