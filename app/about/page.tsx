@@ -105,7 +105,7 @@ export default function AboutPage() {
 
           <div className="flex items-center gap-2 flex-wrap justify-center">
             {[
-              { label: "v1.0.0",      color: "#38bdf8", bg: "#f0f9ff" },
+              { label: "v1.9.0",     color: "#38bdf8", bg: "#f0f9ff" },
               { label: "Open Source", color: "#10b981", bg: "#f0fdf4" },
               { label: "Next.js 16",  color: "#8b5cf6", bg: "#faf5ff" },
             ].map((b) => (
