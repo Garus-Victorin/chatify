@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
   ChevronDownIcon, ArrowRightOnRectangleIcon, UserCircleIcon, Cog6ToothIcon,
-  Bars3Icon,
+  Bars3Icon, InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "@/lib/useAuth";
 import { getAvatarColor, getInitial } from "@/lib/avatar";
@@ -117,6 +117,11 @@ export default function Header({ chatTitle, onOpenSidebar }: Props) {
                     icon={<Cog6ToothIcon className="w-4 h-4" />}
                     label={tr.settings}
                     onClick={() => { setOpen(false); router.push("/settings"); }}
+                  />
+                  <MenuItem
+                    icon={<InformationCircleIcon className="w-4 h-4" />}
+                    label="À propos"
+                    onClick={() => { setOpen(false); router.push("/about"); }}
                   />
                   <div className="my-1" style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }} />
                   <MenuItem

@@ -9,6 +9,7 @@ import {
   ChevronLeftIcon, ChevronRightIcon, Cog6ToothIcon,
   MagnifyingGlassIcon, CpuChipIcon, ArrowDownTrayIcon,
   ArrowRightOnRectangleIcon, StarIcon, TagIcon, XMarkIcon,
+  InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarSolid } from "@heroicons/react/24/solid";
 import { useChatStore } from "@/store/chatStore";
@@ -361,6 +362,16 @@ export default function Sidebar({ onClose }: SidebarProps) {
         >
           <ArrowDownTrayIcon className="w-4 h-4 shrink-0" />
           {!collapsed && <span className="text-xs">{tr.export}</span>}
+        </button>
+
+        <button
+          onClick={() => router.push("/about")}
+          title="À propos"
+          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl t-fast
+                     text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb]"
+        >
+          <InformationCircleIcon className="w-4 h-4 shrink-0" />
+          {!collapsed && <span className="text-xs">À propos</span>}
         </button>
 
         <button
