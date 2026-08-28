@@ -14,6 +14,7 @@ import { useChatStore } from "@/store/chatStore";
 import { PLUGIN_META } from "@/lib/pluginMeta";
 import { Personality } from "@/lib/toolTypes";
 import { LANGUAGES, getTranslations, type Language } from "@/lib/i18n";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const PERSONALITIES: { id: Personality; icon: string }[] = [
   { id: "default",   icon: "🤖" },
@@ -75,16 +76,21 @@ export default function SettingsPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#f5f7fb]" dir={dir}>
+    <div className="min-h-screen" style={{ background: "var(--color-bg-alt)" }} dir={dir}>
       {/* Top bar */}
-      <div className="bg-white px-5 py-3.5 flex items-center gap-3"
-           style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+      <div className="px-5 py-3.5 flex items-center gap-3"
+           style={{
+             background: "var(--color-surface)",
+             borderBottom: "1px solid var(--color-border)",
+           }}>
         <button onClick={() => router.back()}
                 className="w-8 h-8 rounded-xl flex items-center justify-center t-fast
-                           text-[#9ca3af] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]">
+                           text-[#9ca3af] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]
+                           dark:hover:bg-[#1a1c1e]">
           <ArrowLeftIcon className="w-4 h-4" />
         </button>
-        <span className="text-sm font-medium text-[#0a0a0a]">{t.settings}</span>
+        <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>{t.settings}</span>
+        <ThemeToggle className="ml-auto" />
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -275,8 +281,12 @@ function Card({ children, delay = 0 }: { children: React.ReactNode; delay?: numb
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, delay }}
-                className="bg-white rounded-2xl p-5"
-                style={{ border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+                className="rounded-2xl p-5"
+                style={{
+                  background: "var(--color-surface)",
+                  border: "1px solid var(--color-border-strong)",
+                  boxShadow: "0 2px 8px var(--color-shadow)",
+                }}>
       {children}
     </motion.div>
   );
@@ -286,7 +296,7 @@ function CardHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
   return (
     <div className="flex items-center gap-2 mb-4">
       <div className="text-sky-400">{icon}</div>
-      <h2 className="text-sm font-semibold text-[#0a0a0a]">{title}</h2>
+      <h2 className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{title}</h2>
     </div>
   );
 }
@@ -296,16 +306,17 @@ function ToggleRow({ label, desc, enabled, onToggle }: {
 }) {
   return (
     <div className="flex items-center justify-between px-3 py-2.5 rounded-xl"
-         style={{ border: "1px solid rgba(0,0,0,0.06)" }}>
+         style={{ border: "1px solid var(--color-border)" }}>
       <div>
-        <p className="text-xs font-medium text-[#0a0a0a]">{label}</p>
-        <p className="text-[10px] text-[#9ca3af] mt-0.5">{desc}</p>
+        <p className="text-xs font-medium" style={{ color: "var(--color-text)" }}>{label}</p>
+        <p className="text-[10px] mt-0.5" style={{ color: "var(--color-text-muted)" }}>{desc}</p>
       </div>
       <button onClick={onToggle}
               className={`w-10 h-5 rounded-full t-fast relative shrink-0
                           ${enabled ? "bg-sky-400" : "bg-[#e5e7eb]"}`}>
-        <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm t-fast
-                         ${enabled ? "left-5" : "left-0.5"}`} />
+        <span className={`absolute top-0.5 w-4 h-4 rounded-full shadow-sm t-fast
+                         ${enabled ? "left-5" : "left-0.5"}`}
+              style={{ background: "var(--color-surface)" }} />
       </button>
     </div>
   );
@@ -317,13 +328,14 @@ function PasswordField({ label, value, onChange, show, onToggle, placeholder = "
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-[#4b5563] mb-1.5">{label}</label>
+      <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--color-text-secondary)" }}>{label}</label>
       <div className="relative">
         <input type={show ? "text" : "password"} value={value}
                onChange={(e) => onChange(e.target.value)}
                placeholder={placeholder} className="input-base pr-10" />
         <button type="button" onClick={onToggle}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] hover:text-[#4b5563] t-fast">
+                className="absolute right-3 top-1/2 -translate-y-1/2 t-fast"
+                style={{ color: "var(--color-text-muted)" }}>
           {show ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
         </button>
       </div>
@@ -340,15 +352,15 @@ function InfoRow({ icon, label, value, onEdit }: {
 }) {
   return (
     <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
-         style={{ border: "1px solid rgba(0,0,0,0.06)" }}>
-      <div className="text-[#9ca3af] shrink-0">{icon}</div>
+         style={{ border: "1px solid var(--color-border)" }}>
+      <div className="shrink-0" style={{ color: "var(--color-text-muted)" }}>{icon}</div>
       <div className="flex-1 min-w-0">
-        <p className="text-[10px] text-[#9ca3af]">{label}</p>
-        <p className="text-xs font-medium text-[#0a0a0a] truncate">{value}</p>
+        <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>{label}</p>
+        <p className="text-xs font-medium truncate" style={{ color: "var(--color-text)" }}>{value}</p>
       </div>
       <button onClick={onEdit}
-              className="w-7 h-7 rounded-lg flex items-center justify-center t-fast
-                         text-[#9ca3af] hover:text-sky-500 hover:bg-sky-50 shrink-0">
+              className="w-7 h-7 rounded-lg flex items-center justify-center t-fast shrink-0
+                         text-sky-500 hover:bg-sky-50">
         <PencilIcon className="w-3.5 h-3.5" />
       </button>
     </div>
@@ -364,12 +376,16 @@ function ModalShell({ title, onClose, children }: {
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.15 }}
                   onClick={(e) => e.stopPropagation()}
-                  className="bg-white rounded-2xl p-6 max-w-sm w-full"
-                  style={{ border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 12px 48px rgba(0,0,0,0.15)" }}>
+                  className="rounded-2xl p-6 max-w-sm w-full"
+                  style={{
+                    background: "var(--color-surface)",
+                    border: "1px solid var(--color-border-strong)",
+                    boxShadow: "0 12px 48px var(--color-shadow-lg)",
+                  }}>
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-sm font-semibold text-[#0a0a0a]">{title}</h3>
+          <h3 className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{title}</h3>
           <button onClick={onClose} className="w-7 h-7 rounded-lg flex items-center justify-center
-                                               text-[#9ca3af] hover:text-[#0a0a0a] hover:bg-[#f5f7fb] t-fast">
+                                               t-fast text-[#9ca3af] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]">
             <XMarkIcon className="w-4 h-4" />
           </button>
         </div>

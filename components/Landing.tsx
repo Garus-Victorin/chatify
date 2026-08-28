@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import ThemeToggle from "@/components/ThemeToggle";
 import {
   SparklesIcon, BoltIcon, ShieldCheckIcon, CpuChipIcon,
   GlobeAltIcon, CodeBracketIcon, ChatBubbleLeftRightIcon,
@@ -148,22 +149,26 @@ const GUARANTEES = [
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-white text-[#0a0a0a]">
+    <div className="min-h-screen" style={{ background: "var(--color-bg)", color: "var(--color-text)" }}>
       {/* Nav */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md"
-              style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md"
+              style={{ borderBottom: "1px solid var(--color-border)" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/home" className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl overflow-hidden shadow-soft">
               <Image src="/chatify.png" alt="Chatify" width={32} height={32} className="w-full h-full object-cover" />
             </div>
-            <span className="text-base font-semibold tracking-tight">Chatify</span>
+            <span className="text-base font-semibold tracking-tight" style={{ color: "var(--color-text)" }}>Chatify</span>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-7">
             {NAV.map((n) => (
               <a key={n.href} href={n.href}
-                 className="text-sm text-[#4b5563] hover:text-[#0a0a0a] transition-colors">
+                 className="text-sm transition-colors"
+                 style={{ color: "var(--color-text-secondary)" }}
+                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text)"; }}
+                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-secondary)"; }}
+                 >
                 {n.label}
               </a>
             ))}
@@ -171,13 +176,17 @@ export default function Landing() {
 
           <div className="flex items-center gap-2.5">
             <Link href="/login"
-                  className="text-sm font-medium text-[#4b5563] hover:text-[#0a0a0a] px-3 py-2 transition-colors hidden sm:block">
+                  className="text-sm font-medium px-3 py-2 transition-colors hidden sm:block"
+                  style={{ color: "var(--color-text-secondary)" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-secondary)"; }}
+                  >
               Se connecter
             </Link>
-            <Link href="/register"
-                  className="btn-primary !w-auto !px-4 !py-2 text-sm">
+            <Link href="/register" className="btn-primary !w-auto !px-4 !py-2 text-sm">
               Commencer
             </Link>
+            <ThemeToggle />
           </div>
         </div>
       </header>
@@ -710,20 +719,20 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t" style={{ borderColor: "rgba(0,0,0,0.06)" }}>
+       {/* Footer */}
+      <footer className="border-t" style={{ borderColor: "var(--color-border)" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg overflow-hidden">
               <Image src="/chatify.png" alt="Chatify" width={28} height={28} className="w-full h-full object-cover" />
             </div>
-            <span className="text-sm font-medium">Chatify</span>
-            <span className="text-[11px] text-[#c4c9d4]">© 2026 · VicDev</span>
+            <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>Chatify</span>
+            <span className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>© 2026 · VicDev</span>
           </div>
-          <div className="flex items-center gap-6 text-xs text-[#9ca3af]">
-            <Link href="/about/author" className="hover:text-[#4b5563] transition-colors">À propos</Link>
-            <Link href="/login" className="hover:text-[#4b5563] transition-colors">Connexion</Link>
-            <Link href="/register" className="hover:text-[#4b5563] transition-colors">Inscription</Link>
+          <div className="flex items-center gap-6 text-xs" style={{ color: "var(--color-text-muted)" }}>
+            <Link href="/about/author" className="hover:text-[#0284c7] transition-colors">À propos</Link>
+            <Link href="/login" className="hover:text-[#0284c7] transition-colors">Connexion</Link>
+            <Link href="/register" className="hover:text-[#0284c7] transition-colors">Inscription</Link>
           </div>
         </div>
       </footer>

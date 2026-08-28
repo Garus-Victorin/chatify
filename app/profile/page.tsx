@@ -14,6 +14,7 @@ import { useAuth } from "@/lib/useAuth";
 import { useChatStore } from "@/store/chatStore";
 import { getAvatarColor, getInitial } from "@/lib/avatar";
 import { useT } from "@/lib/i18n";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function ProfilePage() {
   const router   = useRouter();
@@ -70,26 +71,33 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#f5f7fb]">
+    <div className="min-h-screen" style={{ background: "var(--color-bg-alt)" }}>
 
       {/* Top bar */}
-      <div className="bg-white px-5 py-3.5 flex items-center justify-between"
-           style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+      <div className="px-5 py-3.5 flex items-center justify-between"
+           style={{
+             background: "var(--color-surface)",
+             borderBottom: "1px solid var(--color-border)",
+           }}>
         <div className="flex items-center gap-3">
           <button onClick={() => router.back()}
                   className="w-8 h-8 rounded-xl flex items-center justify-center t-fast
-                             text-[#9ca3af] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]">
+                             text-[#9ca3af] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]
+                             dark:hover:bg-[#1a1c1e]">
             <ArrowLeftIcon className="w-4 h-4" />
           </button>
-          <span className="text-sm font-medium text-[#0a0a0a]">{tr.profileTitle}</span>
+          <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>{tr.profileTitle}</span>
         </div>
-        <button onClick={() => router.push("/settings")}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs t-fast
-                           text-[#4b5563] hover:bg-[#f5f7fb]"
-                style={{ border: "1px solid rgba(0,0,0,0.08)" }}>
-          <Cog6ToothIcon className="w-3.5 h-3.5" />
-          Settings
-        </button>
+        <div className="flex items-center gap-2.5">
+          <button onClick={() => router.push("/settings")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs t-fast
+                             text-[#9ca3af] hover:bg-[#f5f7fb] dark:hover:bg-[#1a1c1e]"
+                  style={{ border: "1px solid var(--color-border)" }}>
+            <Cog6ToothIcon className="w-3.5 h-3.5" />
+            {tr.settings}
+          </button>
+          <ThemeToggle />
+        </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -336,8 +344,12 @@ function Card({ children, delay = 0 }: { children: React.ReactNode; delay?: numb
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, delay }}
-                className="bg-white rounded-2xl p-5"
-                style={{ border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+                className="rounded-2xl p-5"
+                style={{
+                  background: "var(--color-surface)",
+                  border: "1px solid var(--color-border-strong)",
+                  boxShadow: "0 2px 8px var(--color-shadow)",
+                }}>
       {children}
     </motion.div>
   );
@@ -347,7 +359,7 @@ function CardHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
   return (
     <div className="flex items-center gap-2 mb-4">
       <div className="text-sky-400">{icon}</div>
-      <h2 className="text-sm font-semibold text-[#0a0a0a]">{title}</h2>
+      <h2 className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{title}</h2>
     </div>
   );
 }
@@ -355,11 +367,11 @@ function CardHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
 function InfoField({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-[#4b5563] mb-1.5">{label}</label>
+      <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--color-text-secondary)" }}>{label}</label>
       <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
-           style={{ border: "1px solid rgba(0,0,0,0.08)", background: "#f5f7fb" }}>
-        <div className="text-[#9ca3af] shrink-0">{icon}</div>
-        <span className="text-sm text-[#4b5563]">{value}</span>
+           style={{ border: "1px solid var(--color-border)", background: "var(--color-surface-2)" }}>
+        <div className="shrink-0" style={{ color: "var(--color-text-muted)" }}>{icon}</div>
+        <span className="text-sm" style={{ color: "var(--color-text-secondary)" }}>{value}</span>
       </div>
     </div>
   );
@@ -368,10 +380,10 @@ function InfoField({ label, value, icon }: { label: string; value: string; icon:
 function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
   return (
     <div className="flex flex-col gap-2 px-3 py-3 rounded-xl"
-         style={{ border: "1px solid rgba(0,0,0,0.06)", background: "#fafafa" }}>
+         style={{ border: "1px solid var(--color-border)", background: "var(--color-surface-2)" }}>
       <div className="text-sky-400">{icon}</div>
-      <p className="text-xl font-bold text-[#0a0a0a]">{value}</p>
-      <p className="text-[10px] text-[#9ca3af]">{label}</p>
+      <p className="text-xl font-bold" style={{ color: "var(--color-text)" }}>{value}</p>
+      <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>{label}</p>
     </div>
   );
 }

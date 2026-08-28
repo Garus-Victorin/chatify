@@ -294,7 +294,7 @@ export default function ChatContainer({ onOpenSidebar }: ChatContainerProps) {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen" style={{ background: "var(--color-bg)" }}>
 
       <Header chatTitle={active?.title} onOpenSidebar={onOpenSidebar} />
 

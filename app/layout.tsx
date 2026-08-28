@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import DBProvider from "@/components/DBProvider";
 import ErrorToast from "@/components/ErrorToast";
+import ThemeProvider from "@/components/ThemeProvider";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -14,11 +15,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={inter.variable} data-theme="grok" suppressHydrationWarning>
-      <body className="bg-white text-[#0a0a0a] antialiased">
-        <DBProvider>
-          {children}
-          <ErrorToast />
-        </DBProvider>
+      <body className="antialiased" style={{ background: "var(--color-bg)", color: "var(--color-text)" }}>
+        <ThemeProvider>
+          <DBProvider>
+            {children}
+            <ErrorToast />
+          </DBProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

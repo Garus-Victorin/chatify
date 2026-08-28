@@ -89,8 +89,11 @@ export default function Sidebar({ onClose }: SidebarProps) {
     <motion.aside
       animate={{ width: collapsed ? 56 : 240 }}
       transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-      className="h-screen flex flex-col shrink-0 overflow-hidden bg-white"
-      style={{ borderRight: "1px solid rgba(0,0,0,0.06)" }}
+      className="h-screen flex flex-col shrink-0 overflow-hidden"
+      style={{
+        background: "var(--color-surface)",
+        borderRight: "1px solid var(--color-border)",
+      }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 pt-4 pb-3 shrink-0 gap-2">

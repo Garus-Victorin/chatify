@@ -9,6 +9,7 @@ import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
 import { useT } from "@/lib/i18n";
 import { useChatStore } from "@/store/chatStore";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface Props {
   mode: "login" | "register";
@@ -81,7 +82,7 @@ function Field({
   const [focused, setFocused] = useState(false);
   return (
     <div>
-      <label className="block text-xs font-medium text-[#4b5563] mb-1.5">{label}</label>
+      <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--color-text-secondary)" }}>{label}</label>
       <div className="relative">
         <input
           type={type}
@@ -91,14 +92,15 @@ function Field({
           required={required}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className="w-full px-4 py-2.5 rounded-xl text-sm text-[#0a0a0a]
-                     placeholder:text-[#9ca3af] outline-none transition-all duration-150"
-          style={{
-            border: `1px solid ${hasError ? "#ef4444" : focused ? "#38bdf8" : "rgba(0,0,0,0.1)"}`,
-            background: hasError ? "#fef9f9" : "#fafafa",
-            boxShadow: focused && !hasError ? "0 0 0 3px rgba(56,189,248,0.12)" : "none",
-            paddingRight: children ? "2.5rem" : undefined,
-          }}
+           className="w-full px-4 py-2.5 rounded-xl text-sm outline-none transition-all duration-150
+                      dark:placeholder-[#7b8088]"
+           style={{
+             color: "var(--color-text)",
+             border: `1px solid ${hasError ? "#ef4444" : focused ? "var(--color-accent)" : "var(--color-border)"}`,
+             background: hasError ? "#fef9f9" : "var(--color-surface-2)",
+             boxShadow: focused && !hasError ? "0 0 0 3px rgba(56,189,248,0.12)" : "none",
+             paddingRight: children ? "2.5rem" : undefined,
+           }}
         />
         {children}
       </div>
@@ -158,7 +160,8 @@ export default function AuthForm({ mode }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f7fb] flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4"
+         style={{ background: "var(--color-bg-alt)" }}>
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -167,23 +170,30 @@ export default function AuthForm({ mode }: Props) {
       >
         {/* Logo */}
         <div className="flex flex-col items-center mb-8 gap-3">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <ThemeToggle />
+          </div>
           <div className="w-14 h-14 rounded-2xl overflow-hidden"
-               style={{ boxShadow: "0 4px 16px rgba(0,0,0,0.12)" }}>
+               style={{ boxShadow: "0 4px 16px var(--color-shadow)" }}>
             <Image src="/chatify.png" alt="Chatify" width={56} height={56} className="w-full h-full object-cover" />
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-semibold text-[#0a0a0a] tracking-tight">
+            <h1 className="text-2xl font-semibold tracking-tight" style={{ color: "var(--color-text)" }}>
               {isLogin ? tr.welcomeBack : tr.createAccount}
             </h1>
-            <p className="text-sm text-[#9ca3af] mt-1">
+            <p className="text-sm mt-1" style={{ color: "var(--color-text-muted)" }}>
               {isLogin ? tr.signInSubtitle : tr.registerSubtitle}
             </p>
           </div>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl p-6"
-             style={{ border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
+        <div className="rounded-2xl p-6"
+             style={{
+               background: "var(--color-surface)",
+               border: "1px solid var(--color-border-strong)",
+               boxShadow: "0 4px 24px var(--color-shadow-lg)",
+             }}>
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
 
             {/* Name */}
@@ -254,7 +264,7 @@ export default function AuthForm({ mode }: Props) {
                       <p className="text-[10px] font-medium" style={{ color: strength.color }}>
                         {strength.label}
                         {strength.score < 3 && (
-                          <span className="text-[#9ca3af] font-normal ml-1">
+                          <span className="font-normal ml-1" style={{ color: "var(--color-text-muted)" }}>
                             — ajoutez des majuscules, chiffres ou symboles
                           </span>
                         )}
@@ -322,11 +332,12 @@ export default function AuthForm({ mode }: Props) {
         </div>
 
         {/* Toggle */}
-        <p className="text-center text-sm text-[#9ca3af] mt-5">
+        <p className="text-center text-sm mt-5" style={{ color: "var(--color-text-muted)" }}>
           {isLogin ? tr.noAccount : tr.alreadyAccount}{" "}
           <Link
             href={isLogin ? "/register" : "/login"}
-            className="text-sky-500 font-medium hover:text-sky-600 transition-colors"
+            className="font-medium hover:text-[#0284c7] transition-colors"
+            style={{ color: "var(--color-accent)" }}
           >
             {isLogin ? tr.signUp : tr.signIn}
           </Link>

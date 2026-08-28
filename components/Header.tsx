@@ -8,6 +8,7 @@ import {
   ChevronDownIcon, ArrowRightOnRectangleIcon, UserCircleIcon, Cog6ToothIcon,
   Bars3Icon, InformationCircleIcon,
 } from "@heroicons/react/24/outline";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/lib/useAuth";
 import { getAvatarColor, getInitial } from "@/lib/avatar";
 import { useChatStore } from "@/store/chatStore";
@@ -39,8 +40,11 @@ export default function Header({ chatTitle, onOpenSidebar }: Props) {
 
   return (
     <header
-      className="shrink-0 flex items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3 bg-white"
-      style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}
+      className="shrink-0 flex items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3"
+      style={{
+        background: "var(--color-surface)",
+        borderBottom: "1px solid var(--color-border)",
+      }}
     >
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         {/* Hamburger — mobile only */}
@@ -56,15 +60,18 @@ export default function Header({ chatTitle, onOpenSidebar }: Props) {
         <div className="w-7 h-7 rounded-xl overflow-hidden shrink-0">
           <Image src="/chatify.png" alt="Chatify" width={28} height={28} className="w-full h-full object-cover" />
         </div>
-        <span className="text-sm font-medium text-[#0a0a0a] truncate max-w-[140px] sm:max-w-[280px]">
+            <span className="text-sm font-medium truncate max-w-[140px] sm:max-w-[280px]"
+                  style={{ color: "var(--color-text)" }}>
           {chatTitle ?? "Chatify"}
         </span>
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="text-[11px] text-[#9ca3af] font-medium hidden sm:block">
+        <span className="text-[11px] font-medium hidden sm:block" style={{ color: "var(--color-text-muted)" }}>
           LLaMA 3.3 · 70B
         </span>
+
+        <ThemeToggle />
 
         <div className="relative" ref={ref}>
           <button
