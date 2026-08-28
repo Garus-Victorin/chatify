@@ -153,7 +153,7 @@ export const useChatStore = create<ChatStore>()(
       agentMode: false,
       abortController: null,
       commandHistory: [],
-      language: "en",
+      language: "fr",
 
       dismissError: () => set({ toastError: null }),
       showSuccess: (msg) => set({ toastSuccess: msg }),
