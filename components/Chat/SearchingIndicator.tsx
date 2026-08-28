@@ -16,7 +16,7 @@ export default function SearchingIndicator({ query }: { query?: string }) {
       exit={{ opacity: 0, y: -6 }}
       transition={{ duration: 0.2 }}
       className="flex items-center gap-3 px-4 py-2.5 rounded-xl w-fit shadow-soft"
-      style={{ background: "#f0f9ff", border: "1px solid rgba(56,189,248,0.2)" }}
+      style={{ background: "var(--color-accent-soft)", border: "1px solid rgba(56,189,248,0.15)" }}
     >
       <motion.div
         animate={{ rotate: 360 }}
@@ -26,9 +26,9 @@ export default function SearchingIndicator({ query }: { query?: string }) {
       </motion.div>
 
       <div>
-        <p className="text-xs font-medium text-sky-500">{tr.searchingWeb}</p>
+        <p className="text-xs font-medium" style={{ color: "var(--color-accent-hover)" }}>{tr.searchingWeb}</p>
         {query && (
-          <p className="text-[10px] text-[#9ca3af] truncate max-w-[180px] mt-0.5">{query}</p>
+          <p className="text-[10px] truncate max-w-[180px] mt-0.5" style={{ color: "var(--color-text-muted)" }}>{query}</p>
         )}
       </div>
 

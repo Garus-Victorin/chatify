@@ -1,24 +1,18 @@
 /**
- * Tool router — determines which plugin (if any) should handle a given input.
+ * Tool router � determines which plugin (if any) should handle a given input.
  *
  * Resolution order:
  *   1. Slash command parser  (/search, /calc, /run, /pdf)
  *   2. Heuristic trigger()   (each plugin's built-in trigger function)
- *   3. LLM classification    (llama-3.1-8b-instant, only if heuristics are ambiguous)
- *   4. null                  (fallback → normal LLM response)
+ *   3. LLM classification    � disabled (heuristic + slash only)
+ *   4. null                  (fallback ? normal LLM response)
  */
 
 import { Plugin, PLUGIN_REGISTRY, getEnabledPlugins } from "./plugins/index";
 import { Personality, PERSONALITY_PROMPTS } from "./toolTypes";
 import { logger } from "./logger";
 
-// Lazy Groq instance — only created server-side when needed
-function getGroq() {
-  const { default: Groq } = require("groq-sdk");
-  return new Groq({ apiKey: process.env.GROQ_API_KEY });
-}
-
-// ─── Slash command map ─────────────────────────────────────────────────────────
+// --- Slash command map ---------------------------------------------------------
 
 const SLASH_COMMANDS: Record<string, string> = {
   "/search": "web-search",
@@ -32,7 +26,7 @@ const SLASH_COMMANDS: Record<string, string> = {
 export type { Personality };
 export { PERSONALITY_PROMPTS };
 
-// ─── Command parser ────────────────────────────────────────────────────────────
+// --- Command parser ------------------------------------------------------------
 
 export interface ParsedCommand {
   command: string;
@@ -52,7 +46,7 @@ export function parseSlashCommand(input: string): ParsedCommand | null {
   return { command, args, pluginId };
 }
 
-// ─── Heuristic routing ─────────────────────────────────────────────────────────
+// --- Heuristic routing ---------------------------------------------------------
 
 function heuristicRoute(input: string, enabledPlugins: Plugin[]): Plugin | null {
   for (const plugin of enabledPlugins) {
@@ -61,42 +55,14 @@ function heuristicRoute(input: string, enabledPlugins: Plugin[]): Plugin | null 
   return null;
 }
 
-// ─── LLM routing (fallback) ────────────────────────────────────────────────────
+// --- LLM routing (disabled � heuristic + slash only) ---------------------------
 
 async function llmRoute(input: string, enabledPlugins: Plugin[]): Promise<Plugin | null> {
-  if (enabledPlugins.length === 0) return null;
-
-  const toolList = enabledPlugins
-    .map((p) => `- ${p.id}: ${p.description}`)
-    .join("\n");
-
-  try {
-    const groq = getGroq();
-    const res = await groq.chat.completions.create({
-      model: "llama-3.1-8b-instant",
-      max_tokens: 20,
-      temperature: 0,
-      messages: [
-        {
-          role: "system",
-          content:
-            `You are a tool classifier. Given a user message, output ONLY the tool ID to use, or "none".\n\nAvailable tools:\n${toolList}\n\nOutput ONLY the tool ID (e.g. "calculator") or "none". No explanation.`,
-        },
-        { role: "user", content: input },
-      ],
-    });
-
-    const toolId = res.choices[0]?.message?.content?.trim().toLowerCase() ?? "none";
-    if (toolId === "none") return null;
-
-    return enabledPlugins.find((p) => p.id === toolId) ?? null;
-  } catch (err) {
-    logger.warn("[toolRouter] LLM routing failed, using heuristic only", { error: err });
-    return null;
-  }
+  // LLM routing disabled � Groq removed; heuristic + slash commands only
+  return null;
 }
 
-// ─── Main router ───────────────────────────────────────────────────────────────
+// --- Main router ---------------------------------------------------------------
 
 export interface RouteResult {
   plugin: Plugin | null;

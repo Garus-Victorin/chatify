@@ -35,7 +35,8 @@ export default function PluginPanel({ open, onClose }: Props) {
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+            className="fixed inset-0 z-40"
+            style={{ background: "rgba(0, 0, 0, 0.2)" }}
           />
 
           <motion.div
@@ -43,41 +44,43 @@ export default function PluginPanel({ open, onClose }: Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.97 }}
             transition={{ duration: 0.18 }}
-            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 w-full max-w-sm
-                       bg-white rounded-2xl shadow-lg overflow-hidden"
-            style={{ border: "1px solid rgba(0,0,0,0.08)" }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 w-full max-w-sm rounded-2xl shadow-lg overflow-hidden"
+            style={{
+              background: "var(--color-surface)",
+              border: "1px solid var(--color-border-strong)",
+            }}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3"
-                 style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                 style={{ borderBottom: "1px solid var(--color-border)" }}>
               <div className="flex items-center gap-2">
                 <PuzzlePieceIcon className="w-4 h-4 text-sky-400" />
-                <span className="text-sm font-semibold text-[#0a0a0a]">{tr.plugins}</span>
+                <span className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{tr.plugins}</span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-50 text-sky-500 font-medium">
                   {enabledPlugins.length} {tr.active}
                 </span>
               </div>
               <button onClick={onClose}
-                      className="w-6 h-6 rounded-lg flex items-center justify-center
-                                 text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb] t-fast">
-                <XMarkIcon className="w-4 h-4" />
+                      className="w-6 h-6 rounded-lg flex items-center justify-center t-fast">
+                <XMarkIcon className="w-4 h-4" style={{ color: "var(--color-text-muted)" }} />
               </button>
             </div>
 
             {/* Agent mode */}
-            <div className="px-4 py-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+            <div className="px-4 py-3" style={{ borderBottom: "1px solid var(--color-border)" }}>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold text-[#0a0a0a]">🤖 {tr.agentMode}</p>
-                  <p className="text-[10px] text-[#9ca3af] mt-0.5">{tr.agentModeDesc}</p>
+                  <p className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>🤖 {tr.agentMode}</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: "var(--color-text-muted)" }}>{tr.agentModeDesc}</p>
                 </div>
                 <button
-                  onClick={() => setAgentMode(!agentMode)}
-                  className={`w-10 h-5 rounded-full t-fast relative shrink-0
-                              ${agentMode ? "bg-sky-400" : "bg-[#e5e7eb]"}`}
+            onClick={() => setAgentMode(!agentMode)}
+                className={`w-10 h-5 rounded-full t-fast relative shrink-0
+                            ${agentMode ? "bg-sky-400" : "bg-[#e5e7eb] dark:bg-[#2a2e32]"}`}
                 >
-                  <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm t-fast
-                                   ${agentMode ? "left-5" : "left-0.5"}`} />
+                  <span className={`absolute top-0.5 w-4 h-4 rounded-full shadow-sm t-fast
+                                   ${agentMode ? "left-5" : "left-0.5"}`}
+                        style={{ background: "var(--color-surface)" }} />
                 </button>
               </div>
             </div>
@@ -86,8 +89,8 @@ export default function PluginPanel({ open, onClose }: Props) {
             <div className="p-3 space-y-3 max-h-72 overflow-y-auto">
               {Object.entries(grouped).map(([category, plugins]) => (
                 <div key={category}>
-                  <p className="text-[10px] font-semibold uppercase tracking-widest
-                                text-[#9ca3af] px-1 mb-1.5">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest px-1 mb-1.5"
+                     style={{ color: "var(--color-text-muted)" }}>
                     {CATEGORY_LABELS[category] ?? category}
                   </p>
                   <div className="space-y-1">
@@ -99,15 +102,18 @@ export default function PluginPanel({ open, onClose }: Props) {
                           onClick={() => togglePlugin(plugin.id)}
                           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
                                       text-left t-fast
-                                      ${enabled ? "bg-sky-50" : "bg-[#fafafa] hover:bg-[#f5f7fb]"}`}
-                          style={{ border: `1px solid ${enabled ? "rgba(56,189,248,0.3)" : "rgba(0,0,0,0.06)"}` }}
+                                      ${enabled ? "text-sky-500 bg-sky-50 dark:bg-sky-950/30" : "hover:bg-[var(--color-surface-2)]"}`}
+                          style={{
+                            border: `1px solid ${enabled ? "rgba(56,189,248,0.3)" : "var(--color-border)"}`,
+                          }}
                         >
                           <span className="text-base shrink-0">{plugin.icon}</span>
                           <div className="flex-1 min-w-0">
-                            <p className={`text-xs font-medium ${enabled ? "text-sky-700" : "text-[#0a0a0a]"}`}>
+                            <p className="text-xs font-medium"
+                               style={{ color: enabled ? "var(--color-accent-hover)" : "var(--color-text)" }}>
                               {plugin.name}
                             </p>
-                            <p className="text-[10px] text-[#9ca3af] truncate">{plugin.description}</p>
+                            <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>{plugin.description}</p>
                           </div>
                           <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center
                                           ${enabled ? "bg-sky-400 border-sky-400" : "border-[#d1d5db]"}`}>
@@ -127,12 +133,12 @@ export default function PluginPanel({ open, onClose }: Props) {
             </div>
 
             {/* Footer */}
-            <div className="px-4 py-2.5" style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}>
-              <p className="text-[10px] text-[#9ca3af] text-center">
+            <div className="px-4 py-2.5" style={{ borderTop: "1px solid var(--color-border)" }}>
+              <p className="text-[10px] text-center" style={{ color: "var(--color-text-muted)" }}>
                 {tr.pluginHint}{" "}
-                <code className="bg-[#f5f7fb] px-1 rounded">/search</code>,{" "}
-                <code className="bg-[#f5f7fb] px-1 rounded">/calc</code>,{" "}
-                <code className="bg-[#f5f7fb] px-1 rounded">/run</code>{" "}
+                <code className="px-1 rounded" style={{ background: "var(--color-surface-2)", color: "var(--color-text-secondary)" }}>/search</code>,{" "}
+                <code className="px-1 rounded" style={{ background: "var(--color-surface-2)", color: "var(--color-text-secondary)" }}>/calc</code>,{" "}
+                <code className="px-1 rounded" style={{ background: "var(--color-surface-2)", color: "var(--color-text-secondary)" }}>/run</code>{" "}
                 {tr.pluginHintEnd}
               </p>
             </div>

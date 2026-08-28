@@ -30,7 +30,8 @@ export default function PersonalitySelector({ open, onClose }: Props) {
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+            className="fixed inset-0 z-40"
+            style={{ background: "rgba(0, 0, 0, 0.2)" }}
           />
 
           <motion.div
@@ -38,20 +39,21 @@ export default function PersonalitySelector({ open, onClose }: Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.97 }}
             transition={{ duration: 0.18 }}
-            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 w-full max-w-xs
-                       bg-white rounded-2xl shadow-lg overflow-hidden"
-            style={{ border: "1px solid rgba(0,0,0,0.08)" }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 w-full max-w-xs rounded-2xl shadow-lg overflow-hidden"
+            style={{
+              background: "var(--color-surface)",
+              border: "1px solid var(--color-border-strong)",
+            }}
           >
             <div className="flex items-center justify-between px-4 py-3"
-                 style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                 style={{ borderBottom: "1px solid var(--color-border)" }}>
               <div className="flex items-center gap-2">
                 <SparklesIcon className="w-4 h-4 text-sky-400" />
-                <span className="text-sm font-semibold text-[#0a0a0a]">{tr.aiPersonality}</span>
+                <span className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{tr.aiPersonality}</span>
               </div>
               <button onClick={onClose}
-                      className="w-6 h-6 rounded-lg flex items-center justify-center
-                                 text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb] t-fast">
-                <XMarkIcon className="w-4 h-4" />
+                      className="w-6 h-6 rounded-lg flex items-center justify-center t-fast">
+                <XMarkIcon className="w-4 h-4" style={{ color: "var(--color-text-muted)" }} />
               </button>
             </div>
 
@@ -63,16 +65,17 @@ export default function PersonalitySelector({ open, onClose }: Props) {
                   <button
                     key={meta.id}
                     onClick={() => { setPersonality(meta.id); onClose(); }}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
-                                text-left t-fast ${active ? "bg-sky-50" : "hover:bg-[#f5f7fb]"}`}
-                    style={{ border: `1px solid ${active ? "rgba(56,189,248,0.3)" : "rgba(0,0,0,0.06)"}` }}
+                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
+                                 text-left t-fast ${active ? "text-sky-500 bg-sky-50 dark:bg-sky-950/30" : "hover:bg-[var(--color-surface-2)]"}`}
+                    style={{ border: `1px solid ${active ? "rgba(56,189,248,0.3)" : "var(--color-border)"}` }}
                   >
                     <span className="text-lg shrink-0">{meta.icon}</span>
                     <div className="flex-1">
-                      <p className={`text-xs font-semibold ${active ? "text-sky-700" : "text-[#0a0a0a]"}`}>
+                      <p className="text-xs font-semibold"
+                         style={{ color: active ? "var(--color-accent-hover)" : "var(--color-text)" }}>
                         {p?.label ?? meta.id}
                       </p>
-                      <p className="text-[10px] text-[#9ca3af]">{p?.desc ?? ""}</p>
+                      <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>{p?.desc ?? ""}</p>
                     </div>
                     {active && (
                       <div className="w-4 h-4 rounded-full bg-sky-400 flex items-center justify-center shrink-0">

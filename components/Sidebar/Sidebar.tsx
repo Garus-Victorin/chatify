@@ -108,7 +108,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
               <div className="w-7 h-7 rounded-xl overflow-hidden shrink-0">
                 <Image src="/chatify.png" alt="Chatify" width={28} height={28} className="w-full h-full object-cover" />
               </div>
-              <span className="font-semibold text-sm text-[#0a0a0a] tracking-tight">Chatify</span>
+              <span className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>Chatify</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -116,8 +116,8 @@ export default function Sidebar({ onClose }: SidebarProps) {
         {onClose && (
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg flex items-center justify-center t-fast md:hidden
-                       text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb]"
+            className="w-7 h-7 rounded-lg flex items-center justify-center t-fast md:hidden shrink-0"
+            style={{ color: "var(--color-text-muted)" }}
           >
             <XMarkIcon className="w-4 h-4" />
           </button>
@@ -126,8 +126,8 @@ export default function Sidebar({ onClose }: SidebarProps) {
         <button
           onClick={() => setCollapsed((v) => !v)}
           title={collapsed ? "Agrandir" : "Réduire"}
-          className="w-7 h-7 rounded-lg items-center justify-center t-fast ml-auto
-                     text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb] hidden md:flex"
+          className="w-7 h-7 rounded-lg items-center justify-center t-fast ml-auto hidden md:flex"
+          style={{ color: "var(--color-text-muted)" }}
         >
           {collapsed ? <ChevronRightIcon className="w-3.5 h-3.5" /> : <ChevronLeftIcon className="w-3.5 h-3.5" />}
         </button>
@@ -139,8 +139,9 @@ export default function Sidebar({ onClose }: SidebarProps) {
           onClick={createSession}
           title={tr.newChat}
           className="w-full flex items-center gap-2 px-3 py-2 rounded-xl t-fast
-                     bg-sky-400 text-white text-sm font-medium
-                     hover:bg-sky-500 shadow-soft active:scale-[0.98]"
+                     text-white text-sm font-medium
+                     hover:brightness-110 shadow-soft active:scale-[0.98]"
+          style={{ background: "var(--color-accent)" }}
         >
           <PlusIcon className="w-4 h-4 shrink-0" />
           <AnimatePresence>
@@ -168,17 +169,18 @@ export default function Sidebar({ onClose }: SidebarProps) {
             className="px-2 mb-2 shrink-0 space-y-1.5"
           >
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl t-fast"
-                 style={{ background: "#f5f7fb", border: "1px solid rgba(0,0,0,0.06)" }}>
-              <MagnifyingGlassIcon className="w-3.5 h-3.5 text-[#9ca3af] shrink-0" />
+                 style={{ background: "var(--color-surface-2)", border: "1px solid var(--color-border)" }}>
+              <MagnifyingGlassIcon className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--color-text-muted)" }} />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={tr.searchChats}
-                className="flex-1 bg-transparent text-xs text-[#0a0a0a] placeholder:text-[#9ca3af] outline-none"
+                className="flex-1 bg-transparent text-xs outline-none"
+                style={{ color: "var(--color-text)", placeholder: "var(--color-text-muted)" }}
               />
               {search && (
-                <button onClick={() => setSearch("")} className="text-[#9ca3af] hover:text-[#4b5563] t-fast">
+                <button onClick={() => setSearch("")} className="t-fast" style={{ color: "var(--color-text-muted)" }}>
                   <XMarkIcon className="w-3 h-3" />
                 </button>
               )}
@@ -188,13 +190,16 @@ export default function Sidebar({ onClose }: SidebarProps) {
               <button
                 onClick={() => setFilterFav((v) => !v)}
                 className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium t-fast
-                            ${filterFav ? "bg-amber-50 text-amber-500" : "text-[#9ca3af] hover:bg-[#f5f7fb]"}`}
-                style={{ border: `1px solid ${filterFav ? "rgba(245,158,11,0.25)" : "rgba(0,0,0,0.06)"}` }}
+                            ${filterFav ? "text-amber-400" : "hover:bg-[var(--color-surface-2)]"}`}
+                style={{
+                  border: `1px solid ${filterFav ? "rgba(245,158,11,0.25)" : "var(--color-border)"}`,
+                  color: filterFav ? undefined : "var(--color-text-muted)",
+                }}
               >
                 {filterFav ? <StarSolid className="w-3 h-3" /> : <StarIcon className="w-3 h-3" />}
                 {tr.favorites}
               </button>
-              <span className="text-[10px] text-[#9ca3af] ml-auto">
+                <span className="text-[10px] font-medium" style={{ color: "var(--color-text-muted)" }}>
                 {filtered.length} conv.
               </span>
             </div>
@@ -205,13 +210,14 @@ export default function Sidebar({ onClose }: SidebarProps) {
       {/* Sessions */}
       <div className="flex-1 overflow-y-auto px-2 space-y-3">
         {!collapsed && groups.length === 0 && (
-          <p className="text-xs text-center py-6 text-[#9ca3af]">{tr.noChatsFound}</p>
+          <p className="text-xs text-center py-6" style={{ color: "var(--color-text-muted)" }}>{tr.noChatsFound}</p>
         )}
 
         {groups.map((group) => (
           <div key={group.label}>
             {!collapsed && (
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#9ca3af] px-2 mb-1">
+              <p className="text-[10px] font-semibold uppercase tracking-widest px-2 mb-1"
+                 style={{ color: "var(--color-text-muted)" }}>
                 {group.label}
               </p>
             )}
@@ -234,13 +240,20 @@ export default function Sidebar({ onClose }: SidebarProps) {
                       className={`group flex items-center justify-between px-2.5 py-2
                                   rounded-xl cursor-pointer t-fast
                                   ${isActive
-                                    ? "bg-sky-50 text-sky-600"
-                                    : "text-[#4b5563] hover:bg-[#f5f7fb] hover:text-[#0a0a0a]"
+                                    ? "text-white"
+                                    : "hover:bg-[var(--color-surface-2)]"
                                   }`}
+                      style={{
+                        color: isActive ? "#ffffff" : "var(--color-text-secondary)",
+                        background: isActive ? "var(--color-accent)"  : undefined,
+                        border: "1px solid var(--color-border)",
+                      }}
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <ChatBubbleLeftRightIcon className="w-3.5 h-3.5 shrink-0" />
-                        {!collapsed && <span className="text-xs truncate">{s.title}</span>}
+                        <ChatBubbleLeftRightIcon className="w-3.5 h-3.5 shrink-0" style={{ color: isActive ? "var(--color-accent)" : "var(--color-text-muted)" }} />
+                        {!collapsed && (
+                   <span className="text-xs truncate" style={{ color: isActive ? "#ffffff" : "var(--color-text)" }}>{s.title}</span>
+                 )}
                       </div>
 
                       {!collapsed && (
@@ -248,21 +261,23 @@ export default function Sidebar({ onClose }: SidebarProps) {
                           <button
                             onClick={(e) => { e.stopPropagation(); toggleFavorite(s.id); }}
                             className={`w-5 h-5 rounded-md flex items-center justify-center t-fast
-                                        ${s.favorite ? "text-amber-400" : "text-[#9ca3af] hover:text-amber-400"}`}
+                                        ${s.favorite ? "text-amber-400" : ""}
+                                        ${s.favorite ? "" : "hover:text-amber-400"}`}
+                            style={{ color: s.favorite ? undefined : "var(--color-text-muted)" }}
                           >
                             {s.favorite ? <StarSolid className="w-3 h-3" /> : <StarIcon className="w-3 h-3" />}
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); setTagInput(s.id); setTagValue(""); }}
-                            className="w-5 h-5 rounded-md flex items-center justify-center t-fast
-                                       text-[#9ca3af] hover:text-sky-400 hover:bg-sky-50"
+                            className="w-5 h-5 rounded-md flex items-center justify-center t-fast shrink-0"
+                            style={{ color: "var(--color-text-muted)", background: "var(--color-accent-soft)" }}
                           >
                             <TagIcon className="w-3 h-3" />
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); deleteSession(s.id); }}
-                            className="w-5 h-5 rounded-md flex items-center justify-center t-fast
-                                       text-[#9ca3af] hover:text-red-400 hover:bg-red-50"
+                             className={`w-5 h-5 rounded-md flex items-center justify-center t-fast
+                                       text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30`}
                           >
                             <TrashIcon className="w-3 h-3" />
                           </button>
@@ -299,19 +314,19 @@ export default function Sidebar({ onClose }: SidebarProps) {
                           className="px-2.5 pb-1.5"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <input
-                            autoFocus
-                            type="text"
-                            value={tagValue}
-                            onChange={(e) => setTagValue(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") handleAddTag(s.id);
-                              if (e.key === "Escape") { setTagInput(null); setTagValue(""); }
-                            }}
-                            placeholder={tr.addTag}
-                            className="w-full text-[10px] px-2 py-1 rounded-lg outline-none"
-                            style={{ border: "1px solid rgba(56,189,248,0.3)", background: "#f0f9ff" }}
-                          />
+               <input
+                             autoFocus
+                             type="text"
+                             value={tagValue}
+                             onChange={(e) => setTagValue(e.target.value)}
+                             onKeyDown={(e) => {
+                               if (e.key === "Enter") handleAddTag(s.id);
+                               if (e.key === "Escape") { setTagInput(null); setTagValue(""); }
+                             }}
+                             placeholder={tr.addTag}
+                             className="w-full text-[10px] px-2 py-1 rounded-lg outline-none"
+                             style={{ border: "1px solid var(--color-accent)", background: "var(--color-accent-soft)", color: "var(--color-accent-hover)" }}
+                           />
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -324,25 +339,26 @@ export default function Sidebar({ onClose }: SidebarProps) {
       </div>
 
       {/* Bottom */}
-      <div className="px-2 pb-4 pt-3 shrink-0" style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+      <div className="px-2 pb-4 pt-3 shrink-0" style={{ borderTop: "1px solid var(--color-border)" }}>
 
         <div
           onClick={toggleMemory}
           title={tr.memory}
           className="flex items-center justify-between px-2.5 py-2 rounded-xl
-                     cursor-pointer t-fast hover:bg-[#f5f7fb]"
+                     cursor-pointer t-fast hover:bg-[var(--color-surface-2)]"
         >
           <div className="flex items-center gap-2">
-            <CpuChipIcon className="w-4 h-4 text-[#9ca3af] shrink-0" />
-            {!collapsed && <span className="text-xs text-[#4b5563]">{tr.memory}</span>}
+            <CpuChipIcon className="w-4 h-4 shrink-0" style={{ color: "var(--color-text-muted)" }} />
+            {!collapsed && <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>{tr.memory}</span>}
           </div>
           {!collapsed && (
             <div
-              className={`w-8 h-4 rounded-full t-fast relative shrink-0 ${memoryEnabled ? "bg-sky-400" : "bg-[#e5e7eb]"}`}
+              className={`w-8 h-4 rounded-full t-fast relative shrink-0 ${memoryEnabled ? "bg-sky-400" : "bg-[#e5e7eb] dark:bg-[#2a2e32]"}`}
               onClick={(e) => e.stopPropagation()}
             >
-              <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm t-fast
-                               ${memoryEnabled ? "left-4" : "left-0.5"}`} />
+              <span className={`absolute top-0.5 w-3 h-3 rounded-full shadow-sm t-fast
+                               ${memoryEnabled ? "left-4" : "left-0.5"}`}
+                    style={{ background: "var(--color-surface)" }} />
             </div>
           )}
         </div>
@@ -351,7 +367,8 @@ export default function Sidebar({ onClose }: SidebarProps) {
           onClick={clearActive}
           title={tr.clearChat}
           className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl t-fast
-                     text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb]"
+                     hover:bg-[var(--color-surface-2)]"
+          style={{ color: "var(--color-text-muted)" }}
         >
           <TrashIcon className="w-4 h-4 shrink-0" />
           {!collapsed && <span className="text-xs">{tr.clearChat}</span>}
@@ -361,7 +378,8 @@ export default function Sidebar({ onClose }: SidebarProps) {
           onClick={exportChat}
           title={tr.export}
           className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl t-fast
-                     text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb]"
+                     hover:bg-[var(--color-surface-2)]"
+          style={{ color: "var(--color-text-muted)" }}
         >
           <ArrowDownTrayIcon className="w-4 h-4 shrink-0" />
           {!collapsed && <span className="text-xs">{tr.export}</span>}
@@ -371,7 +389,8 @@ export default function Sidebar({ onClose }: SidebarProps) {
           onClick={() => router.push("/about")}
           title="À propos"
           className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl t-fast
-                     text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb]"
+                     hover:bg-[var(--color-surface-2)]"
+          style={{ color: "var(--color-text-muted)" }}
         >
           <InformationCircleIcon className="w-4 h-4 shrink-0" />
           {!collapsed && <span className="text-xs">À propos</span>}
@@ -381,14 +400,15 @@ export default function Sidebar({ onClose }: SidebarProps) {
           onClick={() => router.push("/profile")}
           title={tr.settings}
           className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl t-fast
-                     text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb]"
+                     hover:bg-[var(--color-surface-2)]"
+          style={{ color: "var(--color-text-muted)" }}
         >
           <Cog6ToothIcon className="w-4 h-4 shrink-0" />
           {!collapsed && <span className="text-xs">{tr.settings}</span>}
         </button>
 
         {!collapsed && user && (
-          <div className="mt-2 pt-2" style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+          <div className="mt-2 pt-2" style={{ borderTop: "1px solid var(--color-border)" }}>
             <div className="flex items-center justify-between px-2.5 py-2 rounded-xl">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-6 h-6 rounded-lg flex items-center justify-center
@@ -396,13 +416,12 @@ export default function Sidebar({ onClose }: SidebarProps) {
                      style={{ background: color.bg, color: color.text }}>
                   {initial}
                 </div>
-                <span className="text-xs text-[#4b5563] truncate">{user.name ?? user.email}</span>
+                <span className="text-xs truncate" style={{ color: "var(--color-text-secondary)" }}>{user.name ?? user.email}</span>
               </div>
               <button
                 onClick={logout}
                 title={tr.signOut}
-                className="w-6 h-6 rounded-lg flex items-center justify-center t-fast
-                           text-[#9ca3af] hover:text-red-400 hover:bg-red-50"
+                className="w-6 h-6 rounded-lg flex items-center justify-center t-fast shrink-0 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
               >
                 <ArrowRightOnRectangleIcon className="w-3.5 h-3.5" />
               </button>
@@ -414,8 +433,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
           <button
             onClick={logout}
             title={tr.signOut}
-            className="w-full flex items-center justify-center py-2 rounded-xl t-fast
-                       text-[#9ca3af] hover:text-red-400 hover:bg-red-50"
+            className="w-full flex items-center justify-center py-2 rounded-xl t-fast text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
           >
             <ArrowRightOnRectangleIcon className="w-4 h-4" />
           </button>

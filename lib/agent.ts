@@ -1,7 +1,7 @@
 /**
- * ReAct Agent — Reasoning + Acting loop.
+ * ReAct Agent � Reasoning + Acting loop.
  *
- * Pattern: Thought → Action → Observation → (repeat) → Final Answer
+ * Pattern: Thought ? Action ? Observation ? (repeat) ? Final Answer
  *
  * The agent:
  *   1. Thinks about what tool to use (Thought)
@@ -10,19 +10,16 @@
  *   4. Decides if more steps are needed or gives Final Answer
  *
  * Max iterations: 4 (prevents infinite loops)
- * Model: llama-3.1-8b-instant (fast, cheap for reasoning steps)
- * Final answer: llama-3.3-70b-versatile (quality response)
+ * Model: Puter server default (via chatServer)
  */
 
-import Groq from "groq-sdk";
+import { chatServer, PUTER_SERVER_DEFAULT_MODEL } from "./puter-server";
 import { Plugin, PluginContext } from "./plugins/index";
 import { logger } from "./logger";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
 const MAX_ITERATIONS = 4;
 
-// ─── Types ─────────────────────────────────────────────────────────────────────
+// --- Types ---------------------------------------------------------------------
 
 export interface AgentStep {
   type: "thought" | "action" | "observation" | "answer";
@@ -38,7 +35,7 @@ export interface AgentResult {
   iterations: number;
 }
 
-// ─── System prompt ─────────────────────────────────────────────────────────────
+// --- System prompt -------------------------------------------------------------
 
 function buildAgentSystemPrompt(tools: Plugin[]): string {
   const toolDescriptions = tools
@@ -67,10 +64,10 @@ Final Answer: [your complete, well-formatted answer in Markdown]
 - Use tools when you need real-time data, calculations, or code execution
 - After each Observation, decide if you need another tool or can answer
 - Final Answer must be comprehensive and well-formatted
-- Never make up tool results — only use what Observations provide`;
+- Never make up tool results � only use what Observations provide`;
 }
 
-// ─── Step parser ───────────────────────────────────────────────────────────────
+// --- Step parser ---------------------------------------------------------------
 
 interface ParsedStep {
   thought?: string;
@@ -88,7 +85,7 @@ function parseAgentResponse(text: string): ParsedStep {
   return { thought, action, actionInput, finalAnswer };
 }
 
-// ─── Main agent ────────────────────────────────────────────────────────────────
+// --- Main agent ----------------------------------------------------------------
 
 export async function runAgent(
   input: string,
@@ -110,21 +107,17 @@ export async function runAgent(
   while (iterations < MAX_ITERATIONS) {
     iterations++;
 
-    // ── LLM reasoning step ──────────────────────────────────────────────────
-    let llmResponse: string;
-    try {
-      const res = await groq.chat.completions.create({
-        model: "llama-3.1-8b-instant",
-        max_tokens: 512,
-        temperature: 0.1,
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...conversationHistory,
-        ],
-      });
-      llmResponse = res.choices[0]?.message?.content ?? "";
-    } catch (err) {
-      logger.error("[agent] LLM reasoning failed", err);
+    // -- LLM reasoning step --------------------------------------------------
+    const llmResponse = await chatServer(
+      [
+        { role: "system", content: systemPrompt },
+        ...conversationHistory,
+      ],
+      { model: PUTER_SERVER_DEFAULT_MODEL, temperature: 0.1, maxTokens: 512 }
+    );
+
+    if (!llmResponse) {
+      logger.error("[agent] LLM (Puter) unavailable � check PUTER_AUTH_TOKEN");
       break;
     }
 
@@ -132,14 +125,14 @@ export async function runAgent(
 
     const parsed = parseAgentResponse(llmResponse);
 
-    // ── Record thought ──────────────────────────────────────────────────────
+    // -- Record thought ------------------------------------------------------
     if (parsed.thought) {
       const step: AgentStep = { type: "thought", content: parsed.thought };
       steps.push(step);
       onStep?.(step);
     }
 
-    // ── Final answer ────────────────────────────────────────────────────────
+    // -- Final answer --------------------------------------------------------
     if (parsed.finalAnswer) {
       const step: AgentStep = { type: "answer", content: parsed.finalAnswer };
       steps.push(step);
@@ -153,7 +146,7 @@ export async function runAgent(
       };
     }
 
-    // ── Tool action ─────────────────────────────────────────────────────────
+    // -- Tool action ---------------------------------------------------------
     if (parsed.action && parsed.actionInput !== undefined) {
       const tool = tools.find(
         (t) => t.id === parsed.action || t.name.toLowerCase() === parsed.action?.toLowerCase()
@@ -194,12 +187,12 @@ export async function runAgent(
         content: `Observation: ${observation}\n\nContinue your reasoning.`,
       });
     } else {
-      // No action and no final answer — force a final answer
+      // No action and no final answer � force a final answer
       break;
     }
   }
 
-  // ── Fallback: generate final answer from accumulated context ───────────────
+  // -- Fallback: generate final answer from accumulated context ---------------
   logger.warn("[agent] Max iterations reached or no final answer, generating fallback");
 
   const observationsSummary = steps
@@ -207,12 +200,9 @@ export async function runAgent(
     .map((s) => s.content)
     .join("\n\n");
 
-  try {
-    const fallbackRes = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      max_tokens: 1024,
-      temperature: 0.4,
-      messages: [
+  const fallbackAnswer =
+    (await chatServer(
+      [
         {
           role: "system",
           content:
@@ -224,24 +214,16 @@ export async function runAgent(
           content: `Original question: ${input}\n\nObservations:\n${observationsSummary || "No tool results available."}`,
         },
       ],
-    });
+      { model: PUTER_SERVER_DEFAULT_MODEL, temperature: 0.4, maxTokens: 1024 }
+    )) ?? "I could not complete this task.";
 
-    const fallbackAnswer = fallbackRes.choices[0]?.message?.content ?? "I could not complete this task.";
-    const step: AgentStep = { type: "answer", content: fallbackAnswer };
-    steps.push(step);
+  const step: AgentStep = { type: "answer", content: fallbackAnswer };
+  steps.push(step);
 
-    return {
-      answer: fallbackAnswer,
-      steps,
-      toolsUsed: [...new Set(toolsUsed)],
-      iterations,
-    };
-  } catch {
-    return {
-      answer: "I encountered an error while processing your request. Please try again.",
-      steps,
-      toolsUsed: [...new Set(toolsUsed)],
-      iterations,
-    };
-  }
+  return {
+    answer: fallbackAnswer,
+    steps,
+    toolsUsed: [...new Set(toolsUsed)],
+    iterations,
+  };
 }

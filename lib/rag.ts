@@ -1,20 +1,19 @@
 /**
- * RAG pipeline — Hybrid retrieval-augmented generation.
+ * RAG pipeline � Hybrid retrieval-augmented generation.
  *
  * Flow:
- *   1. detectSearchIntent()     — LLaMA 3.1 8B classifier (YES/NO)
- *   2. generateEmbedding()      — embed the query
- *   3. multiQuerySearch()       — vector search in conversation history
- *   4. rerankResults()          — cross-encoder reranking (top 3)
- *   5. searchWeb() [optional]   — Tavily if needsSearch
- *   6. getOrCreateSummary()     — fetch/generate conversation summary
- *   7. buildContext()           — fuse all sources into system prompt
+ *   1. detectSearchIntent()     � Keyword-based classifier (YES/NO)
+ *   2. generateEmbedding()      � embed the query
+ *   3. multiQuerySearch()       � vector search in conversation history
+ *   4. rerankResults()          � cross-encoder reranking (top 3)
+ *   5. searchWeb() [optional]   � Tavily if needsSearch
+ *   6. getOrCreateSummary()     � fetch/generate conversation summary
+ *   7. buildContext()           � fuse all sources into system prompt
  *
  * Tavily is preserved as-is and remains the web search backbone.
  * Vector search adds long-term memory on top of it.
  */
 
-import Groq from "groq-sdk";
 import { searchWeb, SearchResult } from "./search";
 import { generateEmbedding } from "./embeddings";
 import { multiQuerySearch, rerankResults, ScoredMessage } from "./vectorSearch";
@@ -22,13 +21,7 @@ import { buildContext, ConversationMessage } from "./contextBuilder";
 import { getOrCreateSummary } from "./memory";
 import { logger } from "./logger";
 
-let _groq: Groq | null = null;
-function getGroq(): Groq {
-  if (!_groq) _groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-  return _groq;
-}
-
-// ─── Types ─────────────────────────────────────────────────────────────────────
+// --- Types ---------------------------------------------------------------------
 
 export interface RAGContext {
   needsSearch: boolean;
@@ -40,32 +33,10 @@ export interface RAGContext {
   tokenEstimate: number;
 }
 
-// ─── Intent detection ──────────────────────────────────────────────────────────
+// --- Intent detection ----------------------------------------------------------
 
 async function detectSearchIntent(query: string): Promise<boolean> {
-  try {
-    const res = await getGroq().chat.completions.create({
-      model: "llama-3.1-8b-instant",
-      max_tokens: 3,
-      temperature: 0,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a classifier. Reply ONLY with YES or NO.\n" +
-            "Does this question require real-time web search?\n" +
-            "YES for: current events, news, prices, weather, sports, recent releases, live data.\n" +
-            "NO for: general knowledge, coding, math, writing, history, explanations.",
-        },
-        { role: "user", content: query },
-      ],
-    });
-
-    const answer = res.choices[0]?.message?.content?.trim().toUpperCase() ?? "NO";
-    return answer.startsWith("YES");
-  } catch {
-    return keywordDetect(query);
-  }
+  return keywordDetect(query);
 }
 
 function keywordDetect(query: string): boolean {
@@ -74,12 +45,12 @@ function keywordDetect(query: string): boolean {
     "today", "now", "current", "latest", "news", "price", "weather",
     "score", "stock", "2024", "2025", "recently", "just announced",
     "who won", "what happened", "live", "trending", "release date",
-    "actualité", "prix", "météo", "aujourd'hui", "récent",
+    "actualit�", "prix", "m�t�o", "aujourd'hui", "r�cent",
   ];
   return triggers.some((t) => q.includes(t));
 }
 
-// ─── Main RAG pipeline ─────────────────────────────────────────────────────────
+// --- Main RAG pipeline ---------------------------------------------------------
 
 export interface BuildRAGOptions {
   query: string;
@@ -111,10 +82,10 @@ export async function buildRAGContext(
 
   const start = Date.now();
 
-  // ── Step 1: Detect search intent ──────────────────────────────────────────
+  // -- Step 1: Detect search intent ------------------------------------------
   const needsSearch = fs || (await detectSearchIntent(query));
 
-  // ── Step 2: Parallel retrieval ────────────────────────────────────────────
+  // -- Step 2: Parallel retrieval --------------------------------------------
   // Run embedding, vector search, web search, and summary in parallel
   const [queryEmbedding, rawMemories, webResults, summary] = await Promise.allSettled([
     // Embed query (used for vector search)
@@ -155,12 +126,12 @@ export async function buildRAGContext(
     logger.warn("[RAG] Web search failed", { error: webResults.reason });
   }
 
-  // ── Step 3: Rerank long-term memories ─────────────────────────────────────
+  // -- Step 3: Rerank long-term memories -------------------------------------
   const rerankedMemories = memories.length > 3
     ? await rerankResults(query, memories, 3)
     : memories;
 
-  // ── Step 4: Build fused context ───────────────────────────────────────────
+  // -- Step 4: Build fused context -------------------------------------------
   const context = buildContext({
     query,
     recentMessages,

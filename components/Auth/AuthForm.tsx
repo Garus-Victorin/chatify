@@ -97,7 +97,7 @@ function Field({
            style={{
              color: "var(--color-text)",
              border: `1px solid ${hasError ? "#ef4444" : focused ? "var(--color-accent)" : "var(--color-border)"}`,
-             background: hasError ? "#fef9f9" : "var(--color-surface-2)",
+              background: hasError ? "var(--color-surface-2)" : "var(--color-surface-2)",
              boxShadow: focused && !hasError ? "0 0 0 3px rgba(56,189,248,0.12)" : "none",
              paddingRight: children ? "2.5rem" : undefined,
            }}
@@ -231,10 +231,9 @@ export default function AuthForm({ mode }: Props) {
               >
                 <button
                   type="button"
-                  onClick={() => setShowPwd((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af]
-                             hover:text-[#4b5563] transition-colors"
-                  tabIndex={-1}
+               onClick={() => setShowPwd((v) => !v)}
+               className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+               style={{ color: "var(--color-text-muted)" }}
                 >
                   {showPwd
                     ? <EyeSlashIcon className="w-4 h-4" />
@@ -256,7 +255,7 @@ export default function AuthForm({ mode }: Props) {
                         <div
                           key={i}
                           className="h-1 flex-1 rounded-full transition-all duration-300"
-                          style={{ background: i <= strength.score ? strength.color : "#e5e7eb" }}
+                          style={{ background: i <= strength.score ? strength.color : "var(--color-border)" }}
                         />
                       ))}
                     </div>
@@ -283,8 +282,8 @@ export default function AuthForm({ mode }: Props) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.15 }}
-                  className="flex items-start gap-2.5 px-3 py-2.5 rounded-xl text-xs text-red-700"
-                  style={{ background: "#fef2f2", border: "1px solid rgba(239,68,68,0.2)" }}
+                  className="flex items-start gap-2.5 px-3 py-2.5 rounded-xl text-xs text-red-700 dark:text-red-300"
+                  style={{ background: "var(--color-surface-2)", border: "1px solid rgba(239,68,68,0.2)" }}
                 >
                   <ExclamationCircleIcon className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                   <span>{error}</span>
@@ -300,18 +299,18 @@ export default function AuthForm({ mode }: Props) {
               className="w-full py-2.5 rounded-xl text-sm font-medium text-white
                          disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150"
               style={{
-                background: success ? "#22c55e" : "#38bdf8",
+                background: success ? "#22c55e" : "var(--color-accent)",
                 boxShadow: success
                   ? "0 2px 8px rgba(34,197,94,0.35)"
                   : "0 2px 8px rgba(56,189,248,0.35)",
               }}
               onMouseEnter={(e) => {
                 if (!loading && !success)
-                  (e.currentTarget as HTMLElement).style.background = "#0ea5e9";
+                  (e.currentTarget as HTMLElement).style.background = "var(--color-accent-hover)";
               }}
               onMouseLeave={(e) => {
                 if (!success)
-                  (e.currentTarget as HTMLElement).style.background = "#38bdf8";
+                  (e.currentTarget as HTMLElement).style.background = "var(--color-accent)";
               }}
             >
               {success ? (
@@ -334,11 +333,11 @@ export default function AuthForm({ mode }: Props) {
         {/* Toggle */}
         <p className="text-center text-sm mt-5" style={{ color: "var(--color-text-muted)" }}>
           {isLogin ? tr.noAccount : tr.alreadyAccount}{" "}
-          <Link
-            href={isLogin ? "/register" : "/login"}
-            className="font-medium hover:text-[#0284c7] transition-colors"
-            style={{ color: "var(--color-accent)" }}
-          >
+           <Link
+             href={isLogin ? "/register" : "/login"}
+             className="font-medium transition-colors"
+             style={{ color: "var(--color-accent)" }}
+           >
             {isLogin ? tr.signUp : tr.signIn}
           </Link>
         </p>

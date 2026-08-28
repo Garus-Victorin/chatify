@@ -217,8 +217,8 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
       ref={containerRef}
       className="shrink-0 px-2 sm:px-4 pb-4 sm:pb-5 pt-2"
       style={{
-        background: "linear-gradient(to top, #ffffff 75%, rgba(255,255,255,0))",
-        borderTop: "1px solid rgba(0,0,0,0.05)",
+        background: "linear-gradient(to top, var(--color-surface), transparent)",
+        borderTop: "1px solid var(--color-border)",
       }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -232,11 +232,11 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0 z-50 flex items-center justify-center rounded-2xl"
-              style={{ background: "rgba(56,189,248,0.08)", border: "2px dashed #38bdf8" }}
+              style={{ background: "rgba(56,189,248,0.08)", border: "2px dashed var(--color-accent)" }}
             >
               <div className="flex flex-col items-center gap-2">
                 <PaperClipIcon className="w-8 h-8 text-sky-400" />
-                <p className="text-sm font-medium text-sky-500">Déposer le fichier ici</p>
+                <p className="text-sm font-medium" style={{ color: "var(--color-accent-hover)" }}>Déposer le fichier ici</p>
               </div>
             </motion.div>
           )}
@@ -251,10 +251,9 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
               exit={{ opacity: 0, y: 6, scale: 0.97 }}
               transition={{ duration: 0.18 }}
               className="flex items-center gap-3 mb-2 px-3 py-2 rounded-xl"
-              style={{ background: "#f0f9ff", border: "1px solid rgba(56,189,248,0.2)" }}
+              style={{ background: "var(--color-accent-soft)", border: "1px solid rgba(56,189,248,0.2)" }}
             >
               {filePreview.isImage ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img src={filePreview.content} alt={filePreview.name}
                      className="w-10 h-10 rounded-lg object-cover shrink-0" />
               ) : (
@@ -262,12 +261,12 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
               )}
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-sky-700 truncate">{filePreview.name}</p>
-                <p className="text-[10px] text-[#9ca3af]">{filePreview.size}</p>
+                <p className="text-[10px]" style={{ color: "var(--color-text-secondary)" }}>{filePreview.size}</p>
               </div>
               <button
                 onClick={() => { setFilePreview(null); setInput(""); }}
-                className="w-5 h-5 rounded-lg flex items-center justify-center t-fast
-                           text-[#9ca3af] hover:text-red-400 hover:bg-red-50 shrink-0"
+                className="w-5 h-5 rounded-lg flex items-center justify-center t-fast shrink-0"
+                style={{ color: "var(--color-text-muted)" }}
               >
                 <XMarkIcon className="w-3.5 h-3.5" />
               </button>
@@ -283,8 +282,12 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 6 }}
               transition={{ duration: 0.15 }}
-              className="mb-2 bg-white rounded-2xl overflow-hidden"
-              style={{ border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
+              className="mb-2 rounded-2xl overflow-hidden"
+              style={{
+                background: "var(--color-surface)",
+                border: "1px solid var(--color-border-strong)",
+                boxShadow: "0 8px 24px var(--color-shadow-lg)",
+              }}
             >
               {filteredCommands.map((c, i) => (
                 <button
@@ -295,16 +298,20 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
                     setShowSlash(false);
                     textareaRef.current?.focus();
                   }}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 text-left t-fast
-                              ${i === slashIdx ? "bg-sky-50" : "hover:bg-[#f5f7fb]"}`}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left t-fast
+                              ${i === slashIdx ? "text-sky-500 bg-sky-50 dark:bg-sky-950/30" : "hover:bg-[var(--color-surface-2)]"}`}
                 >
                   <span className="text-base w-5 text-center shrink-0">{c.icon}</span>
                   <div className="flex-1">
                     <span className="text-xs font-mono font-bold text-sky-600">{c.cmd}</span>
-                    <span className="text-xs text-[#9ca3af] ml-2">{c.desc}</span>
+                    <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>{c.desc}</span>
                   </div>
-                  <kbd className="text-[9px] text-[#9ca3af] px-1.5 py-0.5 rounded-md"
-                       style={{ background: "#f5f7fb", border: "1px solid rgba(0,0,0,0.08)" }}>
+                  <kbd className="text-[9px] px-1.5 py-0.5 rounded-md"
+                       style={{
+                         background: "var(--color-surface-2)",
+                         color: "var(--color-text-secondary)",
+                         border: "1px solid var(--color-border)",
+                       }}>
                     Tab
                   </kbd>
                 </button>
@@ -319,13 +326,16 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
             boxShadow: focused
               ? "0 0 0 3px rgba(56,189,248,0.18), 0 8px 32px rgba(0,0,0,0.08)"
               : isDragging
-              ? "0 0 0 2px #38bdf8, 0 8px 32px rgba(56,189,248,0.12)"
-              : "0 2px 12px rgba(0,0,0,0.06)",
-            borderColor: focused ? "#38bdf8" : isDragging ? "#38bdf8" : "rgba(0,0,0,0.1)",
+              ? "0 0 0 2px var(--color-accent), 0 8px 32px rgba(56,189,248,0.12)"
+              : "0 2px 12px var(--color-shadow)",
+            borderColor: focused ? "var(--color-accent)" : isDragging ? "var(--color-accent)" : "var(--color-border)",
           }}
           transition={{ duration: 0.18 }}
-          className="rounded-2xl bg-white overflow-hidden"
-          style={{ border: "1px solid rgba(0,0,0,0.1)" }}
+          className="rounded-2xl overflow-hidden"
+          style={{
+            background: "var(--color-surface)",
+            border: "1px solid var(--color-border)",
+          }}
         >
           {/* Textarea */}
           <div className="px-4 pt-3 pb-1">
@@ -345,10 +355,12 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
               }
               rows={1}
               disabled={loading}
-              className="w-full bg-transparent text-sm text-[#0a0a0a] leading-relaxed
-                         placeholder:text-[#9ca3af] resize-none outline-none
-                         max-h-[200px] disabled:opacity-50"
-              style={{ caretColor: "#38bdf8" }}
+              className="w-full bg-transparent text-sm resize-none outline-none overflow-hidden disabled:opacity-50"
+              style={{
+                color: "var(--color-text)",
+                caretColor: "var(--color-accent)",
+                minHeight: "20px",
+              }}
             />
           </div>
 
@@ -361,13 +373,16 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
               onClick={() => { setShowPlugins(true); setShowPersonality(false); }}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium t-fast
                           ${activePluginCount > 0
-                            ? "bg-sky-50 text-sky-600"
-                            : "text-[#6b7280] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]"
+                            ? "text-sky-500 bg-sky-50 dark:bg-sky-950/30"
+                            : "hover:bg-[var(--color-surface-2)]"
                           }`}
-              style={{ border: `1px solid ${activePluginCount > 0 ? "rgba(56,189,248,0.3)" : "rgba(0,0,0,0.08)"}` }}
+              style={{
+                border: `1px solid ${activePluginCount > 0 ? "rgba(56,189,248,0.3)" : "var(--color-border)"}`,
+                color: activePluginCount > 0 ? "var(--color-accent)" : "var(--color-text-secondary)",
+              }}
               title="Plugins"
             >
-              <PuzzlePieceIcon className="w-3.5 h-3.5 shrink-0" />
+              <PuzzlePieceIcon className="w-3.5 h-3.5 shrink-0" style={{ color: activePluginCount > 0 ? "var(--color-accent)" : "var(--color-text-muted)" }} />
               <span className="hidden sm:inline">{tr.plugins}</span>
               <AnimatePresence>
                 {activePluginCount > 0 && (
@@ -386,9 +401,11 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
             <motion.button
               whileTap={{ scale: 0.93 }}
               onClick={() => { setShowPersonality(true); setShowPlugins(false); }}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium t-fast
-                         text-[#6b7280] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]"
-              style={{ border: "1px solid rgba(0,0,0,0.08)" }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium t-fast hover:bg-[var(--color-surface-2)]"
+              style={{
+                border: "1px solid var(--color-border)",
+                color: "var(--color-text-secondary)",
+              }}
               title="Personnalité IA"
             >
               <span className="text-sm leading-none">{pm.emoji}</span>
@@ -401,13 +418,16 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
               onClick={() => setAgentMode(!agentMode)}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium t-fast
                           ${agentMode
-                            ? "bg-purple-50 text-purple-600"
-                            : "text-[#6b7280] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]"
+                            ? "text-purple-500 bg-purple-50 dark:bg-purple-950/30"
+                            : "hover:bg-[var(--color-surface-2)]"
                           }`}
-              style={{ border: `1px solid ${agentMode ? "rgba(139,92,246,0.3)" : "rgba(0,0,0,0.08)"}` }}
+              style={{
+                border: `1px solid ${agentMode ? "rgba(139,92,246,0.3)" : "var(--color-border)"}`,
+                color: agentMode ? "var(--color-accent)" : "var(--color-text-secondary)",
+              }}
               title="Mode Agent"
             >
-              <BoltIcon className={`w-3.5 h-3.5 shrink-0 ${agentMode ? "text-purple-500" : ""}`} />
+              <BoltIcon className={`w-3.5 h-3.5 shrink-0`} style={{ color: agentMode ? "var(--color-accent)" : "var(--color-text-muted)" }} />
               <span className="hidden sm:inline">Agent</span>
               {agentMode && (
                 <motion.span
@@ -420,11 +440,14 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
 
             {/* Memory indicator */}
             {memoryEnabled && (
-              <div className="flex items-center gap-1 px-2 py-1.5 rounded-xl text-[10px] font-medium
-                              text-[#9ca3af]"
-                   style={{ border: "1px solid rgba(0,0,0,0.06)" }}
+              <div className="flex items-center gap-1 px-2 py-1.5 rounded-xl text-[10px] font-medium"
+                   style={{
+                     border: "1px solid rgba(56,189,248,0.2)",
+                     color: "var(--color-accent-hover)",
+                     background: "var(--color-accent-soft)",
+                   }}
                    title="Mémoire active">
-                <CpuChipIcon className="w-3 h-3 shrink-0" />
+                <CpuChipIcon className="w-3 h-3 shrink-0" style={{ color: "var(--color-accent)" }} />
                 <span className="hidden sm:inline">Mémoire</span>
               </div>
             )}
@@ -437,7 +460,8 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
               {charCount > 500 && (
                 <motion.span
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className={`text-[10px] font-mono mr-1 ${charCount > 3800 ? "text-red-400" : "text-[#9ca3af]"}`}
+                  className={`text-[10px] font-mono mr-1 ${charCount > 3800 ? "text-red-400" : ""}`}
+                  style={{ color: charCount > 3800 ? undefined : "var(--color-text-muted)" }}
                 >
                   {charCount}/4000
                 </motion.span>
@@ -448,8 +472,8 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => fileRef.current?.click()}
-              className="w-8 h-8 rounded-xl flex items-center justify-center t-fast
-                         text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb]"
+              className="w-8 h-8 rounded-xl flex items-center justify-center t-fast"
+              style={{ color: "var(--color-text-muted)" }}
               title={tr.attachFile}
             >
               <PaperClipIcon className="w-4 h-4" />
@@ -468,8 +492,7 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
                 whileTap={{ scale: 0.9 }}
                 onClick={cancelStream}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium t-fast
-                           text-red-500 bg-red-50 hover:bg-red-100"
-                style={{ border: "1px solid rgba(239,68,68,0.2)" }}
+                           text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
                 title={tr.stopGeneration}
               >
                 <StopIcon className="w-3.5 h-3.5" />
@@ -480,8 +503,8 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={onRegenerate}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center t-fast
-                             text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb]"
+                  className="w-8 h-8 rounded-xl flex items-center justify-center t-fast"
+                  style={{ color: "var(--color-text-muted)" }}
                   title={tr.regenerate}
                 >
                   <ArrowPathIcon className="w-4 h-4" />
@@ -497,9 +520,9 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
                     background: canSend
                       ? agentMode
                         ? "linear-gradient(135deg, #8b5cf6, #6366f1)"
-                        : "#38bdf8"
-                      : "#f1f5f9",
-                    color: canSend ? "#ffffff" : "#9ca3af",
+                        : "var(--color-accent)"
+                      : "var(--color-surface-2)",
+                    color: canSend ? "#ffffff" : "var(--color-text-muted)",
                     boxShadow: canSend
                       ? agentMode
                         ? "0 2px 12px rgba(139,92,246,0.4)"
@@ -517,7 +540,7 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
         </motion.div>
 
         {/* ── Hint ── */}
-        <p className="text-center text-[10px] text-[#c4c9d4] mt-2 select-none">
+        <p className="text-center text-[10px] mt-2 select-none" style={{ color: "var(--color-text-muted)" }}>
           {tr.inputHint}
         </p>
       </div>

@@ -84,9 +84,8 @@ export default function SettingsPage() {
              borderBottom: "1px solid var(--color-border)",
            }}>
         <button onClick={() => router.back()}
-                className="w-8 h-8 rounded-xl flex items-center justify-center t-fast
-                           text-[#9ca3af] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]
-                           dark:hover:bg-[#1a1c1e]">
+                className="w-8 h-8 rounded-xl flex items-center justify-center t-fast"
+                style={{ color: "var(--color-text-muted)" }}>
           <ArrowLeftIcon className="w-4 h-4" />
         </button>
         <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>{t.settings}</span>
@@ -136,15 +135,19 @@ export default function SettingsPage() {
                   const labels = personalitiesMap[p.id];
                   return (
                     <button key={p.id} onClick={() => setPersonality(p.id)}
-                            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left t-fast
-                                        ${active ? "bg-sky-50" : "hover:bg-[#f5f7fb]"}`}
-                            style={{ border: `1px solid ${active ? "rgba(56,189,248,0.3)" : "rgba(0,0,0,0.06)"}` }}>
+                             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left t-fast
+                                        ${active ? "text-sky-500 bg-sky-50 dark:bg-sky-950/30" : "hover:bg-[var(--color-surface-2)]"}`}
+                            style={{
+                              border: `1px solid ${active ? "rgba(56,189,248,0.3)" : "var(--color-border)"}`,
+                              color: active ? "var(--color-accent)" : "var(--color-text-secondary)",
+                            }}>
                       <span className="text-lg shrink-0">{p.icon}</span>
                       <div className="flex-1">
-                        <p className={`text-xs font-semibold ${active ? "text-sky-700" : "text-[#0a0a0a]"}`}>
+                        <p className={`text-xs font-semibold ${active ? "text-sky-700" : ""}`}
+                           style={{ color: active ? "var(--color-accent-hover)" : "var(--color-text)" }}>
                           {labels.label}
                         </p>
-                        <p className="text-[10px] text-[#9ca3af]">{labels.desc}</p>
+                        <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>{labels.desc}</p>
                       </div>
                       {active && (
                         <div className="w-4 h-4 rounded-full bg-sky-400 flex items-center justify-center shrink-0">
@@ -177,19 +180,20 @@ export default function SettingsPage() {
             {/* Language */}
             <Card delay={0}>
               <CardHeader icon={<LanguageIcon className="w-4 h-4" />} title={t.language} />
-              <p className="text-[10px] text-[#9ca3af] mb-3">{t.languageDesc}</p>
+              <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>{t.languageDesc}</p>
               <div className="grid grid-cols-2 gap-1.5">
                 {LANGUAGES.map((lang) => {
                   const active = language === lang.id;
                   return (
                     <button key={lang.id} onClick={() => setLanguage(lang.id as Language)}
                             className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-left t-fast
-                                        ${active ? "bg-sky-50" : "hover:bg-[#f5f7fb]"}`}
-                            style={{ border: `1px solid ${active ? "rgba(56,189,248,0.3)" : "rgba(0,0,0,0.06)"}` }}>
+                                        ${active ? "text-sky-500 bg-sky-50 dark:bg-sky-950/30" : "hover:bg-[var(--color-surface-2)]"}`}
+                            style={{
+                              border: `1px solid ${active ? "rgba(56,189,248,0.3)" : "var(--color-border)"}`,
+                              color: active ? "var(--color-accent)" : "var(--color-text)",
+                            }}>
                       <span className="text-base shrink-0">{lang.flag}</span>
-                      <span className={`text-xs font-medium ${active ? "text-sky-700" : "text-[#0a0a0a]"}`}>
-                        {lang.label}
-                      </span>
+                      <span className={`text-xs font-medium`}>{lang.label}</span>
                       {active && (
                         <div className="ms-auto w-3.5 h-3.5 rounded-full bg-sky-400 flex items-center justify-center shrink-0">
                           <CheckIcon className="w-2 h-2 text-white" />
@@ -210,25 +214,30 @@ export default function SettingsPage() {
                   return (
                     <button key={plugin.id} onClick={() => togglePlugin(plugin.id)}
                             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left t-fast
-                                        ${enabled ? "bg-sky-50" : "hover:bg-[#f5f7fb]"}`}
-                            style={{ border: `1px solid ${enabled ? "rgba(56,189,248,0.3)" : "rgba(0,0,0,0.06)"}` }}>
+                                        ${enabled ? "text-sky-500 bg-sky-50 dark:bg-sky-950/30" : "hover:bg-[var(--color-surface-2)]"}`}
+                            style={{
+                              border: `1px solid ${enabled ? "rgba(56,189,248,0.3)" : "var(--color-border)"}`,
+                              color: enabled ? "var(--color-accent)" : "var(--color-text-secondary)",
+                            }}>
                       <span className="text-base shrink-0">{plugin.icon}</span>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-xs font-medium ${enabled ? "text-sky-700" : "text-[#0a0a0a]"}`}>
+                        <p className={`text-xs font-medium`}
+                           style={{ color: enabled ? "var(--color-accent-hover)" : "var(--color-text)" }}>
                           {plugin.name}
                         </p>
-                        <p className="text-[10px] text-[#9ca3af] truncate">{plugin.description}</p>
+                        <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>{plugin.description}</p>
                       </div>
                       <div className={`w-8 h-4 rounded-full t-fast relative shrink-0
-                                      ${enabled ? "bg-sky-400" : "bg-[#e5e7eb]"}`}>
-                        <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm t-fast
-                                         ${enabled ? "left-4" : "left-0.5"}`} />
+                                       ${enabled ? "bg-sky-400" : "bg-[#e5e7eb] dark:bg-[#2a2e32]"}`}>
+                        <span className={`absolute top-0.5 w-3 h-3 rounded-full shadow-sm t-fast
+                                        ${enabled ? "left-4" : "left-0.5"}`}
+                              style={{ background: "var(--color-surface)" }} />
                       </div>
                     </button>
                   );
                 })}
               </div>
-              <p className="text-[10px] text-[#9ca3af] mt-3 px-1">{t.pluginHint}</p>
+              <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>{t.pluginHint}</p>
             </Card>
 
             {/* AI Preferences */}
@@ -254,9 +263,9 @@ export default function SettingsPage() {
       </div>
 
       {/* Edit Modals */}
-      <EditNameModal   open={nameModal}  onClose={() => setNameModal(false)}  onSaved={refetch} t={t} currentName={user.name ?? ""} />
+      <EditNameModal   open={nameModal}  onClose={() => setNameModal(false)}   onSaved={refetch} t={t} currentName={user.name ?? ""} />
       <EditEmailModal  open={emailModal} onClose={() => setEmailModal(false)} onSaved={refetch} t={t} currentEmail={user.email} />
-      <EditPasswordModal open={pwdModal} onClose={() => setPwdModal(false)}   t={t} />
+      <EditPasswordModal open={pwdModal} onClose={() => setPwdModal(false)}    t={t} />
 
       {/* Danger Modals */}
       <ConfirmModal
@@ -313,7 +322,7 @@ function ToggleRow({ label, desc, enabled, onToggle }: {
       </div>
       <button onClick={onToggle}
               className={`w-10 h-5 rounded-full t-fast relative shrink-0
-                          ${enabled ? "bg-sky-400" : "bg-[#e5e7eb]"}`}>
+                          ${enabled ? "bg-sky-400" : "bg-[#e5e7eb] dark:bg-[#2a2e32]"}`}>
         <span className={`absolute top-0.5 w-4 h-4 rounded-full shadow-sm t-fast
                          ${enabled ? "left-5" : "left-0.5"}`}
               style={{ background: "var(--color-surface)" }} />
@@ -359,8 +368,10 @@ function InfoRow({ icon, label, value, onEdit }: {
         <p className="text-xs font-medium truncate" style={{ color: "var(--color-text)" }}>{value}</p>
       </div>
       <button onClick={onEdit}
-              className="w-7 h-7 rounded-lg flex items-center justify-center t-fast shrink-0
-                         text-sky-500 hover:bg-sky-50">
+              className="w-7 h-7 rounded-lg flex items-center justify-center t-fast shrink-0"
+              style={{ color: "var(--color-accent)" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "var(--color-accent-soft)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
         <PencilIcon className="w-3.5 h-3.5" />
       </button>
     </div>
@@ -371,7 +382,8 @@ function ModalShell({ title, onClose, children }: {
   title: string; onClose: () => void; children: React.ReactNode;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+         style={{ background: "rgba(0, 0, 0, 0.4)" }}
          onClick={onClose}>
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.15 }}
@@ -385,7 +397,8 @@ function ModalShell({ title, onClose, children }: {
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{title}</h3>
           <button onClick={onClose} className="w-7 h-7 rounded-lg flex items-center justify-center
-                                               t-fast text-[#9ca3af] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]">
+                                               t-fast"
+                  style={{ color: "var(--color-text-muted)" }}>
             <XMarkIcon className="w-4 h-4" />
           </button>
         </div>
@@ -428,7 +441,7 @@ function EditNameModal({ open, onClose, onSaved, t, currentName }: {
     <ModalShell title={t.editName} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs font-medium text-[#4b5563] mb-1.5">{t.labelName}</label>
+          <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--color-text-secondary)" }}>{t.labelName}</label>
           <input className="input-base" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
         </div>
         {error && <p className="text-xs text-red-500">{error}</p>}
@@ -476,18 +489,19 @@ function EditEmailModal({ open, onClose, onSaved, t, currentEmail }: {
     <ModalShell title={t.editEmail} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs font-medium text-[#4b5563] mb-1.5">{t.labelEmail}</label>
+          <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--color-text-secondary)" }}>{t.labelEmail}</label>
           <input type="email" className="input-base" value={email}
                  onChange={(e) => setEmail(e.target.value)} autoFocus />
         </div>
         <div>
-          <label className="block text-xs font-medium text-[#4b5563] mb-1.5">{t.currentPassword}</label>
+          <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--color-text-secondary)" }}>{t.currentPassword}</label>
           <div className="relative">
             <input type={showPwd ? "text" : "password"} className="input-base pr-10"
                    value={password} onChange={(e) => setPassword(e.target.value)}
                    placeholder={t.currentPassword} />
             <button type="button" onClick={() => setShowPwd(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] hover:text-[#4b5563] t-fast">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 t-fast"
+                    style={{ color: "var(--color-text-muted)" }}>
               {showPwd ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
             </button>
           </div>
@@ -565,15 +579,20 @@ function ConfirmModal({ open, onClose, onConfirm, loading, title, description, c
 }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+         style={{ background: "rgba(0, 0, 0, 0.4)" }}
          onClick={onClose}>
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.15 }}
                   onClick={(e) => e.stopPropagation()}
-                  className="bg-white rounded-2xl p-6 max-w-md w-full"
-                  style={{ border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 12px 48px rgba(0,0,0,0.15)" }}>
-        <h3 className="text-base font-semibold text-[#0a0a0a] mb-2">{title}</h3>
-        <p className="text-sm text-[#4b5563] leading-relaxed mb-5">{description}</p>
+                  className="rounded-2xl p-6 max-w-md w-full"
+                  style={{
+                    background: "var(--color-surface)",
+                    border: "1px solid var(--color-border-strong)",
+                    boxShadow: "0 12px 48px var(--color-shadow-lg)",
+                  }}>
+        <h3 className="text-base font-semibold mb-2" style={{ color: "var(--color-text)" }}>{title}</h3>
+        <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--color-text-secondary)" }}>{description}</p>
         <div className="flex gap-2">
           <button onClick={onClose} disabled={loading} className="btn-neutral flex-1">{cancelText}</button>
           <button onClick={onConfirm} disabled={loading}

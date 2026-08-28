@@ -40,7 +40,7 @@ const FOLLOWUPS_EN: Prompt[] = [
   { emoji: "📖", text: "Elaborate on this idea",                       category: "followup" },
   { emoji: "💡", text: "What are the alternatives?",                   category: "followup" },
   { emoji: "⚡", text: "Turn this into code",                          category: "action"   },
-  { emoji: "📋", text: "Summarize in bullet points",                   category: "action"   },
+  { emoji: "📋", text: "Summarize in bullet points",                 category: "action"   },
 ];
 
 // ─── Context-aware follow-up generation ────────────────────────────────────────
@@ -139,13 +139,13 @@ function PromptChip({
         whileTap={{ scale: 0.97 }}
         className="w-full flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl text-left t-all"
         style={{
-          background: hovered ? style.bg : "#fafafa",
-          border: `1px solid ${hovered ? style.dot + "40" : "rgba(0,0,0,0.07)"}`,
+          background: hovered ? style.bg : "var(--color-surface-2)",
+          border: `1px solid ${hovered ? style.dot + "40" : "var(--color-border)"}`,
           boxShadow: hovered ? `0 4px 16px ${style.dot}18` : "none",
         }}
       >
         <span className="text-base leading-none mt-0.5 shrink-0">{prompt.emoji}</span>
-        <span className="text-xs text-[#374151] leading-relaxed font-medium">
+        <span className="text-xs leading-relaxed font-medium" style={{ color: "var(--color-text)" }}>
           {prompt.text}
         </span>
       </motion.button>
@@ -232,9 +232,9 @@ export default function SuggestedPrompts({
                 animate={{ rotate: [0, 15, -15, 0] }}
                 transition={{ duration: 0.6, delay: 0.3 }}
               >
-                <SparklesIcon className="w-3.5 h-3.5 text-indigo-400" />
+                <SparklesIcon className="w-3.5 h-3.5 text-sky-400" />
               </motion.div>
-              <span className="text-[11px] font-semibold text-[#9ca3af] uppercase tracking-widest">
+              <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--color-text-muted)" }}>
                 {label}
               </span>
             </div>
@@ -246,8 +246,8 @@ export default function SuggestedPrompts({
                   whileTap={{ rotate: 180 }}
                   transition={{ duration: 0.3 }}
                   onClick={() => setRefreshKey((k) => k + 1)}
-                  className="w-6 h-6 rounded-lg flex items-center justify-center t-fast
-                             text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb]"
+                  className="w-6 h-6 rounded-lg flex items-center justify-center t-fast"
+                  style={{ color: "var(--color-text-muted)" }}
                   title={isFr ? "Actualiser" : "Refresh"}
                 >
                   <ArrowPathIcon className="w-3.5 h-3.5" />
@@ -256,8 +256,8 @@ export default function SuggestedPrompts({
               {/* Dismiss */}
               <button
                 onClick={() => setDismissed(true)}
-                className="w-6 h-6 rounded-lg flex items-center justify-center t-fast
-                           text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb]"
+                className="w-6 h-6 rounded-lg flex items-center justify-center t-fast"
+                style={{ color: "var(--color-text-muted)" }}
                 title={isFr ? "Masquer" : "Dismiss"}
               >
                 <XMarkIcon className="w-3.5 h-3.5" />

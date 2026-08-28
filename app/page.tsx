@@ -19,8 +19,9 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <span className="w-5 h-5 rounded-full border-2 border-[#e5e7eb] border-t-[#38bdf8] anim-spin" />
+      <div className="min-h-screen flex items-center justify-center"
+           style={{ background: "var(--color-bg)" }}>
+        <span className="w-5 h-5 rounded-full border-2 border-[rgba(0,0,0,0.06)] border-t-[var(--color-accent)] anim-spin" />
       </div>
     );
   }
@@ -29,7 +30,7 @@ export default function Home() {
   if (!user) return <Landing />;
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-white">
+    <div className="flex h-screen w-screen overflow-hidden" style={{ background: "var(--color-bg)" }}>
       {/* Mobile backdrop */}
       {sidebarOpen && (
         <div

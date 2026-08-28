@@ -65,7 +65,8 @@ export default function DBProvider({ children }: { children: React.ReactNode }) 
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white"
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
+            style={{ background: "var(--color-bg)" }}
           >
             <div className="w-48 h-48">
               <DotLottieReact
@@ -84,7 +85,7 @@ export default function DBProvider({ children }: { children: React.ReactNode }) 
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.25 }}
-                    className="text-sm font-medium text-[#4b5563] tracking-wide text-center"
+                    className="text-sm font-medium text-[#4b5563] dark:text-[#9da0a6] tracking-wide text-center"
                   >
                     {PHRASES[phraseIdx]}
                   </motion.p>

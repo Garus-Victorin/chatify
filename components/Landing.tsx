@@ -1,9 +1,8 @@
 "use client";
 
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   SparklesIcon, BoltIcon, ShieldCheckIcon, CpuChipIcon,
@@ -26,67 +25,67 @@ const NAV = [
 const BENEFITS = [
   {
     icon: <BoltIcon className="w-5 h-5" />,
-    color: "#38bdf8", bg: "#f0f9ff",
+    color: "#38bdf8",
     title: "Des réponses en quelques secondes",
     desc: "Vous écrivez votre question, et la réponse s'écrit devant vous, presque instantanément.",
   },
   {
     icon: <GlobeAltIcon className="w-5 h-5" />,
-    color: "#10b981", bg: "#f0fdf4",
+    color: "#10b981",
     title: "Toujours informé, au jour le jour",
     desc: "Besoin des dernières nouvelles, d'un prix ou de la météo ? Chatify va chercher les infos directement sur internet et vous montre d'où elles viennent.",
   },
   {
     icon: <CpuChipIcon className="w-5 h-5" />,
-    color: "#8b5cf6", bg: "#faf5ff",
+    color: "#8b5cf6",
     title: "Il se souvient de vos discussions",
     desc: "Activez la mémoire et votre assistant garde en tête le contexte de vos conversations passées pour vous répondre encore mieux.",
   },
   {
     icon: <SparklesIcon className="w-5 h-5" />,
-    color: "#f59e0b", bg: "#fffbeb",
+    color: "#f59e0b",
     title: "Un ton à votre goût",
     desc: "Du style pro au ton détendu, en passant par l'expert ou le formateur : choisissez la personnalité qui vous correspond.",
   },
   {
     icon: <CodeBracketIcon className="w-5 h-5" />,
-    color: "#6366f1", bg: "#eef2ff",
+    color: "#6366f1",
     title: "Des outils pratiques intégrés",
     desc: "Faire un calcul, lire un fichier, exécuter du code ou lancer une recherche web : tout est déjà inclus, sans installation.",
   },
   {
     icon: <EyeIcon className="w-5 h-5" />,
-    color: "#10b981", bg: "#f0fdf4",
+    color: "#10b981",
     title: "Des sources fiables",
     desc: "Quand votre question concerne l'actualité, Chatify regarde le web et vous montre d'où vient l'information.",
   },
   {
     icon: <ShieldCheckIcon className="w-5 h-5" />,
-    color: "#38bdf8", bg: "#f0f9ff",
+    color: "#38bdf8",
     title: "Vos données restent à vous",
     desc: "Rien n'est partagé. Vous gardez la main sur vos conversations, vous pouvez tout effacer à tout moment.",
   },
   {
     icon: <LockClosedIcon className="w-5 h-5" />,
-    color: "#ef4444", bg: "#fef2f2",
+    color: "#ef4444",
     title: "Vos discussions restent privées",
     desc: "Vos conversations sont rattachées à votre compte. Personne d'autre ne peut y accéder.",
   },
   {
     icon: <PencilSquareIcon className="w-5 h-5" />,
-    color: "#0ea5e9", bg: "#f0f9ff",
+    color: "#0ea5e9",
     title: "Vous gardez le contrôle",
     desc: "Modifiez, refaites ou supprimez n'importe quel message. Vous décidez ce que vous gardez.",
   },
   {
     icon: <DeviceTabletIcon className="w-5 h-5" />,
-    color: "#6366f1", bg: "#eef2ff",
+    color: "#6366f1",
     title: "Partout, sans installer",
     desc: "Depuis votre navigateur, sur ordinateur ou téléphone. Une page, c'est tout.",
   },
   {
     icon: <HeartIcon className="w-5 h-5" />,
-    color: "#ec4899", bg: "#fdf2f8",
+    color: "#ec4899",
     title: "Gratuit pour commencer",
     desc: "Créez votre compte en quelques secondes. Aucune carte bancaire, aucun engagement.",
   },
@@ -119,17 +118,17 @@ const STYLES = [
 ];
 
 const TOOLS = [
-  { icon: <GlobeAltIcon className="w-5 h-5" />, name: "Recherche web", cmd: "/search", color: "#10b981", bg: "#f0fdf4", desc: "Posez une question d'actualité, Chatify vous ramène les infos du web." },
-  { icon: <CalculatorIcon className="w-5 h-5" />, name: "Calculatrice", cmd: "/calc", color: "#f59e0b", bg: "#fffbeb", desc: "Demandez-lui de résoudre une opération ou une équation." },
-  { icon: <CommandLineIcon className="w-5 h-5" />, name: "Lecteur de code", cmd: "/run", color: "#6366f1", bg: "#eef2ff", desc: "Collez du code, il vous l'explique ou le fait tourner." },
-  { icon: <DocumentIcon className="w-5 h-5" />, name: "Lecteur PDF", cmd: "/pdf", color: "#8b5cf6", bg: "#faf5ff", desc: "Donnez-lui un document, il le résume pour vous." },
+  { icon: <GlobeAltIcon className="w-5 h-5" />, name: "Recherche web", cmd: "/search", color: "#10b981", desc: "Posez une question d'actualité, Chatify vous ramène les infos du web." },
+  { icon: <CalculatorIcon className="w-5 h-5" />, name: "Calculatrice", cmd: "/calc", color: "#f59e0b", desc: "Demandez-lui de résoudre une opération ou une équation." },
+  { icon: <CommandLineIcon className="w-5 h-5" />, name: "Lecteur de code", cmd: "/run", color: "#6366f1", desc: "Collez du code, il vous l'explique ou le fait tourner." },
+  { icon: <DocumentIcon className="w-5 h-5" />, name: "Lecteur PDF", cmd: "/pdf", color: "#8b5cf6", desc: "Donnez-lui un document, il le résume pour vous." },
 ];
 
 const USE_CASES = [
-  { icon: <LightBulbIcon className="w-5 h-5" />, title: "Étudiant", color: "#38bdf8", bg: "#f0f9ff", desc: "Révise, résume un cours, explique une notion difficile." },
-  { icon: <UserGroupIcon className="w-5 h-5" />, title: "Professionnel", color: "#6366f1", bg: "#eef2ff", desc: "Rédige un e-mail, synthétise une réunion, prépare une présentation." },
-  { icon: <BeakerIcon className="w-5 h-5" />, title: "Curieux", color: "#10b981", bg: "#f0fdf4", desc: "Explore un sujet, compare des idées, apprend tous les jours." },
-  { icon: <CodeBracketIcon className="w-5 h-5" />, title: "Développeur", color: "#f59e0b", bg: "#fffbeb", desc: "Écrit, commente et corrige du code plus vite." },
+  { icon: <LightBulbIcon className="w-5 h-5" />, title: "Étudiant", color: "#38bdf8", desc: "Révise, résume un cours, explique une notion difficile." },
+  { icon: <UserGroupIcon className="w-5 h-5" />, title: "Professionnel", color: "#6366f1", desc: "Rédige un e-mail, synthétise une réunion, prépare une présentation." },
+  { icon: <BeakerIcon className="w-5 h-5" />, title: "Curieux", color: "#10b981", desc: "Explore un sujet, compare des idées, apprend tous les jours." },
+  { icon: <CodeBracketIcon className="w-5 h-5" />, title: "Développeur", color: "#f59e0b", desc: "Écrit, commente et corrige du code plus vite." },
 ];
 
 const FAQ = [
@@ -151,23 +150,26 @@ export default function Landing() {
   return (
     <div className="min-h-screen" style={{ background: "var(--color-bg)", color: "var(--color-text)" }}>
       {/* Nav */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md"
-              style={{ borderBottom: "1px solid var(--color-border)" }}>
+      <header className="sticky top-0 z-50"
+              style={{
+                background: "var(--color-surface)",
+                borderBottom: "1px solid var(--color-border)",
+              }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/home" className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl overflow-hidden shadow-soft">
               <Image src="/chatify.png" alt="Chatify" width={32} height={32} className="w-full h-full object-cover" />
             </div>
-            <span className="text-base font-semibold tracking-tight" style={{ color: "var(--color-text)" }}>Chatify</span>
+            <span className="text-base font-semibold tracking-tight">Chatify</span>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-7">
             {NAV.map((n) => (
               <a key={n.href} href={n.href}
                  className="text-sm transition-colors"
-                 style={{ color: "var(--color-text-secondary)" }}
+                 style={{ color: "var(--color-text-muted)" }}
                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text)"; }}
-                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-secondary)"; }}
+                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-muted)"; }}
                  >
                 {n.label}
               </a>
@@ -177,9 +179,9 @@ export default function Landing() {
           <div className="flex items-center gap-2.5">
             <Link href="/login"
                   className="text-sm font-medium px-3 py-2 transition-colors hidden sm:block"
-                  style={{ color: "var(--color-text-secondary)" }}
+                  style={{ color: "var(--color-text-muted)" }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-secondary)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-muted)"; }}
                   >
               Se connecter
             </Link>
@@ -202,7 +204,7 @@ export default function Landing() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-6"
-              style={{ background: "#f0f9ff", color: "#0284c7", border: "1px solid rgba(56,189,248,0.25)" }}
+              style={{ background: "var(--color-accent-soft)", color: "var(--color-accent-hover)", border: "1px solid rgba(56,189,248,0.25)" }}
             >
               <SparklesIcon className="w-3.5 h-3.5" />
               Votre assistant conversationnel
@@ -225,7 +227,8 @@ export default function Landing() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, delay: 0.12 }}
-              className="mt-5 text-base sm:text-lg text-[#4b5563] leading-relaxed"
+              className="mt-5 text-base sm:text-lg leading-relaxed"
+              style={{ color: "var(--color-text-secondary)" }}
             >
               Chatify est un assistant qui vous aide au quotidien : il répond à vos
               questions, va chercher les dernières informations sur internet, se
@@ -251,7 +254,8 @@ export default function Landing() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-6 flex items-center gap-4 text-[11px] text-[#9ca3af] flex-wrap"
+              className="mt-6 flex items-center gap-4 text-[11px] flex-wrap"
+              style={{ color: "var(--color-text-muted)" }}
             >
               <span className="inline-flex items-center gap-1.5"><CheckIcon className="w-3.5 h-3.5 text-[#10b981]" /> Gratuit</span>
               <span className="inline-flex items-center gap-1.5"><CheckIcon className="w-3.5 h-3.5 text-[#10b981]" /> Aucune carte bancaire</span>
@@ -268,13 +272,17 @@ export default function Landing() {
           >
             <div className="absolute -inset-4 rounded-3xl blur-2xl -z-10"
                  style={{ background: "radial-gradient(60% 60% at 50% 40%, rgba(139,92,246,0.15), transparent 70%)" }} />
-            <div className="rounded-3xl bg-white p-4 shadow-lg-soft"
-                 style={{ border: "1px solid rgba(0,0,0,0.08)" }}>
-              <div className="flex items-center gap-2 px-2 pb-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+            <div className="rounded-3xl"
+                 style={{
+                   background: "var(--color-surface)",
+                   border: "1px solid var(--color-border-strong)",
+                   boxShadow: "0 4px 24px var(--color-shadow-lg)",
+                 }}>
+              <div className="flex items-center gap-2 px-2 pb-3" style={{ borderBottom: "1px solid var(--color-border)" }}>
                 <div className="w-2.5 h-2.5 rounded-full bg-[#ef4444]" />
                 <div className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]" />
                 <div className="w-2.5 h-2.5 rounded-full bg-[#10b981]" />
-                <span className="text-[11px] text-[#9ca3af] ml-2">Chatify</span>
+                <span className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>Chatify</span>
               </div>
 
               <div className="space-y-3 pt-4">
@@ -285,9 +293,9 @@ export default function Landing() {
                   </div>
                 </div>
                 <div className="flex justify-start">
-                  <div className="max-w-[85%] rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm bg-white"
-                       style={{ border: "1px solid rgba(0,0,0,0.07)" }}>
-                    C'est Canberra 🇦🇺 — et non Sydney ! Je peux t'en dire plus si tu veux.
+                  <div className="max-w-[85%] rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm"
+                       style={{ border: "1px solid var(--color-border-strong)" }}>
+                    C'est Canberra 🇦�🇺 — et non Sydney ! Je peux t'en dire plus si tu veux.
                   </div>
                 </div>
                 <div className="flex justify-end">
@@ -297,9 +305,9 @@ export default function Landing() {
                   </div>
                 </div>
                 <div className="flex justify-start">
-                  <div className="max-w-[85%] rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm bg-white"
-                       style={{ border: "1px solid rgba(0,0,0,0.07)" }}>
-                    <span className="inline-flex items-center gap-1.5 text-[11px] text-[#0284c7] mb-1">
+                  <div className="max-w-[85%] rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm"
+                       style={{ border: "1px solid var(--color-border-strong)" }}>
+                    <span className="inline-flex items-center gap-1.5 text-[11px]" style={{ color: "var(--color-accent-hover)" }}>
                       <GlobeAltIcon className="w-3.5 h-3.5" /> Je regarde les infos du jour…
                     </span>
                     Voici les points clés récents, avec leurs sources.
@@ -326,21 +334,32 @@ export default function Landing() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.3, delay: (i % 4) * 0.04 }}
               className="flex flex-col items-start gap-3 p-5 rounded-2xl t-all hover:-translate-y-0.5"
-              style={{ background: b.bg, border: `1px solid ${b.color}20` }}
+              style={{
+                background: b.color === "#38bdf8" ? "var(--color-accent-soft)" :
+                            b.color === "#10b981" ? "var(--color-accent-soft)" :
+                            b.color === "#8b5cf6" ? "var(--color-accent-soft)" :
+                            b.color === "#f59e0b" ? "var(--color-accent-soft)" :
+                            b.color === "#6366f1" ? "var(--color-accent-soft)" :
+                            b.color === "#ec4899" ? "var(--color-accent-soft)" :
+                            b.color === "#0ea5e9" ? "var(--color-accent-soft)" :
+                            b.color === "#ef4444" ? "var(--color-accent-soft)" : "var(--color-surface-2)",
+                border: `1px solid ${b.color}20`,
+              }}
             >
               <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                    style={{ background: `${b.color}18`, color: b.color }}>
                 {b.icon}
               </div>
-              <p className="text-sm font-semibold text-[#0a0a0a] leading-snug">{b.title}</p>
-              <p className="text-xs text-[#6b7280] leading-relaxed">{b.desc}</p>
+              <p className="text-sm font-semibold leading-snug" style={{ color: "var(--color-text)" }}>{b.title}</p>
+              <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{b.desc}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* How it works */}
-      <section id="fonctionnement" className="bg-[#fafafa] border-y" style={{ borderColor: "rgba(0,0,0,0.06)" }}>
+      <section id="fonctionnement"
+               style={{ background: "var(--color-surface-2)", borderBottom: "1px solid var(--color-border)" }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
           <SectionHeading
             title="Comment ça fonctionne"
@@ -354,16 +373,21 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.3, delay: i * 0.08 }}
-                className="relative p-6 rounded-2xl bg-white"
-                style={{ border: "1px solid rgba(0,0,0,0.07)" }}
+                className="relative p-6 rounded-2xl"
+                style={{
+                  background: "var(--color-surface)",
+                  border: "1px solid var(--color-border-strong)",
+                }}
               >
-                <span className="absolute top-5 right-5 text-4xl font-bold text-[#eef2f6]">{i + 1}</span>
+                <span className="absolute top-5 right-5 text-4xl font-bold" style={{ color: "var(--color-border)" }}>
+                  {i + 1}
+                </span>
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
-                     style={{ background: "#f0f9ff", color: "#38bdf8" }}>
+                     style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>
                   {s.icon}
                 </div>
-                <p className="text-sm font-semibold text-[#0a0a0a]">{s.title}</p>
-                <p className="text-xs text-[#6b7280] mt-2 leading-relaxed">{s.desc}</p>
+                <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{s.title}</p>
+                <p className="text-xs mt-2 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{s.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -385,18 +409,22 @@ export default function Landing() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.3, delay: i * 0.04 }}
               className="p-4 rounded-2xl text-center t-all hover:-translate-y-0.5"
-              style={{ background: "#fafafa", border: `1px solid ${p.color}22` }}
+              style={{
+                background: "var(--color-surface-2)",
+                border: `1px solid ${p.color}22`,
+              }}
             >
               <div className="text-3xl mb-2">{p.emoji}</div>
-              <p className="text-sm font-semibold text-[#0a0a0a]">{p.name}</p>
-              <p className="text-[11px] text-[#9ca3af] mt-1 leading-relaxed">{p.desc}</p>
+              <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{p.name}</p>
+              <p className="text-[11px] mt-1 leading-relaxed" style={{ color: "var(--color-text-muted)" }}>{p.desc}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* Tools */}
-      <section id="outils" className="bg-[#fafafa] border-y" style={{ borderColor: "rgba(0,0,0,0.06)" }}>
+      <section id="outils"
+               style={{ background: "var(--color-surface-2)", borderBottom: "1px solid var(--color-border)" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
           <SectionHeading
             title="Des outils pratiques, déjà intégrés"
@@ -411,7 +439,10 @@ export default function Landing() {
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.3, delay: i * 0.05 }}
                 className="flex items-start gap-3 p-5 rounded-2xl t-all hover:-translate-y-0.5"
-                style={{ background: pl.bg, border: `1px solid ${pl.color}22` }}
+                style={{
+                  background: "var(--color-accent-soft)",
+                  border: `1px solid ${pl.color}22`,
+                }}
               >
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                      style={{ background: `${pl.color}18`, color: pl.color }}>
@@ -419,11 +450,15 @@ export default function Landing() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-semibold text-[#0a0a0a]">{pl.name}</p>
-                    <code className="text-[10px] px-1.5 py-0.5 rounded-md bg-white text-[#6b7280]"
-                          style={{ border: "1px solid rgba(0,0,0,0.08)" }}>{pl.cmd}</code>
+                    <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{pl.name}</p>
+                    <code className="text-[10px] px-1.5 py-0.5 rounded-md"
+                          style={{
+                            background: "var(--color-surface-2)",
+                            color: "var(--color-text-secondary)",
+                            border: "1px solid var(--color-border)",
+                          }}>{pl.cmd}</code>
                   </div>
-                  <p className="text-xs text-[#6b7280] mt-1 leading-relaxed">{pl.desc}</p>
+                  <p className="text-xs mt-1 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{pl.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -446,14 +481,17 @@ export default function Landing() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.3, delay: i * 0.05 }}
               className="p-5 rounded-2xl"
-              style={{ background: u.bg, border: `1px solid ${u.color}22` }}
+              style={{
+                background: "var(--color-accent-soft)",
+                border: `1px solid ${u.color}22`,
+              }}
             >
               <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
                    style={{ background: `${u.color}18`, color: u.color }}>
                 {u.icon}
               </div>
-              <p className="text-sm font-semibold text-[#0a0a0a]">{u.title}</p>
-              <p className="text-xs text-[#6b7280] mt-1 leading-relaxed">{u.desc}</p>
+              <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{u.title}</p>
+              <p className="text-xs mt-1 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{u.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -467,11 +505,11 @@ export default function Landing() {
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.4 }}
           className="rounded-3xl p-8 sm:p-10"
-          style={{ background: "linear-gradient(135deg, #f0f9ff, #faf5ff)", border: "1px solid rgba(56,189,248,0.15)" }}
+          style={{ background: "var(--color-accent-soft)", border: "1px solid rgba(56,189,248,0.15)" }}
         >
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold tracking-tight">Vos conversations vous appartiennent</h3>
-            <p className="text-sm text-[#4b5563] mt-2 max-w-md mx-auto">
+            <h3 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: "var(--color-text)" }}>Vos conversations vous appartiennent</h3>
+            <p className="text-sm mt-2 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
               Vous décidez qui y a accès et combien de temps vous les gardez.
             </p>
           </div>
@@ -483,16 +521,19 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.3, delay: i * 0.06 }}
-                className="flex items-start gap-3 p-4 rounded-2xl bg-white"
-                style={{ border: "1px solid rgba(0,0,0,0.06)" }}
+                className="flex items-start gap-3 p-4 rounded-2xl"
+                style={{
+                  background: "var(--color-surface)",
+                  border: "1px solid var(--color-border-strong)",
+                }}
               >
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                     style={{ background: "#f0f9ff", color: "#38bdf8" }}>
+                     style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>
                   {g.icon}
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-[#0a0a0a]">{g.title}</p>
-                  <p className="text-[11px] text-[#6b7280] mt-0.5 leading-relaxed">{g.desc}</p>
+                  <p className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>{g.title}</p>
+                  <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{g.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -501,7 +542,8 @@ export default function Landing() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="bg-[#fafafa] border-y" style={{ borderColor: "rgba(0,0,0,0.06)" }}>
+      <section id="faq"
+               style={{ background: "var(--color-surface-2)", borderBottom: "1px solid var(--color-border)" }}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16">
           <SectionHeading title="Questions fréquentes" subtitle="Les réponses aux doutes les plus courants." />
           <div className="space-y-3">
@@ -512,14 +554,18 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.3, delay: i * 0.04 }}
-                className="group rounded-2xl bg-white overflow-hidden"
-                style={{ border: "1px solid rgba(0,0,0,0.07)" }}
+                className="group rounded-2xl"
+                style={{
+                  background: "var(--color-surface)",
+                  border: "1px solid var(--color-border-strong)",
+                }}
               >
-                <summary className="flex items-center justify-between gap-3 px-5 py-4 cursor-pointer list-none text-sm font-medium text-[#0a0a0a]">
+                <summary className="flex items-center justify-between gap-3 px-5 py-4 cursor-pointer list-none text-sm font-medium"
+                         style={{ color: "var(--color-text)" }}>
                   {f.q}
-                  <span className="text-[#9ca3af] group-open:rotate-45 transition-transform duration-200 text-xl leading-none">+</span>
+                  <span className="transition-transform duration-200 text-xl leading-none" style={{ color: "var(--color-text-muted)" }}>+</span>
                 </summary>
-                <p className="px-5 pb-4 text-xs text-[#6b7280] leading-relaxed">{f.a}</p>
+                <p className="px-5 pb-4 text-xs leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{f.a}</p>
               </motion.details>
             ))}
           </div>
@@ -544,17 +590,18 @@ export default function Landing() {
           >
             <div className="absolute inset-0 rounded-3xl blur-2xl scale-150"
                  style={{ background: "radial-gradient(60% 60% at 50% 0%, rgba(56,189,248,0.2), transparent 70%)" }} />
-            <div className="relative w-24 h-24 rounded-3xl overflow-hidden shadow-xl border border-white">
+            <div className="relative w-24 h-24 rounded-3xl overflow-hidden shadow-xl border-2"
+                 style={{ border: "2px solid var(--color-border)" }}>
               <Image src="/chatify.png" alt="Chatify" width={96} height={96} className="w-full h-full object-cover" />
             </div>
           </motion.div>
 
           <div className="space-y-3">
-            <h2 className="text-4xl sm:text-5xl font-bold text-[#0a0a0a] tracking-tight">Chatify</h2>
-            <p className="text-lg text-[#9ca3af]">Un assistant conversationnel qui vit dans votre navigateur.</p>
+            <h2 className="text-4xl sm:text-5xl font-bold tracking-tight" style={{ color: "var(--color-text)" }}>Chatify</h2>
+            <p className="text-lg" style={{ color: "var(--color-text-muted)" }}>Un assistant conversationnel qui vit dans votre navigateur.</p>
           </div>
 
-          <p className="text-lg text-[#4b5563] leading-relaxed max-w-2xl">
+          <p className="text-lg leading-relaxed max-w-2xl" style={{ color: "var(--color-text-secondary)" }}>
             Chatify est votre assistant IA : il répond à vos questions, va chercher les informations
             les plus récentes sur internet, se souvient de vos échanges passés et s'adapte à votre
             façon de communiquer. Rien à installer, rien à configurer. Vous écrivez, il répond.
@@ -567,16 +614,20 @@ export default function Landing() {
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: 0.05 }}
               className="rounded-2xl p-5 text-center"
-              style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.06)" }}
+              style={{
+                background: "var(--color-surface)",
+                border: "1px solid var(--color-border-strong)",
+              }}
             >
               <motion.p
-                className="text-3xl font-bold text-[#0a0a0a]"
+                className="text-3xl font-bold"
+                style={{ color: "var(--color-accent)" }}
                 initial={{ scale: 0 }}
                 whileInView={{ scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.1 }}
               >Instantané</motion.p>
-              <p className="text-[11px] text-[#9ca3af] mt-1">Réponse en flux continu</p>
+              <p className="text-[11px] mt-1" style={{ color: "var(--color-text-muted)" }}>Réponse en flux continu</p>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 8 }}
@@ -584,16 +635,19 @@ export default function Landing() {
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: 0.1 }}
               className="rounded-2xl p-5 text-center"
-              style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.06)" }}
+              style={{
+                background: "var(--color-surface)",
+                border: "1px solid var(--color-border-strong)",
+              }}
             >
               <motion.p
-                className="text-3xl font-bold text-[#38bdf8]"
+                className="text-3xl font-bold text-[#8b5cf6]"
                 initial={{ scale: 0 }}
                 whileInView={{ scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.15 }}
               >5</motion.p>
-              <p className="text-[11px] text-[#9ca3af] mt-1">Personnalités</p>
+              <p className="text-[11px] mt-1" style={{ color: "var(--color-text-muted)" }}>Personnalités</p>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 8 }}
@@ -601,7 +655,10 @@ export default function Landing() {
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: 0.15 }}
               className="rounded-2xl p-5 text-center"
-              style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.06)" }}
+              style={{
+                background: "var(--color-surface)",
+                border: "1px solid var(--color-border-strong)",
+              }}
             >
               <motion.p
                 className="text-3xl font-bold text-[#8b5cf6]"
@@ -610,7 +667,7 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.2 }}
               >4</motion.p>
-              <p className="text-[11px] text-[#9ca3af] mt-1">Outils intégrés</p>
+              <p className="text-[11px] mt-1" style={{ color: "var(--color-text-muted)" }}>Outils intégrés</p>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 8 }}
@@ -618,7 +675,10 @@ export default function Landing() {
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: 0.2 }}
               className="rounded-2xl p-5 text-center"
-              style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.06)" }}
+              style={{
+                background: "var(--color-surface)",
+                border: "1px solid var(--color-border-strong)",
+              }}
             >
               <motion.p
                 className="text-3xl font-bold text-[#10b981]"
@@ -627,7 +687,7 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.25 }}
               >Gratuit</motion.p>
-              <p className="text-[11px] text-[#9ca3af] mt-1">Pour commencer</p>
+              <p className="text-[11px] mt-1" style={{ color: "var(--color-text-muted)" }}>Pour commencer</p>
             </motion.div>
           </div>
 
@@ -639,7 +699,7 @@ export default function Landing() {
           >
             <Link href="/about/author"
                   className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-medium"
-                  style={{ background: "#f0f9ff", color: "#0284c7", border: "1px solid rgba(56,189,248,0.25)" }}>
+                  style={{ background: "var(--color-accent-soft)", color: "var(--color-accent-hover)", border: "1px solid rgba(56,189,248,0.25)" }}>
               En savoir plus sur Victorin Dognon, le créateur
               <ArrowRightIcon className="w-3.5 h-3.5" />
             </Link>
@@ -672,16 +732,17 @@ export default function Landing() {
 
           <div className="space-y-4 max-w-xl">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#0a0a0a] tracking-tight">Victorin Dognon</h2>
-              <p className="text-sm text-[#0284c7] mt-1 font-medium">CEO & CTO — IFY (Innovative For Young)</p>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: "var(--color-text)" }}>Victorin Dognon</h2>
+              <p className="text-sm mt-1 font-medium" style={{ color: "var(--color-accent-hover)" }}>CEO & CTO — IFY (Innovative For Young)</p>
             </div>
-            <p className="text-lg text-[#4b5563] leading-relaxed">
+            <p className="text-lg leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
               Développeur full-stack & IA, il a conçu Chatify de A à Z — de l'idée à la version en ligne —
               en croisant développement, intelligence artificielle et expérience utilisateur.
               Il est disponible en remote, partout.
             </p>
             <Link href="/about/author"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0284c7] hover:text-[#0369a1] transition-colors">
+                  className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors"
+                  style={{ color: "var(--color-accent-hover)" }}>
               Voir son parcours complet
               <ArrowRightIcon className="w-4 h-4" />
             </Link>
@@ -697,14 +758,17 @@ export default function Landing() {
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.4 }}
           className="rounded-3xl p-10 sm:p-14 text-center relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg, #f0f9ff, #faf5ff)", border: "1px solid rgba(56,189,248,0.15)" }}
+          style={{ background: "var(--color-accent-soft)", border: "1px solid rgba(56,189,248,0.15)" }}
         >
           <div className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-5"
-               style={{ background: "linear-gradient(135deg, #38bdf8, #8b5cf6)", color: "#fff" }}>
+               style={{
+                 background: "linear-gradient(135deg, var(--color-accent), #8b5cf6)",
+                 color: "#fff",
+               }}>
             <RocketLaunchIcon className="w-6 h-6" />
           </div>
-          <h3 className="text-2xl sm:text-3xl font-bold tracking-tight">Prêt à discuter ?</h3>
-          <p className="text-sm text-[#4b5563] mt-2 max-w-md mx-auto">
+          <h3 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: "var(--color-text)" }}>Prêt à discuter ?</h3>
+          <p className="text-sm mt-2 leading-relaxed max-w-md mx-auto" style={{ color: "var(--color-text-secondary)" }}>
             Créez votre compte en quelques secondes et lancez votre première conversation.
           </p>
           <div className="mt-7 flex items-center justify-center gap-3 flex-wrap">
@@ -719,7 +783,7 @@ export default function Landing() {
         </motion.div>
       </section>
 
-       {/* Footer */}
+      {/* Footer */}
       <footer className="border-t" style={{ borderColor: "var(--color-border)" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
@@ -730,9 +794,9 @@ export default function Landing() {
             <span className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>© 2026 · VicDev</span>
           </div>
           <div className="flex items-center gap-6 text-xs" style={{ color: "var(--color-text-muted)" }}>
-            <Link href="/about/author" className="hover:text-[#0284c7] transition-colors">À propos</Link>
-            <Link href="/login" className="hover:text-[#0284c7] transition-colors">Connexion</Link>
-            <Link href="/register" className="hover:text-[#0284c7] transition-colors">Inscription</Link>
+            <Link href="/about/author" className="transition-colors" style={{ color: "var(--color-text-muted)" }}>À propos</Link>
+            <Link href="/login" className="transition-colors" style={{ color: "var(--color-text-muted)" }}>Connexion</Link>
+            <Link href="/register" className="transition-colors" style={{ color: "var(--color-text-muted)" }}>Inscription</Link>
           </div>
         </div>
       </footer>
@@ -749,8 +813,8 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle: string }
       transition={{ duration: 0.35 }}
       className="text-center mb-10"
     >
-      <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">{title}</h2>
-      <p className="text-sm text-[#9ca3af] mt-2 max-w-xl mx-auto">{subtitle}</p>
+      <h2 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: "var(--color-text)" }}>{title}</h2>
+      <p className="text-sm mt-2 max-w-xl mx-auto" style={{ color: "var(--color-text-muted)" }}>{subtitle}</p>
     </motion.div>
   );
 }

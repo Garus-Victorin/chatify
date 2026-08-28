@@ -51,8 +51,8 @@ export default function Header({ chatTitle, onOpenSidebar }: Props) {
         {onOpenSidebar && (
           <button
             onClick={onOpenSidebar}
-            className="w-8 h-8 rounded-lg flex items-center justify-center t-fast md:hidden
-                       text-[#9ca3af] hover:text-[#4b5563] hover:bg-[#f5f7fb] shrink-0"
+            className="w-8 h-8 rounded-lg flex items-center justify-center t-fast md:hidden shrink-0"
+            style={{ color: "var(--color-text-muted)" }}
           >
             <Bars3Icon className="w-5 h-5" />
           </button>
@@ -76,17 +76,21 @@ export default function Header({ chatTitle, onOpenSidebar }: Props) {
         <div className="relative" ref={ref}>
           <button
             onClick={() => setOpen((v) => !v)}
-            className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl t-fast hover:bg-[#f5f7fb]"
-            style={{ border: "1px solid rgba(0,0,0,0.07)" }}
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl t-fast"
+            style={{
+              border: "1px solid var(--color-border)",
+              color: "var(--color-text-secondary)",
+            }}
           >
             <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold"
                  style={{ background: color.bg, color: color.text }}>
               {initial}
             </div>
-            <span className="text-xs text-[#4b5563] hidden sm:block max-w-[120px] truncate">
+            <span className="text-xs hidden sm:block max-w-[120px] truncate"
+                  style={{ color: "var(--color-text-secondary)" }}>
               {user?.name ?? user?.email}
             </span>
-            <ChevronDownIcon className="w-3 h-3 text-[#9ca3af]" />
+            <ChevronDownIcon className="w-3 h-3" style={{ color: "var(--color-text-muted)" }} />
           </button>
 
           <AnimatePresence>
@@ -96,20 +100,24 @@ export default function Header({ chatTitle, onOpenSidebar }: Props) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -6, scale: 0.97 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl z-50 overflow-hidden"
-                style={{ border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 8px 24px rgba(0,0,0,0.1)" }}
+                className="absolute right-0 top-full mt-2 w-56 rounded-2xl z-50 overflow-hidden"
+                style={{
+                  background: "var(--color-surface)",
+                  border: "1px solid var(--color-border-strong)",
+                  boxShadow: "0 8px 24px var(--color-shadow-lg)",
+                }}
               >
-                <div className="px-4 py-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                <div className="px-4 py-3" style={{ borderBottom: "1px solid var(--color-border)" }}>
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
                          style={{ background: color.bg, color: color.text }}>
                       {initial}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold text-[#0a0a0a] truncate">
+                      <p className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>
                         {user?.name ?? "Utilisateur"}
                       </p>
-                      <p className="text-[10px] text-[#9ca3af] truncate">{user?.email}</p>
+                      <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>{user?.email}</p>
                     </div>
                   </div>
                 </div>
@@ -130,7 +138,7 @@ export default function Header({ chatTitle, onOpenSidebar }: Props) {
                     label="À propos"
                     onClick={() => { setOpen(false); router.push("/about"); }}
                   />
-                  <div className="my-1" style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }} />
+                  <div className="my-1" style={{ borderTop: "1px solid var(--color-border)" }} />
                   <MenuItem
                     icon={<ArrowRightOnRectangleIcon className="w-4 h-4" />}
                     label={tr.signOut}
@@ -155,9 +163,10 @@ function MenuItem({ icon, label, onClick, danger = false }: {
       onClick={onClick}
       className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs t-fast
                   ${danger
-                    ? "text-red-500 hover:bg-red-50"
-                    : "text-[#4b5563] hover:bg-[#f5f7fb] hover:text-[#0a0a0a]"
+                    ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                    : "hover:bg-[var(--color-surface-2)]"
                   }`}
+      style={{ color: danger ? undefined : "var(--color-text-secondary)" }}
     >
       {icon}
       {label}

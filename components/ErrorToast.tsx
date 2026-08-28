@@ -31,21 +31,22 @@ function Toast({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -12, scale: 0.97 }}
       transition={{ duration: 0.2 }}
-      className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white max-w-sm w-full"
+      className="flex items-center gap-3 px-4 py-3 rounded-2xl max-w-sm w-full"
       style={{
         border: `1px solid ${isSuccess ? "rgba(34,197,94,0.25)" : "rgba(239,68,68,0.2)"}`,
         boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-      }}
-    >
+        background: "var(--color-surface)",
+      }}>
       {isSuccess ? (
         <CheckCircleIcon className="w-5 h-5 text-emerald-500 shrink-0" />
       ) : (
         <ExclamationCircleIcon className="w-5 h-5 text-red-500 shrink-0" />
       )}
-      <p className="text-sm text-[#1f2937] flex-1">{message}</p>
+      <p className="text-sm flex-1" style={{ color: "var(--color-text-secondary)" }}>{message}</p>
       <button
         onClick={onDismiss}
-        className="text-[#9ca3af] hover:text-[#4b5563] t-fast shrink-0"
+        className="t-fast shrink-0"
+        style={{ color: "var(--color-text-muted)" }}
       >
         <XMarkIcon className="w-4 h-4" />
       </button>

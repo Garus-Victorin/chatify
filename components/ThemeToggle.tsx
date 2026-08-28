@@ -14,9 +14,12 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
       aria-label={isDark ? "Passer au mode clair" : "Passer au mode sombre"}
       title={isDark ? "Mode clair" : "Mode sombre"}
       className={`w-9 h-9 rounded-xl flex items-center justify-center t-fast
-                 text-[#9ca3af] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]
-                 dark:text-[#7b8088] dark:hover:text-[#f1f1f1] dark:hover:bg-[#1a1c1e] ${className}`}
-      style={{ border: "1px solid var(--color-border)" }}
+                 hover:bg-[var(--color-surface-2)] dark:hover:bg-[var(--color-surface-2)]
+                 ${className}`}
+      style={{
+        color: "var(--color-text-muted)",
+        border: "1px solid var(--color-border)",
+      }}
       whileTap={{ scale: 0.95 }}
     >
       <motion.span

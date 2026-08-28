@@ -8,7 +8,7 @@
  *
  * Production upgrade path:
  *   - Enable pgvector extension and use native SQL:
- *     SELECT * FROM "Message" ORDER BY embedding_vec <=> $1 LIMIT $2
+ *     SELECT * FROM "Message" ORDER BY embedding_vec <==>  LIMIT 
  *   - Or use Pinecone/Qdrant for dedicated vector storage
  *
  * Recall threshold: 0.75 (configurable via VECTOR_SIMILARITY_THRESHOLD env)
@@ -19,14 +19,14 @@ import { prisma } from "./prisma";
 import { generateEmbedding, cosineSimilarity } from "./embeddings";
 import { logger } from "./logger";
 
-// ─── Config ────────────────────────────────────────────────────────────────────
+// --- Config --------------------------------------------------------------------
 
 const SIMILARITY_THRESHOLD = parseFloat(
   process.env.VECTOR_SIMILARITY_THRESHOLD ?? "0.72"
 );
 const MAX_RESULTS = parseInt(process.env.VECTOR_MAX_RESULTS ?? "5", 10);
 
-// ─── Types ─────────────────────────────────────────────────────────────────────
+// --- Types ---------------------------------------------------------------------
 
 export interface ScoredMessage {
   id: string;
@@ -37,7 +37,7 @@ export interface ScoredMessage {
   createdAt: Date;
 }
 
-// ─── Multi-query retrieval ─────────────────────────────────────────────────────
+// --- Multi-query retrieval -----------------------------------------------------
 
 /**
  * Generate query variants to improve recall.
@@ -48,7 +48,7 @@ function generateQueryVariants(query: string): string[] {
 
   // Add question form if not already a question
   if (!query.trim().endsWith("?")) {
-    variants.push(`What is ${query}?`);
+    variants.push("What is " + query + "?");
   }
 
   // Add keyword-only variant (remove stop words)
@@ -66,7 +66,7 @@ function generateQueryVariants(query: string): string[] {
   return [...new Set(variants)]; // deduplicate
 }
 
-// ─── Core search ───────────────────────────────────────────────────────────────
+// --- Core search ---------------------------------------------------------------
 
 /**
  * Search for semantically similar messages in the conversation history.
@@ -165,7 +165,7 @@ export async function multiQuerySearch(
     variants.map((v) => searchSimilarMessages(v, options))
   );
 
-  // Merge and deduplicate — keep highest similarity score per message
+  // Merge and deduplicate � keep highest similarity score per message
   const merged = new Map<string, ScoredMessage>();
   for (const results of allResults) {
     for (const msg of results) {
@@ -182,11 +182,8 @@ export async function multiQuerySearch(
 }
 
 /**
- * Simple cross-encoder reranking using LLM relevance scoring.
+ * Non-LLM reranking: returns top-K candidates by similarity score.
  * Used as a post-processing step after vector search.
- *
- * Scores each candidate against the query using a lightweight model.
- * Falls back to similarity score if LLM call fails.
  */
 export async function rerankResults(
   query: string,
@@ -195,45 +192,8 @@ export async function rerankResults(
 ): Promise<ScoredMessage[]> {
   if (candidates.length <= topK) return candidates;
 
-  try {
-    const { default: Groq } = await import("groq-sdk");
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
-    const candidateList = candidates
-      .map((c, i) => `[${i}] ${c.content.slice(0, 150)}`)
-      .join("\n");
-
-    const res = await groq.chat.completions.create({
-      model: "llama-3.1-8b-instant",
-      max_tokens: 32,
-      temperature: 0,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a relevance ranker. Given a query and candidates, " +
-            `output ONLY the indices of the top ${topK} most relevant candidates ` +
-            "as comma-separated numbers (e.g. '2,0,4'). No explanation.",
-        },
-        {
-          role: "user",
-          content: `Query: ${query}\n\nCandidates:\n${candidateList}`,
-        },
-      ],
-    });
-
-    const raw = res.choices[0]?.message?.content?.trim() ?? "";
-    const indices = raw
-      .split(",")
-      .map((s) => parseInt(s.trim(), 10))
-      .filter((n) => !isNaN(n) && n >= 0 && n < candidates.length)
-      .slice(0, topK);
-
-    if (indices.length === 0) return candidates.slice(0, topK);
-
-    return indices.map((i) => candidates[i]);
-  } catch {
-    // Fallback: return top-K by similarity score
-    return candidates.slice(0, topK);
-  }
+  // Sort by similarity descending and return top-K
+  return candidates
+    .sort((a, b) => b.similarity - a.similarity)
+    .slice(0, topK);
 }

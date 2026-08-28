@@ -81,18 +81,19 @@ export default function ProfilePage() {
            }}>
         <div className="flex items-center gap-3">
           <button onClick={() => router.back()}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center t-fast
-                             text-[#9ca3af] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]
-                             dark:hover:bg-[#1a1c1e]">
+                  className="w-8 h-8 rounded-xl flex items-center justify-center t-fast"
+                  style={{ color: "var(--color-text-muted)" }}>
             <ArrowLeftIcon className="w-4 h-4" />
           </button>
           <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>{tr.profileTitle}</span>
         </div>
         <div className="flex items-center gap-2.5">
           <button onClick={() => router.push("/settings")}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs t-fast
-                             text-[#9ca3af] hover:bg-[#f5f7fb] dark:hover:bg-[#1a1c1e]"
-                  style={{ border: "1px solid var(--color-border)" }}>
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs t-fast"
+                  style={{
+                    border: "1px solid var(--color-border)",
+                    color: "var(--color-text-muted)",
+                  }}>
             <Cog6ToothIcon className="w-3.5 h-3.5" />
             {tr.settings}
           </button>
@@ -110,13 +111,16 @@ export default function ProfilePage() {
             <Card delay={0}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="text-sky-400"><UserIcon className="w-4 h-4" /></div>
-                  <h2 className="text-sm font-semibold text-[#0a0a0a]">{tr.account}</h2>
+                  <div className="text-sky-400" style={{ color: "var(--color-accent-hover)" }}><UserIcon className="w-4 h-4" /></div>
+                  <h2 className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{tr.account}</h2>
                 </div>
                 <button onClick={openModal}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs t-fast
-                                   text-sky-500 hover:bg-sky-50"
-                        style={{ border: "1px solid rgba(56,189,248,0.25)" }}>
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs t-fast"
+                        style={{
+                          border: "1px solid rgba(56,189,248,0.25)",
+                          color: "var(--color-accent-hover)",
+                          background: "var(--color-accent-soft)",
+                        }}>
                   <PencilIcon className="w-3.5 h-3.5" />
                   {tr.editProfile}
                 </button>
@@ -129,16 +133,21 @@ export default function ProfilePage() {
                        style={{ background: color.bg, color: color.text }}>
                     {initial}
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg overflow-hidden border-2 border-white">
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg overflow-hidden border-2"
+                       style={{ border: "2px solid var(--color-border)" }}>
                     <Image src="/chatify.png" alt="Chatify" width={20} height={20} className="w-full h-full object-cover" />
                   </div>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-base font-semibold text-[#0a0a0a] truncate">{user.name ?? "User"}</p>
-                  <p className="text-sm text-[#9ca3af] truncate">{user.email}</p>
+                  <p className="text-base font-semibold truncate" style={{ color: "var(--color-text)" }}>{user.name ?? "User"}</p>
+                  <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>{user.email}</p>
                   <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full
-                                   text-[10px] font-medium text-sky-600 bg-sky-50"
-                        style={{ border: "1px solid rgba(56,189,248,0.2)" }}>
+                                   text-[10px] font-medium"
+                        style={{
+                          border: "1px solid rgba(56,189,248,0.2)",
+                          color: "var(--color-accent-hover)",
+                          background: "var(--color-accent-soft)",
+                        }}>
                     Free plan
                   </span>
                 </div>
@@ -159,10 +168,10 @@ export default function ProfilePage() {
             {/* User ID */}
             <Card delay={0.1}>
               <div className="flex items-center gap-2 mb-2">
-                <KeyIcon className="w-4 h-4 text-[#9ca3af]" />
-                <h3 className="text-xs font-semibold text-[#4b5563]">{tr.userId}</h3>
+                <KeyIcon className="w-4 h-4" style={{ color: "var(--color-text-muted)" }} />
+                <h3 className="text-xs font-semibold" style={{ color: "var(--color-text-secondary)" }}>{tr.userId}</h3>
               </div>
-              <p className="text-[11px] text-[#9ca3af] font-mono break-all">{user.id}</p>
+              <p className="text-[11px] break-all" style={{ color: "var(--color-text-muted)" }}>{user.id}</p>
             </Card>
           </div>
 
@@ -187,21 +196,21 @@ export default function ProfilePage() {
                 {sessions.slice(0, 8).map((s) => (
                   <button key={s.id} onClick={() => router.push("/")}
                           className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl
-                                     text-left t-fast hover:bg-[#f5f7fb]"
-                          style={{ border: "1px solid rgba(0,0,0,0.06)" }}>
+                                     text-left t-fast"
+                          style={{ border: "1px solid var(--color-border)" }}>
                     <div className="min-w-0">
-                      <p className="text-xs font-medium text-[#0a0a0a] truncate">{s.title}</p>
-                      <p className="text-[10px] text-[#9ca3af] mt-0.5">
+                      <p className="text-xs font-medium truncate" style={{ color: "var(--color-text)" }}>{s.title}</p>
+                      <p className="text-[10px] mt-0.5" style={{ color: "var(--color-text-muted)" }}>
                         {s.messages.length} {s.messages.length !== 1 ? tr.messages : tr.message}
                       </p>
                     </div>
-                    <span className="text-[10px] text-[#9ca3af] shrink-0">
+                    <span className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>
                       {new Date(s.createdAt).toLocaleDateString()}
                     </span>
                   </button>
                 ))}
                 {sessions.length === 0 && (
-                  <p className="text-xs text-center py-6 text-[#9ca3af]">{tr.noConversations}</p>
+                  <p className="text-xs text-center py-6" style={{ color: "var(--color-text-muted)" }}>{tr.noConversations}</p>
                 )}
               </div>
             </Card>
@@ -230,7 +239,8 @@ export default function ProfilePage() {
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+              className="fixed inset-0 z-40"
+              style={{ background: "rgba(0, 0, 0, 0.3)" }}
               onClick={() => setModalOpen(false)}
             />
 
@@ -242,22 +252,27 @@ export default function ProfilePage() {
               transition={{ duration: 0.2 }}
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
-              <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden"
-                   style={{ border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 16px 48px rgba(0,0,0,0.14)" }}
+              <div className="rounded-2xl w-full max-w-md overflow-hidden"
+                   style={{
+                     background: "var(--color-surface)",
+                     border: "1px solid var(--color-border-strong)",
+                     boxShadow: "0 16px 48px var(--color-shadow-lg)",
+                   }}
                    onClick={(e) => e.stopPropagation()}>
 
                 {/* Modal header */}
                 <div className="flex items-center justify-between px-5 py-4"
-                     style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                     style={{ borderBottom: "1px solid var(--color-border)" }}>
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-xl flex items-center justify-center bg-sky-50">
-                      <PencilIcon className="w-3.5 h-3.5 text-sky-500" />
+                    <div className="w-7 h-7 rounded-xl flex items-center justify-center"
+                         style={{ background: "var(--color-accent-soft)" }}>
+                      <PencilIcon className="w-3.5 h-3.5" style={{ color: "var(--color-accent-hover)" }} />
                     </div>
-                    <span className="text-sm font-semibold text-[#0a0a0a]">{tr.editProfile}</span>
+                    <span className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{tr.editProfile}</span>
                   </div>
                   <button onClick={() => setModalOpen(false)}
-                          className="w-7 h-7 rounded-xl flex items-center justify-center t-fast
-                                     text-[#9ca3af] hover:text-[#0a0a0a] hover:bg-[#f5f7fb]">
+                          className="w-7 h-7 rounded-xl flex items-center justify-center t-fast"
+                          style={{ color: "var(--color-text-muted)" }}>
                     <XMarkIcon className="w-4 h-4" />
                   </button>
                 </div>
@@ -267,22 +282,22 @@ export default function ProfilePage() {
 
                   {/* Avatar preview */}
                   <div className="flex items-center gap-3 p-3 rounded-xl"
-                       style={{ background: "#f5f7fb", border: "1px solid rgba(0,0,0,0.06)" }}>
+                       style={{ background: "var(--color-surface-2)", border: "1px solid var(--color-border)" }}>
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-base font-bold shrink-0"
                          style={{ background: color.bg, color: color.text }}>
                       {modalName ? modalName[0].toUpperCase() : initial}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-[#0a0a0a] truncate">
+                      <p className="text-sm font-medium truncate" style={{ color: "var(--color-text)" }}>
                         {modalName || user.name || "Your name"}
                       </p>
-                      <p className="text-xs text-[#9ca3af] truncate">{user.email}</p>
+                      <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>{user.email}</p>
                     </div>
                   </div>
 
                   {/* Name field */}
                   <div>
-                    <label className="block text-xs font-medium text-[#4b5563] mb-1.5">
+                    <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--color-text-secondary)" }}>
                       {tr.displayName}
                     </label>
                     <input
@@ -298,13 +313,13 @@ export default function ProfilePage() {
 
                   {/* Email (readonly) */}
                   <div>
-                    <label className="block text-xs font-medium text-[#4b5563] mb-1.5">
-                      {tr.emailAddress} <span className="text-[#9ca3af] font-normal">{tr.emailCannotChange}</span>
+                    <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--color-text-secondary)" }}>
+                      {tr.emailAddress} <span className="font-normal" style={{ color: "var(--color-text-muted)" }}>{tr.emailCannotChange}</span>
                     </label>
                     <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
-                         style={{ border: "1px solid rgba(0,0,0,0.08)", background: "#f5f7fb" }}>
-                      <EnvelopeIcon className="w-4 h-4 text-[#9ca3af] shrink-0" />
-                      <span className="text-sm text-[#9ca3af]">{user.email}</span>
+                         style={{ border: "1px solid var(--color-border)", background: "var(--color-surface-2)" }}>
+                      <EnvelopeIcon className="w-4 h-4 shrink-0" style={{ color: "var(--color-text-muted)" }} />
+                      <span className="text-sm" style={{ color: "var(--color-text-muted)" }}>{user.email}</span>
                     </div>
                   </div>
 
@@ -315,8 +330,7 @@ export default function ProfilePage() {
 
                 {/* Modal footer */}
                 <div className="flex gap-2 px-5 pb-5">
-                  <button onClick={() => setModalOpen(false)}
-                          className="btn-neutral flex-1">
+                  <button onClick={() => setModalOpen(false)} className="btn-neutral flex-1">
                     {tr.cancel}
                   </button>
                   <button

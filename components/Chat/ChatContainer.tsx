@@ -306,18 +306,21 @@ export default function ChatContainer({ onOpenSidebar }: ChatContainerProps) {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             className="flex items-center gap-2 px-5 py-1.5 shrink-0"
-            style={{ background: "#f0f9ff", borderBottom: "1px solid rgba(56,189,248,0.15)" }}
+            style={{ background: "var(--color-accent-soft)", borderBottom: "1px solid rgba(56,189,248,0.15)" }}
           >
-            {memoryCount > 0 && (
-              <span className="flex items-center gap-1.5 text-[10px] font-medium text-sky-600">
-                <CpuChipIcon className="w-3 h-3" />
+             {memoryCount > 0 && (
+              <span className="flex items-center gap-1.5 text-[10px] font-medium" style={{ color: "var(--color-accent-hover)" }}>
+                <CpuChipIcon className="w-3 h-3" style={{ color: "var(--color-accent)" }} />
                 {memoryCount} {memoryCount > 1 ? tr.memoryRecalls : tr.memoryRecall}
               </span>
             )}
             {toolBadge && (
-              <span className="flex items-center gap-1.5 text-[10px] font-medium text-purple-600
-                               px-2 py-0.5 rounded-full bg-purple-50"
-                    style={{ border: "1px solid rgba(139,92,246,0.2)" }}>
+              <span className="flex items-center gap-1.5 text-[10px] font-medium"
+                    style={{
+                      border: "1px solid var(--color-border-strong)",
+                      color: "var(--color-text-secondary)",
+                      background: "var(--color-surface-2)",
+                    }}>
                 ⚡ Tool: {toolBadge}
               </span>
             )}
@@ -347,10 +350,8 @@ export default function ChatContainer({ onOpenSidebar }: ChatContainerProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <h1 className="text-3xl font-semibold text-[#0a0a0a] tracking-tight">
-                    {tr.howCanIHelp}
-                  </h1>
-                  <p className="text-sm text-[#9ca3af] leading-relaxed">
+              <h1 className="text-3xl font-semibold tracking-tight" style={{ color: "var(--color-text)" }}>{tr.howCanIHelp}</h1>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
                     {agentMode ? tr.agentModeActive : tr.askAnything}
                   </p>
                 </div>
@@ -366,21 +367,21 @@ export default function ChatContainer({ onOpenSidebar }: ChatContainerProps) {
                         transition={{ duration: 0.3, delay: i * 0.05, ease: [0.4, 0, 0.2, 1] }}
                         onClick={() => sendMessage(s.text)}
                         className="flex items-start gap-2 sm:gap-3 px-3 sm:px-4 py-3 sm:py-3.5 rounded-2xl text-left t-all
-                                   bg-white shadow-soft hover:shadow-md-soft active:scale-[0.98] w-full"
-                        style={{ border: "1px solid rgba(0,0,0,0.07)" }}
+                                   shadow-soft hover:shadow-md-soft active:scale-[0.98] w-full"
+                        style={{ border: "1px solid var(--color-border-strong)", background: "var(--color-surface)" }}
                         onMouseEnter={(e) => {
                           (e.currentTarget as HTMLElement).style.borderColor = "rgba(56,189,248,0.35)";
                           (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
                         }}
                         onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLElement).style.borderColor = "rgba(0,0,0,0.07)";
+                          (e.currentTarget as HTMLElement).style.borderColor = "var(--color-border-strong)";
                           (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
                         }}
                       >
                         <span className="text-xl leading-none mt-0.5 shrink-0">{s.emoji}</span>
                         <div>
-                          <p className="text-xs font-medium text-[#0a0a0a] leading-snug">{s.text}</p>
-                          <p className="text-[10px] text-[#9ca3af] mt-0.5">{s.desc}</p>
+                          <p className="text-xs font-medium leading-snug" style={{ color: "var(--color-text)" }}>{s.text}</p>
+                          <p className="text-[10px] mt-0.5" style={{ color: "var(--color-text-secondary)" }}>{s.desc}</p>
                         </div>
                       </motion.button>
                     ))}
@@ -395,13 +396,13 @@ export default function ChatContainer({ onOpenSidebar }: ChatContainerProps) {
                       <motion.button
                         key={i}
                         onClick={() => setPromptOffset(i * BATCH)}
-                        animate={{
-                          width: isActive ? 20 : 6,
-                          background: isActive ? "#38bdf8" : "rgba(0,0,0,0.15)",
-                        }}
-                        transition={{ duration: 0.25 }}
-                        className="h-1.5 rounded-full t-fast"
-                        title={`Page ${i + 1}`}
+                         animate={{
+                           width: isActive ? 20 : 6,
+                           background: isActive ? "var(--color-accent)" : "var(--color-border)",
+                         }}
+                         transition={{ duration: 0.25 }}
+                         className="h-1.5 rounded-full t-fast"
+                         title={`Page ${i + 1}`}
                       />
                     );
                   })}

@@ -1,8 +1,9 @@
-/**
+﻿const fs = require("fs");
+const content = `/**
  * Embedding engine for Chatify RAG pipeline.
  *
  * Strategy (in priority order):
- *   1. OpenAI — `text-embedding-3-small` (384 dims) — REQUIRED (OPENAI_API_KEY)
+ *   1. OpenAI — \`text-embedding-3-small\` (384 dims) — REQUIRED (OPENAI_API_KEY)
  *   2. Fallback — deterministic hash-based pseudo-embedding (no API needed)
  *      ⚠️ Fallback is for development only — similarity scores are approximate.
  *      ⚠️ Puter.js has no embedding API. Groq has no embedding API.
@@ -80,7 +81,7 @@ export function chunkText(text: string, maxChars = 512, overlap = 64): string[] 
 
   const chunks: string[] = [];
   // Split on sentence boundaries first
-  const sentences = text.match(/[^.!?\n]+[.!?\n]*/g) ?? [text];
+  const sentences = text.match(/[^.!?\\n]+[.!?\\n]*/g) ?? [text];
 
   let current = "";
   for (const sentence of sentences) {
@@ -129,7 +130,7 @@ async function openaiEmbed(text: string): Promise<number[]> {
   const res = await fetch("https://api.openai.com/v1/embeddings", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: \`Bearer \${apiKey}\`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -142,7 +143,7 @@ async function openaiEmbed(text: string): Promise<number[]> {
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`OpenAI embedding failed: ${res.status} — ${err}`);
+    throw new Error(\`OpenAI embedding failed: \${res.status} — \${err}\`);
   }
 
   const data = await res.json() as { data: [{ embedding: number[] }] };
@@ -199,3 +200,7 @@ export async function generateEmbeddingsBatch(texts: string[]): Promise<number[]
 
   return results;
 }
+`;
+
+fs.writeFileSync("D:\\\\MyApps\\\\chatify\\\\lib\\\\embeddings.ts", content, "utf8");
+console.log("File written successfully");
