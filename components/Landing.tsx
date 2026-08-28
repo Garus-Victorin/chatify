@@ -11,6 +11,7 @@ import {
   CommandLineIcon, DocumentIcon, CalculatorIcon, BeakerIcon,
   HeartIcon, LightBulbIcon, UserGroupIcon, PencilSquareIcon,
   CloudArrowDownIcon, TrashIcon, LockClosedIcon,
+  EyeIcon, DeviceTabletIcon,
 } from "@heroicons/react/24/outline";
 
 const NAV = [
@@ -53,6 +54,18 @@ const BENEFITS = [
     desc: "Faire un calcul, lire un fichier, exécuter du code ou lancer une recherche web : tout est déjà inclus, sans installation.",
   },
   {
+    icon: <EyeIcon className="w-5 h-5" />,
+    color: "#10b981", bg: "#f0fdf4",
+    title: "Des sources fiables",
+    desc: "Quand votre question concerne l'actualité, Chatify regarde le web et vous montre d'où vient l'information.",
+  },
+  {
+    icon: <ShieldCheckIcon className="w-5 h-5" />,
+    color: "#38bdf8", bg: "#f0f9ff",
+    title: "Vos données restent à vous",
+    desc: "Rien n'est partagé. Vous gardez la main sur vos conversations, vous pouvez tout effacer à tout moment.",
+  },
+  {
     icon: <LockClosedIcon className="w-5 h-5" />,
     color: "#ef4444", bg: "#fef2f2",
     title: "Vos discussions restent privées",
@@ -63,6 +76,12 @@ const BENEFITS = [
     color: "#0ea5e9", bg: "#f0f9ff",
     title: "Vous gardez le contrôle",
     desc: "Modifiez, refaites ou supprimez n'importe quel message. Vous décidez ce que vous gardez.",
+  },
+  {
+    icon: <DeviceTabletIcon className="w-5 h-5" />,
+    color: "#6366f1", bg: "#eef2ff",
+    title: "Partout, sans installer",
+    desc: "Depuis votre navigateur, sur ordinateur ou téléphone. Une page, c'est tout.",
   },
   {
     icon: <HeartIcon className="w-5 h-5" />,
@@ -498,6 +517,169 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* À propos de l'app */}
+      <section id="a-propos" className="max-w-4xl mx-auto px-4 sm:px-6 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col items-center text-center gap-12"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+            viewport={{ once: true }}
+            className="relative"
+          >
+            <div className="absolute inset-0 rounded-3xl blur-2xl scale-150"
+                 style={{ background: "radial-gradient(60% 60% at 50% 0%, rgba(56,189,248,0.2), transparent 70%)" }} />
+            <div className="relative w-24 h-24 rounded-3xl overflow-hidden shadow-xl border border-white">
+              <Image src="/chatify.png" alt="Chatify" width={96} height={96} className="w-full h-full object-cover" />
+            </div>
+          </motion.div>
+
+          <div className="space-y-3">
+            <h2 className="text-4xl sm:text-5xl font-bold text-[#0a0a0a] tracking-tight">Chatify</h2>
+            <p className="text-lg text-[#9ca3af]">Un assistant conversationnel qui vit dans votre navigateur.</p>
+          </div>
+
+          <p className="text-lg text-[#4b5563] leading-relaxed max-w-2xl">
+            Chatify est votre assistant IA : il répond à vos questions, va chercher les informations
+            les plus récentes sur internet, se souvient de vos échanges passés et s'adapte à votre
+            façon de communiquer. Rien à installer, rien à configurer. Vous écrivez, il répond.
+          </p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl w-full">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: 0.05 }}
+              className="rounded-2xl p-5 text-center"
+              style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              <motion.p
+                className="text-3xl font-bold text-[#0a0a0a]"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+              >Instantané</motion.p>
+              <p className="text-[11px] text-[#9ca3af] mt-1">Réponse en flux continu</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              className="rounded-2xl p-5 text-center"
+              style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              <motion.p
+                className="text-3xl font-bold text-[#38bdf8]"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.15 }}
+              >5</motion.p>
+              <p className="text-[11px] text-[#9ca3af] mt-1">Personnalités</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: 0.15 }}
+              className="rounded-2xl p-5 text-center"
+              style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              <motion.p
+                className="text-3xl font-bold text-[#8b5cf6]"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >4</motion.p>
+              <p className="text-[11px] text-[#9ca3af] mt-1">Outils intégrés</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="rounded-2xl p-5 text-center"
+              style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              <motion.p
+                className="text-3xl font-bold text-[#10b981]"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.25 }}
+              >Gratuit</motion.p>
+              <p className="text-[11px] text-[#9ca3af] mt-1">Pour commencer</p>
+            </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
+            <Link href="/about/author"
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-medium"
+                  style={{ background: "#f0f9ff", color: "#0284c7", border: "1px solid rgba(56,189,248,0.25)" }}>
+              En savoir plus sur Victorin Dognon, le créateur
+              <ArrowRightIcon className="w-3.5 h-3.5" />
+            </Link>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Le créateur */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col sm:flex-row items-center gap-10 text-center sm:text-left"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+            className="relative"
+          >
+            <div className="absolute inset-0 rounded-full blur-2xl scale-110"
+                 style={{ background: "linear-gradient(135deg, #38bdf8, #8b5cf6)" }} />
+            <div className="relative w-32 h-32 rounded-full overflow-hidden shadow-xl">
+              <Image src="/python2.png" alt="Victorin Dognon" width={128} height={128} className="w-full h-full object-cover" />
+            </div>
+          </motion.div>
+
+          <div className="space-y-4 max-w-xl">
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-[#0a0a0a] tracking-tight">Victorin Dognon</h2>
+              <p className="text-sm text-[#0284c7] mt-1 font-medium">CEO & CTO — IFY (Innovative For Young)</p>
+            </div>
+            <p className="text-lg text-[#4b5563] leading-relaxed">
+              Développeur full-stack & IA, il a conçu Chatify de A à Z — de l'idée à la version en ligne —
+              en croisant développement, intelligence artificielle et expérience utilisateur.
+              Il est disponible en remote, partout.
+            </p>
+            <Link href="/about/author"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0284c7] hover:text-[#0369a1] transition-colors">
+              Voir son parcours complet
+              <ArrowRightIcon className="w-4 h-4" />
+            </Link>
+          </div>
+        </motion.div>
+      </section>
+
       {/* CTA */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
         <motion.div
@@ -539,7 +721,7 @@ export default function Landing() {
             <span className="text-[11px] text-[#c4c9d4]">© 2026 · VicDev</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-[#9ca3af]">
-            <Link href="/about" className="hover:text-[#4b5563] transition-colors">À propos</Link>
+            <Link href="/about/author" className="hover:text-[#4b5563] transition-colors">À propos</Link>
             <Link href="/login" className="hover:text-[#4b5563] transition-colors">Connexion</Link>
             <Link href="/register" className="hover:text-[#4b5563] transition-colors">Inscription</Link>
           </div>

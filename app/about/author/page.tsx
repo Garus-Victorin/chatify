@@ -39,13 +39,13 @@ export default function AboutAuthor() {
     <div className="min-h-screen bg-white">
       {/* Back */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
-        <Link
-          href="/about/app"
-          className="inline-flex items-center gap-1.5 text-xs text-[#9ca3af] hover:text-[#0a0a0a] transition-colors"
-        >
-          <ArrowLeftIcon className="w-3.5 h-3.5" />
-          Retour à propos de l'app
-        </Link>
+         <Link
+           href="/home"
+           className="inline-flex items-center gap-1.5 text-xs text-[#9ca3af] hover:text-[#0a0a0a] transition-colors"
+         >
+           <ArrowLeftIcon className="w-3.5 h-3.5" />
+           Retour à l'accueil
+         </Link>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
@@ -59,12 +59,8 @@ export default function AboutAuthor() {
           <div className="relative">
             <div className="absolute inset-0 rounded-full blur-xl scale-110"
                  style={{ background: "linear-gradient(135deg, #38bdf8, #8b5cf6)" }} />
-            <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-lg"
-                 style={{ borderColor: "#ffffff" }}>
-              <div className="w-full h-full flex items-center justify-center text-3xl font-bold"
-                   style={{ background: "linear-gradient(135deg, #38bdf8, #8b5cf6)", color: "#fff" }}>
-                GV
-              </div>
+            <div className="relative w-28 h-28 rounded-full overflow-hidden shadow-lg">
+              <Image src="/python2.png" alt="Victorin Dognon" width={112} height={112} className="w-full h-full object-cover" />
             </div>
           </div>
 
