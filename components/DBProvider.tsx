@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useChatStore } from "@/store/chatStore";
 
-const PUBLIC_PATHS = ["/login", "/register", "/home", "/"];
+const PUBLIC_PATHS = ["/login", "/register", "/home", "/", "/about"];
 
 const PHRASES = [
   "🔍 Analyse intelligente en cours...",

@@ -7,8 +7,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Chatify — AI Assistant",
-  description: "Powered by LLaMA 3.3 via Groq",
+  title: "Chatify — Votre assistant conversationnel",
+  description: "Assistant IA qui répond à vos questions, cherche les infos sur internet, se souvient de vos discussions et s'adapte à votre style — gratuit et sans installation.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

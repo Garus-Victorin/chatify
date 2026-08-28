@@ -5,7 +5,7 @@ const SECRET = new TextEncoder().encode(
   process.env.AUTH_SECRET ?? "chatify-secret-change-in-production"
 );
 
-const PUBLIC_PATHS = ["/", "/login", "/register", "/home", "/api/auth/login", "/api/auth/register"];
+const PUBLIC_PATHS = ["/", "/login", "/register", "/home", "/about", "/api/auth/login", "/api/auth/register"];
 
 // Routes restricted to admin role
 const ADMIN_PATHS = ["/api/admin"];
