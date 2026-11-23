@@ -6,7 +6,7 @@
 
 ## 1. Vision produit
 
-**Qodify** est une extension VS Code propulsée par LLaMA 3.3 70B (Groq) qui agit comme un assistant IA de développement intégré directement dans l'éditeur.
+**Qodify** est une extension VS Code propulsée par Kilo Gateway (Groq) qui agit comme un assistant IA de développement intégré directement dans l'éditeur.
 
 ### Objectif
 Reproduire l'expérience Amazon Q Developer / GitHub Copilot avec :
@@ -80,7 +80,7 @@ Qodify Extension
 | Extension | TypeScript + VS Code API | Standard extensions |
 | UI Chat | React 18 + Tailwind CSS | |
 | Build UI | Vite (mode lib) | Bundle rapide pour webview |
-| LLM | Groq SDK — LLaMA 3.3 70B | Vitesse + gratuit |
+| LLM | Groq SDK — Kilo Gateway | Vitesse + gratuit |
 | Streaming | SSE via fetch natif | Pas de dépendance |
 | Embeddings | Groq nomic-embed / fallback hash | RAG local |
 | Stockage | VS Code globalState + fichiers JSON | Persistance légère |
@@ -410,3 +410,4 @@ Jamais dans `settings.json` en clair.
 ---
 
 *Planning créé le — Qodify AI Extension*
+
