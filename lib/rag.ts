@@ -14,7 +14,7 @@
  * Vector search adds long-term memory on top of it.
  */
 
-import { searchWeb, SearchResult } from "./search";
+import { searchWeb, SearchResult, fetchUrlContent, extractUrls } from "./search";
 import { generateEmbedding } from "./embeddings";
 import { multiQuerySearch, rerankResults, ScoredMessage } from "./vectorSearch";
 import { buildContext, ConversationMessage } from "./contextBuilder";
@@ -85,9 +85,11 @@ export async function buildRAGContext(
   // -- Step 1: Detect search intent ------------------------------------------
   const needsSearch = fs || (await detectSearchIntent(query));
 
+  const urls = extractUrls(query);
+
   // -- Step 2: Parallel retrieval --------------------------------------------
-  // Run embedding, vector search, web search, and summary in parallel
-  const [queryEmbedding, rawMemories, webResults, summary] = await Promise.allSettled([
+  // Run embedding, vector search, web search, URL fetch, and summary in parallel
+  const [queryEmbedding, rawMemories, webResults, urlResults, summary] = await Promise.allSettled([
     // Embed query (used for vector search)
     generateEmbedding(query),
 
@@ -108,6 +110,11 @@ export async function buildRAGContext(
       ? searchWeb(query).then((r) => r.results).catch(() => [] as SearchResult[])
       : Promise.resolve([] as SearchResult[]),
 
+    // URL content fetch (if URLs present in query)
+    urls.length > 0
+      ? Promise.all(urls.map((u) => fetchUrlContent(u))).then((r) => r.filter(Boolean) as SearchResult[])
+      : Promise.resolve([] as SearchResult[]),
+
     // Conversation summary
     memoryEnabled && chatId
       ? getOrCreateSummary(chatId)
@@ -116,7 +123,9 @@ export async function buildRAGContext(
 
   // Extract settled values with fallbacks
   const memories = rawMemories.status === "fulfilled" ? rawMemories.value : [];
-  const sources  = webResults.status  === "fulfilled" ? webResults.value  : [];
+  const webSources = webResults.status  === "fulfilled" ? webResults.value  : [];
+  const urlSources = urlResults.status === "fulfilled" ? urlResults.value : [];
+  const sources = [...webSources, ...urlSources];
   const summaryText = summary.status  === "fulfilled" ? summary.value     : null;
 
   if (rawMemories.status === "rejected") {

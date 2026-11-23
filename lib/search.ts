@@ -81,8 +81,62 @@ export async function searchWeb(query: string, maxResults = 5): Promise<SearchRe
 }
 
 /**
- * Format search results into a clean, structured context block for LLM
+ * Extract URLs from text
  */
+export function extractUrls(text: string): string[] {
+  const regex = /https?:\/\/[^\s<>"')]+/gi;
+  const matches = text.match(regex) ?? [];
+  return [...new Set(matches.map((u) => u.replace(/[.,;:!?]+$/, "")))];
+}
+
+/**
+ * Fetch and extract readable text from a URL
+ */
+export async function fetchUrlContent(url: string): Promise<SearchResult | null> {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+
+  const host = parsed.hostname.toLowerCase();
+  if (
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === "::1" ||
+    host === "0.0.0.0" ||
+    /^10\./.test(host) ||
+    /^192\.168\./.test(host) ||
+    /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
+    /^169\.254\./.test(host) ||
+    host.endsWith(".local")
+  ) {
+    return null;
+  }
+
+  try {
+    const res = await axios.get(url, {
+      timeout: 10000,
+      maxContentLength: 2 * 1024 * 1024,
+      maxBodyLength: 2 * 1024 * 1024,
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; ChatifyBot/1.0)" },
+      responseType: "text",
+    });
+    const cleaned = cleanText(String(res.data ?? ""));
+    const deduplicated = deduplicateSentences(cleaned);
+    if (deduplicated.length < 20) return null;
+    return {
+      title: url,
+      url,
+      content: deduplicated.slice(0, 1500),
+      score: 1,
+    };
+  } catch {
+    return null;
+  }
+}
 export function formatContext(results: SearchResult[]): string {
   if (results.length === 0) return "No relevant web results found.";
 
