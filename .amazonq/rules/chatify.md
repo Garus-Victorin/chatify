@@ -22,7 +22,7 @@
 
 ## 1. Vue d'ensemble
 
-Chatify est une application web de chat IA full-stack construite avec **Next.js 16** (App Router). Elle permet aux utilisateurs de converser avec **LLaMA 3.3 70B** via l'API Groq, avec une capacité de **recherche web en temps réel** via Tavily (RAG — Retrieval-Augmented Generation).
+Chatify est une application web de chat IA full-stack construite avec **Next.js 16** (App Router). Elle permet aux utilisateurs de converser avec **Kilo Gateway** via l'API Groq, avec une capacité de **recherche web en temps réel** via Tavily (RAG — Retrieval-Augmented Generation).
 
 **Fonctionnalités principales :**
 - Chat IA avec streaming SSE (Server-Sent Events)
@@ -286,7 +286,7 @@ detectSearchIntent()  ──── LLaMA 3.1 8B (classifier YES/NO)
 BASE_SYSTEM    WEB_SYSTEM (contexte injecté)
        │
        ▼
-groq.chat.completions.create()  ──── LLaMA 3.3 70B (streaming)
+groq.chat.completions.create()  ──── Kilo Gateway (streaming)
        │
        ▼
 postProcess()  ──── removeRepeatedWords + removeDuplicateSentences + fixFormatting
@@ -520,7 +520,7 @@ Fichier `.env` (voir `.env.example`) :
 # PostgreSQL (Neon, Supabase, etc.)
 DATABASE_URL="postgresql://user:password@host/dbname?sslmode=require"
 
-# Groq API — LLaMA 3.3 70B
+# Groq API — Kilo Gateway
 GROQ_API_KEY="gsk_..."
 
 # Tavily API — recherche web
@@ -611,3 +611,4 @@ npm run db:studio
 4. Redirection vers /
 5. DBProvider.init() → charge les sessions de l'utilisateur
 ```
+

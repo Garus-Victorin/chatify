@@ -268,3 +268,4 @@ Si une solution est :
 * simple ET robuste → IDÉAL
 
 Tu optimises toujours pour le long terme.
+
