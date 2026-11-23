@@ -2,9 +2,9 @@
  * Plugin system for Chatify.
  *
  * Each plugin is a self-contained unit with:
- *   - trigger()  — heuristic to detect if this plugin should handle the input
- *   - execute()  — async function that returns a string result
- *   - schema     — metadata for UI display and LLM tool-calling
+ *   - trigger()  -------- heuristic to detect if this plugin should handle the input
+ *   - execute()  -------- async function that returns a string result
+ *   - schema     -------- metadata for UI display and LLM tool-calling
  *
  * Plugins are registered in the PLUGIN_REGISTRY and can be toggled per-session
  * via the PluginPanel UI component.
@@ -12,8 +12,9 @@
 
 import { searchWeb } from "@/lib/search";
 import { logger } from "@/lib/logger";
+import { chatServer } from "../kilo-server";
 
-// ─── Core types ────────────────────────────────────────────────────────────────
+// ------------------------ Core types --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 export interface Plugin {
   id: string;
@@ -37,13 +38,13 @@ export interface PluginResult {
   error?: string;
 }
 
-// ─── 1. WebSearch Plugin ───────────────────────────────────────────────────────
+// ------------------------ 1. WebSearch Plugin --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 const WebSearchPlugin: Plugin = {
   id: "web-search",
   name: "Web Search",
   description: "Search the web for real-time information using Tavily",
-  icon: "🔎",
+  icon: "---------",
   category: "search",
 
   trigger: (input) => {
@@ -62,7 +63,7 @@ const WebSearchPlugin: Plugin = {
         return { output: "No results found for: " + query };
       }
       const formatted = results
-        .map((r, i) => `**[${i + 1}] ${r.title}**\n${r.content}\n🔗 ${r.url}`)
+        .map((r, i) => `**[${i + 1}] ${r.title}**\n${r.content}\n---------- ${r.url}`)
         .join("\n\n");
       return {
         output: `## Web Search Results for "${query}"\n\n${formatted}`,
@@ -75,10 +76,10 @@ const WebSearchPlugin: Plugin = {
   },
 };
 
-// ─── 2. Calculator Plugin ──────────────────────────────────────────────────────
+// ------------------------ 2. Calculator Plugin ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 /**
- * Safe math evaluator — no eval(), uses a recursive descent parser.
+ * Safe math evaluator -------- no eval(), uses a recursive descent parser.
  * Supports: +, -, *, /, **, %, parentheses, sqrt(), abs(), round(), floor(), ceil()
  */
 function safeMath(expr: string): number {
@@ -94,10 +95,10 @@ function safeMath(expr: string): number {
 
   // Whitelist: only allow safe math characters
   if (!/^[0-9+\-*/().%^Math.sqrtabsroundflorceil\s]+$/.test(clean)) {
-    throw new Error("Invalid expression — only math operations allowed");
+    throw new Error("Invalid expression -------- only math operations allowed");
   }
 
-  // Use Function constructor (safer than eval — no scope access)
+  // Use Function constructor (safer than eval -------- no scope access)
   // eslint-disable-next-line no-new-func
   const result = new Function(`"use strict"; return (${clean})`)();
   if (typeof result !== "number" || !isFinite(result)) {
@@ -110,7 +111,7 @@ const CalculatorPlugin: Plugin = {
   id: "calculator",
   name: "Calculator",
   description: "Evaluate mathematical expressions safely",
-  icon: "🧮",
+  icon: "--------",
   category: "compute",
 
   trigger: (input) => {
@@ -150,10 +151,10 @@ const CalculatorPlugin: Plugin = {
   },
 };
 
-// ─── 3. Code Interpreter Plugin ────────────────────────────────────────────────
+// ------------------------ 3. Code Interpreter Plugin ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 /**
- * Sandboxed code interpreter — simulates execution via LLM.
+ * Sandboxed code interpreter -------- simulates execution via LLM.
  * In production, replace with a real sandbox (e2b.dev, Pyodide, etc.)
  *
  * The LLM is asked to "execute" the code and return the output.
@@ -163,7 +164,7 @@ const CodeInterpreterPlugin: Plugin = {
   id: "code-interpreter",
   name: "Code Interpreter",
   description: "Execute and explain code snippets (LLM-simulated sandbox)",
-  icon: "💻",
+  icon: "---------",
   category: "code",
 
   trigger: (input) => {
@@ -187,29 +188,17 @@ const CodeInterpreterPlugin: Plugin = {
     const cleanCode = code.replace(/^```\w*\n?/, "").replace(/```$/, "").trim();
 
     try {
-      const { default: Groq } = await import("groq-sdk");
-      const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
-      const res = await groq.chat.completions.create({
-        model: "llama-3.1-8b-instant",
-        max_tokens: 512,
-        temperature: 0,
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a code execution simulator. Given code, output ONLY what the program would print/return. " +
-              "Format: show the output in a code block, then a brief explanation. " +
-              "If there's an error, show the error message.",
-          },
-          {
-            role: "user",
-            content: `Execute this ${lang} code:\n\`\`\`${lang}\n${cleanCode}\n\`\`\``,
-          },
+      const sys = "You are a code execution simulator. Given code, output ONLY what the program would print/return. Format: show the output in a code block, then a brief explanation. If there's an error, show the error message.";
+      const output = await chatServer(
+        [
+          { role: "system", content: sys },
+          { role: "user", content: `Execute this ${lang} code:\n\`\`\`${lang}\n${cleanCode}\n\`\`\`` },
         ],
-      });
-
-      const output = res.choices[0]?.message?.content ?? "No output";
+        { model: process.env.KILO_SERVER_MODEL || "kilo-auto/free", temperature: 0, maxTokens: 512 }
+      );
+      if (output == null) {
+        return { output: "------------ Code interpreter unavailable: set KILO_API_KEY on the server to enable it.", error: "kilo_unavailable" };
+      }
       return {
         output: `## Code Execution (${lang})\n\n\`\`\`${lang}\n${cleanCode}\n\`\`\`\n\n**Output:**\n${output}`,
         metadata: { language: lang, simulated: true },
@@ -229,7 +218,7 @@ function detectLanguage(code: string): string {
   return "text";
 }
 
-// ─── 4. PDF Plugin ─────────────────────────────────────────────────────────────
+// ------------------------ 4. PDF Plugin --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 /**
  * PDF text extraction and Q&A.
@@ -240,7 +229,7 @@ const PDFPlugin: Plugin = {
   id: "pdf",
   name: "PDF Reader",
   description: "Upload and analyze PDF documents",
-  icon: "📄",
+  icon: "----------",
   category: "document",
 
   trigger: (input) => {
@@ -259,38 +248,26 @@ const PDFPlugin: Plugin = {
 
     if (!fileContent) {
       return {
-        output: "📄 **PDF Plugin**: Please upload a PDF file first using the attachment button.",
+        output: "---------- **PDF Plugin**: Please upload a PDF file first using the attachment button.",
         error: "No file content provided",
       };
     }
 
     try {
-      const { default: Groq } = await import("groq-sdk");
-      const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
       const truncatedContent = fileContent.slice(0, 8000); // Token budget
 
-      const res = await groq.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
-        max_tokens: 1024,
-        temperature: 0.3,
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a document analyst. Answer questions based ONLY on the provided document content. " +
-              "If the answer is not in the document, say so explicitly. Use Markdown formatting.",
-          },
-          {
-            role: "user",
-            content: `Document content:\n\n${truncatedContent}\n\n---\n\nQuestion: ${question || "Summarize this document"}`,
-          },
+      const answer = await chatServer(
+        [
+          { role: "system", content: "You are a document analyst. Answer questions based ONLY on the provided document content. If the answer is not in the document, say so explicitly. Use Markdown formatting." },
+          { role: "user", content: `Document content:\n\n${truncatedContent}\n\n---\n\nQuestion: ${question || "Summarize this document"}` },
         ],
-      });
-
-      const answer = res.choices[0]?.message?.content ?? "Could not analyze document";
+        { model: process.env.KILO_SERVER_MODEL || "kilo-auto/free", temperature: 0.3, maxTokens: 1024 }
+      );
+      if (answer == null) {
+        return { output: "------------ PDF analysis unavailable: set KILO_API_KEY on the server to enable it.", error: "kilo_unavailable" };
+      }
       return {
-        output: `## 📄 PDF Analysis\n\n${answer}`,
+        output: `## ---------- PDF Analysis\n\n${answer}`,
         metadata: { contentLength: fileContent.length, question },
       };
     } catch (err) {
@@ -300,7 +277,7 @@ const PDFPlugin: Plugin = {
   },
 };
 
-// ─── Plugin Registry ───────────────────────────────────────────────────────────
+// ------------------------ Plugin Registry ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 export const PLUGIN_REGISTRY: Plugin[] = [
   WebSearchPlugin,
@@ -318,3 +295,4 @@ export function getEnabledPlugins(enabledIds: string[]): Plugin[] {
 }
 
 // Default enabled plugins
+
