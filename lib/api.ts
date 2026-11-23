@@ -1,4 +1,5 @@
-import type { SearchResult } from "./search";
+﻿import type { Personality } from "./toolTypes";
+import { PERSONALITY_PROMPTS } from "./toolTypes";
 
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
@@ -7,16 +8,12 @@ export interface ChatMessage {
 
 export interface StreamCallbacks {
   onSearching?: (query: string) => void;
-  onSources?: (sources: SearchResult[]) => void;
+  onSources?: (sources: any) => void;
   onMemory?: (count: number) => void;
   onChunk: (delta: string) => void;
   onReplace?: (content: string) => void;
   onDone: () => void;
   onError: (err: string) => void;
-}
-
-function cleanDelta(text: string): string {
-  return text.replace(/\b(\w+)(\s+\1){2,}/gi, "$1");
 }
 
 export async function streamChat(
@@ -29,77 +26,103 @@ export async function streamChat(
     personality?: string;
     signal?: AbortSignal;
     fileData?: { dataUrl: string; mimeType: string; name: string };
+    model?: string;
   } = {}
-) {
-  const payload = messages.filter((m) => m.content !== "__client_placeholder__");
+): Promise<void> {
+  const lastUserMsg: string =
+    [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
 
-  let res: Response;
+  const recentMessages = messages
+    .filter((m) => m.role !== "system")
+    .slice(-8)
+    .map((m) => ({ role: m.role, content: m.content }));
+
+  const personality = (options.personality as Personality) ?? "default";
+
+  const payload = {
+    messages: recentMessages,
+    forceSearch,
+    chatId: options.chatId,
+    memoryEnabled: options.memoryEnabled ?? true,
+    personality,
+    model: options.model,
+    fileData: options.fileData,
+  };
+
   try {
-    res = await fetch("/api/chat", {
+    const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        messages: payload,
-        forceSearch,
-        chatId: options.chatId,
-        memoryEnabled: options.memoryEnabled ?? true,
-        personality: options.personality ?? "default",
-        fileData: options.fileData,
-      }),
+      body: JSON.stringify(payload),
       signal: options.signal,
     });
-  } catch (err) {
-    if (err instanceof Error && err.name === "AbortError") return; // cancelled
-    callbacks.onError("Network error — could not reach the server.");
-    return;
-  }
 
-  if (!res.ok || !res.body) {
-    callbacks.onError(`Server error: ${res.status}`);
-    return;
-  }
-
-  const reader  = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer    = "";
-
-  while (true) {
-    let done: boolean;
-    let value: Uint8Array | undefined;
-
-    try {
-      ({ done, value } = await reader.read());
-    } catch {
-      break; // AbortError or network drop
+    if (!res.ok) {
+      callbacks.onError(`Chat request failed: ${res.status}`);
+      callbacks.onDone();
+      return;
     }
 
-    if (done) break;
+    if (!res.body) {
+      callbacks.onError("No response body");
+      callbacks.onDone();
+      return;
+    }
 
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split("\n");
-    buffer = lines.pop() ?? "";
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
 
-    for (const line of lines) {
-      if (!line.startsWith("data: ")) continue;
-      const raw = line.slice(6).trim();
-      if (!raw) continue;
-
-      try {
-        const event = JSON.parse(raw);
-        switch (event.type) {
-          case "searching":  callbacks.onSearching?.(event.query);   break;
-          case "sources":    callbacks.onSources?.(event.sources);   break;
-          case "memory":     callbacks.onMemory?.(event.count);      break;
-          case "delta":      callbacks.onChunk(cleanDelta(event.delta)); break;
-          case "replace":    callbacks.onReplace?.(event.content);   break;
-          case "done":       callbacks.onDone(); return;
-          case "error":      callbacks.onError(event.error); return;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith("data:")) continue;
+        const payloadStr = trimmed.slice(5).trim();
+        if (!payloadStr || payloadStr === "[DONE]") continue;
+        try {
+          const evt = JSON.parse(payloadStr);
+          switch (evt.type) {
+            case "searching":
+              callbacks.onSearching?.(evt.query ?? lastUserMsg);
+              break;
+            case "sources":
+              callbacks.onSources?.(evt.sources);
+              break;
+            case "memory":
+              callbacks.onMemory?.(evt.count);
+              break;
+            case "delta":
+              if (evt.delta) callbacks.onChunk(evt.delta);
+              break;
+            case "replace":
+              callbacks.onReplace?.(evt.content);
+              break;
+            case "error":
+              callbacks.onError(evt.error ?? "Unknown error");
+              break;
+            case "done":
+              callbacks.onDone();
+              return;
+            default:
+              break;
+          }
+        } catch {
         }
-      } catch { /* skip malformed */ }
+      }
     }
+
+    callbacks.onDone();
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      callbacks.onDone();
+      return;
+    }
+    callbacks.onError(err instanceof Error ? err.message : String(err));
+    callbacks.onDone();
   }
-
-  callbacks.onDone();
 }
-
-export type { SearchResult };
