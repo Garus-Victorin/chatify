@@ -100,6 +100,7 @@ interface ChatStore {
   personality: Personality;
   enabledPlugins: string[];
   agentMode: boolean;
+  selectedModel: string;
   abortController: AbortController | null;
   commandHistory: string[];
   language: Language;
@@ -122,6 +123,7 @@ interface ChatStore {
 
   // New actions
   setPersonality: (p: Personality) => void;
+  setSelectedModel: (m: string) => void;
   togglePlugin: (id: string) => void;
   setAgentMode: (v: boolean) => void;
   cancelStream: () => void;
@@ -149,6 +151,7 @@ export const useChatStore = create<ChatStore>()(
       initialized: false,
       toastError: null,
       personality: "default",
+      selectedModel: "kilo-auto/free",
       enabledPlugins: DEFAULT_ENABLED_PLUGINS,
       agentMode: false,
       abortController: null,
@@ -161,6 +164,7 @@ export const useChatStore = create<ChatStore>()(
       toastSuccess: null,
 
       setPersonality: (p) => set({ personality: p }),
+      setSelectedModel: (m) => set({ selectedModel: m }),
 
       togglePlugin: (id) =>
         set((s) => ({
@@ -501,7 +505,8 @@ export const useChatStore = create<ChatStore>()(
       name: "chatify-store",
       // Only persist user preferences, not session data (that comes from DB)
       partialize: (s) => ({
-        personality: s.personality,
+         personality: s.personality,
+         selectedModel: s.selectedModel,
         enabledPlugins: s.enabledPlugins,
         agentMode: s.agentMode,
         memoryEnabled: s.memoryEnabled,
