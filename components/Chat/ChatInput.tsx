@@ -8,12 +8,14 @@ import {
 import {
   PuzzlePieceIcon, PaperClipIcon, XMarkIcon,
   BoltIcon, SparklesIcon, CpuChipIcon,
+  BriefcaseIcon, FaceSmileIcon, CodeBracketIcon, AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import { useChatStore } from "@/store/chatStore";
 import { useT } from "@/lib/i18n";
 import { PLUGIN_META } from "@/lib/pluginMeta";
 import PluginPanel from "./PluginPanel";
 import PersonalitySelector from "./PersonalitySelector";
+import ModelSelector from "./ModelSelector";
 
 // ─── Slash commands ────────────────────────────────────────────────────────────
 
@@ -203,12 +205,12 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
   const activePluginCount = enabledPlugins.length;
 
   // ── Personality label ─────────────────────────────────────────────────────────
-  const personalityMeta: Record<string, { emoji: string; label: string; color: string }> = {
-    default:   { emoji: "🤖", label: language === "fr" ? "Défaut"    : "Default",   color: "#38bdf8" },
-    pro:       { emoji: "💼", label: "Pro",                                          color: "#6366f1" },
-    fun:       { emoji: "🎉", label: "Fun",                                          color: "#f59e0b" },
-    technical: { emoji: "⚙️", label: language === "fr" ? "Technique" : "Technical", color: "#10b981" },
-    mentor:    { emoji: "🎓", label: "Mentor",                                       color: "#8b5cf6" },
+  const personalityMeta: Record<string, { icon: React.ComponentType<{ className?: string }>; label: string; color: string }> = {
+    default:   { icon: SparklesIcon,    label: language === "fr" ? "Défaut"    : "Default",   color: "#38bdf8" },
+    pro:       { icon: BriefcaseIcon,   label: "Pro",                                          color: "#6366f1" },
+    fun:       { icon: FaceSmileIcon,   label: "Fun",                                          color: "#f59e0b" },
+    technical: { icon: CodeBracketIcon, label: language === "fr" ? "Technique" : "Technical", color: "#10b981" },
+    mentor:    { icon: AcademicCapIcon, label: "Mentor",                                       color: "#8b5cf6" },
   };
   const pm = personalityMeta[personality] ?? personalityMeta.default;
 
@@ -321,6 +323,8 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
         </AnimatePresence>
 
         {/* ── Main input card ── */}
+
+
         <motion.div
           animate={{
             boxShadow: focused
@@ -367,52 +371,7 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
           {/* ── Bottom toolbar ── */}
           <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 pb-2.5 sm:pb-3 pt-1 overflow-x-auto scrollbar-none">
 
-            {/* Plugins */}
-            <motion.button
-              whileTap={{ scale: 0.93 }}
-              onClick={() => { setShowPlugins(true); setShowPersonality(false); }}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium t-fast
-                          ${activePluginCount > 0
-                            ? "text-sky-500 bg-sky-50 dark:bg-sky-950/30"
-                            : "hover:bg-[var(--color-surface-2)]"
-                          }`}
-              style={{
-                border: `1px solid ${activePluginCount > 0 ? "rgba(56,189,248,0.3)" : "var(--color-border)"}`,
-                color: activePluginCount > 0 ? "var(--color-accent)" : "var(--color-text-secondary)",
-              }}
-              title="Plugins"
-            >
-              <PuzzlePieceIcon className="w-3.5 h-3.5 shrink-0" style={{ color: activePluginCount > 0 ? "var(--color-accent)" : "var(--color-text-muted)" }} />
-              <span className="hidden sm:inline">{tr.plugins}</span>
-              <AnimatePresence>
-                {activePluginCount > 0 && (
-                  <motion.span
-                    initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
-                    className="flex items-center justify-center w-4 h-4 rounded-full
-                               bg-sky-400 text-white text-[9px] font-bold shrink-0"
-                  >
-                    {activePluginCount}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.button>
-
-            {/* Personality / Pro mode */}
-            <motion.button
-              whileTap={{ scale: 0.93 }}
-              onClick={() => { setShowPersonality(true); setShowPlugins(false); }}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium t-fast hover:bg-[var(--color-surface-2)]"
-              style={{
-                border: "1px solid var(--color-border)",
-                color: "var(--color-text-secondary)",
-              }}
-              title="Personnalité IA"
-            >
-              <span className="text-sm leading-none">{pm.emoji}</span>
-              <span className="hidden sm:inline" style={{ color: pm.color }}>{pm.label}</span>
-            </motion.button>
-
-            {/* Agent mode toggle */}
+            <ModelSelector />
             <motion.button
               whileTap={{ scale: 0.93 }}
               onClick={() => setAgentMode(!agentMode)}
@@ -538,6 +497,37 @@ export default function ChatInput({ onSend, onRegenerate, loading }: Props) {
             )}
           </div>
         </motion.div>
+
+        {/* Plugin & personality selectors (below card) */}
+        <div className="flex items-center gap-2 mt-2 px-1">
+          <motion.button
+            whileTap={{ scale: 0.93 }}
+            onClick={() => { setShowPlugins(true); setShowPersonality(false); }}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium t-fast
+                        ${activePluginCount > 0
+                          ? "text-sky-500 bg-sky-50 dark:bg-sky-950/30"
+                          : "hover:bg-[var(--color-surface-2)]"
+                        }`}
+            style={{
+              border: `1px solid ${activePluginCount > 0 ? "rgba(56,189,248,0.3)" : "var(--color-border)"}`,
+              color: activePluginCount > 0 ? "var(--color-accent)" : "var(--color-text-secondary)",
+            }}
+          >
+            <PuzzlePieceIcon className="w-3.5 h-3.5 shrink-0" />
+            <span>{tr.plugins}</span>
+            {activePluginCount > 0 && <span className="text-[9px] font-bold">{activePluginCount}</span>}
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.93 }}
+            onClick={() => { setShowPersonality(true); setShowPlugins(false); }}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium t-fast hover:bg-[var(--color-surface-2)]"
+            style={{ border: "1px solid var(--color-border)", color: "var(--color-text-secondary)" }}
+          >
+            {(() => { const Icon = pm.icon; return <Icon className="w-4 h-4" />; })()}
+            <span style={{ color: pm.color }}>{pm.label}</span>
+          </motion.button>
+        </div>
 
         {/* ── Hint ── */}
         <p className="text-center text-[10px] mt-2 select-none" style={{ color: "var(--color-text-muted)" }}>
