@@ -177,7 +177,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={tr.searchChats}
                 className="flex-1 bg-transparent text-xs outline-none"
-                style={{ color: "var(--color-text)", placeholder: "var(--color-text-muted)" }}
+                style={{ color: "var(--color-text)" }}
               />
               {search && (
                 <button onClick={() => setSearch("")} className="t-fast" style={{ color: "var(--color-text-muted)" }}>
