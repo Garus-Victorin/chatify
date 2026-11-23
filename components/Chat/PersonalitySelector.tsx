@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { XMarkIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, SparklesIcon, BriefcaseIcon, FaceSmileIcon, CodeBracketIcon, AcademicCapIcon } from "@heroicons/react/24/outline";
 import { useChatStore } from "@/store/chatStore";
 import { useT } from "@/lib/i18n";
 import type { Personality } from "@/lib/toolTypes";
@@ -11,12 +11,12 @@ interface Props {
   onClose: () => void;
 }
 
-const PERSONALITY_META: { id: Personality; icon: string; color: string }[] = [
-  { id: "default",   icon: "🤖", color: "#38bdf8" },
-  { id: "pro",       icon: "💼", color: "#6366f1" },
-  { id: "fun",       icon: "🎉", color: "#f59e0b" },
-  { id: "technical", icon: "⚙️", color: "#10b981" },
-  { id: "mentor",    icon: "🎓", color: "#8b5cf6" },
+const PERSONALITY_META: { id: Personality; icon: React.ComponentType<any>; color: string }[] = [
+  { id: "default",   icon: SparklesIcon,    color: "#38bdf8" },
+  { id: "pro",       icon: BriefcaseIcon,   color: "#6366f1" },
+  { id: "fun",       icon: FaceSmileIcon,   color: "#f59e0b" },
+  { id: "technical", icon: CodeBracketIcon, color: "#10b981" },
+  { id: "mentor",    icon: AcademicCapIcon, color: "#8b5cf6" },
 ];
 
 export default function PersonalitySelector({ open, onClose }: Props) {
@@ -69,7 +69,7 @@ export default function PersonalitySelector({ open, onClose }: Props) {
                                  text-left t-fast ${active ? "text-sky-500 bg-sky-50 dark:bg-sky-950/30" : "hover:bg-[var(--color-surface-2)]"}`}
                     style={{ border: `1px solid ${active ? "rgba(56,189,248,0.3)" : "var(--color-border)"}` }}
                   >
-                    <span className="text-lg shrink-0">{meta.icon}</span>
+                    {(() => { const Icon = meta.icon; return <Icon className="w-5 h-5 shrink-0" />; })()}
                     <div className="flex-1">
                       <p className="text-xs font-semibold"
                          style={{ color: active ? "var(--color-accent-hover)" : "var(--color-text)" }}>
