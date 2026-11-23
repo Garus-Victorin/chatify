@@ -8,7 +8,7 @@
  *
  * Summarization strategy:
  *   - Triggered when a chat has > SUMMARIZE_THRESHOLD messages
- *   - LLM summarization disabled — Groq removed; vector memory still provides long-term recall
+ *   - LLM summarization disabled --- Groq removed; vector memory still provides long-term recall
  *   - Summary is stored in Chat.summary field
  *   - Only messages older than the last SHORT_TERM_WINDOW are summarized
  */
@@ -16,6 +16,7 @@
 import { prisma } from "./prisma";
 import { generateEmbedding } from "./embeddings";
 import { logger } from "./logger";
+import { chatServer } from "./kilo-server";
 
 // --- Config --------------------------------------------------------------------
 
@@ -32,8 +33,33 @@ const SUMMARY_MAX_TOKENS   = 256;
  * Returns the summary string (also persisted to DB).
  */
 export async function summarizeConversation(chatId: string): Promise<string | null> {
-  // LLM summarization disabled — Groq removed; vector memory still provides long-term recall
-  return null;
+  const chat = await prisma.chat.findUnique({
+    where: { id: chatId },
+    include: { messages: { orderBy: { createdAt: "asc" } } },
+  });
+  if (!chat || chat.messages.length <= SHORT_TERM_WINDOW) return null;
+
+  const older = chat.messages.slice(0, chat.messages.length - SHORT_TERM_WINDOW);
+  const transcript = older
+    .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`)
+    .join("\n");
+
+  const summary = await chatServer(
+    [
+      {
+        role: "system",
+        content:
+          "Summarize the following conversation into a concise memory block (max 200 words). Preserve key facts, decisions, and user preferences.",
+      },
+      { role: "user", content: transcript },
+    ],
+    { model: process.env.KILO_SERVER_MODEL || "kilo-auto/free", temperature: 0.2, maxTokens: SUMMARY_MAX_TOKENS }
+  );
+
+  if (!summary) return null;
+
+  await prisma.chat.update({ where: { id: chatId }, data: { summary } });
+  return summary;
 }
 
 /**
@@ -62,7 +88,7 @@ export async function getOrCreateSummary(chatId: string): Promise<string | null>
 
 /**
  * Generate and store embedding for a message.
- * Non-blocking — called after message is already persisted.
+ * Non-blocking --- called after message is already persisted.
  *
  * Skips if embedding already exists or content is too short.
  */
@@ -82,7 +108,7 @@ export async function embedAndStoreMessage(
     });
   } catch (err) {
     logger.error("[memory] Failed to embed message", err, { messageId });
-    // Non-critical — message is already saved, just without embedding
+    // Non-critical --- message is already saved, just without embedding
   }
 }
 
@@ -124,3 +150,4 @@ export async function backfillEmbeddings(
   logger.info("[memory] Backfill complete", { chatId, processed, failed });
   return { processed, failed };
 }
+
