@@ -1,5 +1,5 @@
 /**
- * ReAct Agent — Reasoning + Acting loop.
+ * ReAct Agent -------- Reasoning + Acting loop.
  *
  * Pattern: Thought ? Action ? Observation ? (repeat) ? Final Answer
  *
@@ -13,7 +13,7 @@
  * Model: Puter server default (via chatServer)
  */
 
-import { chatServer, PUTER_SERVER_DEFAULT_MODEL } from "./puter-server";
+import { chatServer } from "./kilo-server";
 import { Plugin, PluginContext } from "./plugins/index";
 import { logger } from "./logger";
 
@@ -64,7 +64,7 @@ Final Answer: [your complete, well-formatted answer in Markdown]
 - Use tools when you need real-time data, calculations, or code execution
 - After each Observation, decide if you need another tool or can answer
 - Final Answer must be comprehensive and well-formatted
-- Never make up tool results — only use what Observations provide`;
+- Never make up tool results -------- only use what Observations provide`;
 }
 
 // --- Step parser ---------------------------------------------------------------
@@ -113,11 +113,11 @@ export async function runAgent(
         { role: "system", content: systemPrompt },
         ...conversationHistory,
       ],
-      { model: PUTER_SERVER_DEFAULT_MODEL, temperature: 0.1, maxTokens: 512 }
+      { model: process.env.KILO_SERVER_MODEL || "kilo-auto/free", temperature: 0.1, maxTokens: 512 }
     );
 
     if (!llmResponse) {
-      logger.error("[agent] LLM (Puter) unavailable — check PUTER_AUTH_TOKEN");
+      logger.error("[agent] LLM (Puter) unavailable -------- check PUTER_AUTH_TOKEN");
       break;
     }
 
@@ -187,7 +187,7 @@ export async function runAgent(
         content: `Observation: ${observation}\n\nContinue your reasoning.`,
       });
     } else {
-      // No action and no final answer — force a final answer
+      // No action and no final answer -------- force a final answer
       break;
     }
   }
@@ -214,7 +214,7 @@ export async function runAgent(
           content: `Original question: ${input}\n\nObservations:\n${observationsSummary || "No tool results available."}`,
         },
       ],
-      { model: PUTER_SERVER_DEFAULT_MODEL, temperature: 0.4, maxTokens: 1024 }
+      { model: process.env.KILO_SERVER_MODEL || "kilo-auto/free", temperature: 0.4, maxTokens: 1024 }
     )) ?? "I could not complete this task.";
 
   const step: AgentStep = { type: "answer", content: fallbackAnswer };
