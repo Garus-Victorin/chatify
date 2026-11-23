@@ -7,6 +7,10 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
   const theme = useThemeStore((s) => s.theme);
 
   useEffect(() => {
+    useThemeStore.persist.rehydrate();
+  }, []);
+
+  useEffect(() => {
     const root = document.documentElement;
     if (theme === "dark") {
       root.classList.add("dark");
