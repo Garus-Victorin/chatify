@@ -1,6 +1,6 @@
 # Chatify
 
-Application web de chat IA full-stack construite avec Next.js 16 (App Router). Conversations avec **LLaMA 3.3 70B** via Groq, recherche web temps réel (Tavily), mémoire vectorielle longue durée, système de plugins et agent ReAct.
+Application web de chat IA full-stack construite avec Next.js 16 (App Router). Conversations avec **Kilo Gateway** via Groq, recherche web temps réel (Tavily), mémoire vectorielle longue durée, système de plugins et agent ReAct.
 
 ---
 
@@ -510,3 +510,4 @@ CMD ["npm", "start"]
 - [ ] Activer Sentry (décommenter dans `lib/logger.ts`)
 - [ ] Activer pgvector pour la recherche vectorielle native (optionnel)
 - [ ] Configurer `VECTOR_SIMILARITY_THRESHOLD` selon vos besoins
+
