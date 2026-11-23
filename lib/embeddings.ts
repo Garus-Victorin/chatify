@@ -168,7 +168,9 @@ export async function generateEmbedding(text: string): Promise<number[]> {
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is required for embeddings (Groq/Puter have no embedding API)");
+    const embedding = fallbackEmbedding(input);
+    cacheSet(cacheKey, embedding);
+    return embedding;
   }
 
   let embedding: number[];
@@ -177,7 +179,9 @@ export async function generateEmbedding(text: string): Promise<number[]> {
     embedding = await openaiEmbed(input);
   } catch (err) {
     logger.error("[embeddings] OpenAI embedding failed", err);
-    throw err;
+    const embedding = fallbackEmbedding(input);
+    cacheSet(cacheKey, embedding);
+    return embedding;
   }
 
   cacheSet(cacheKey, embedding);
