@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
         controller.close();
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        logger.error("[chat] Pipeline failed", { error: msg });
+        logger.error("[chat] Pipeline failed", err);
         send({ type: "error", error: msg });
         send({ type: "done" });
         controller.close();

@@ -48,36 +48,72 @@ function deduplicateSentences(text: string): string {
  */
 export async function searchWeb(query: string, maxResults = 5): Promise<SearchResponse> {
   const apiKey = process.env.TAVILY_API_KEY;
-  if (!apiKey) throw new Error("TAVILY_API_KEY is not set.");
 
-  const res = await axios.post(
-    "https://api.tavily.com/search",
-    {
-      api_key: apiKey,
-      query,
-      search_depth: "basic",
-      include_answer: false,
-      include_raw_content: false,
-      max_results: maxResults,
-    },
-    { headers: { "Content-Type": "application/json" }, timeout: 8000 }
-  );
+  if (apiKey) {
+    try {
+      const res = await axios.post(
+        "https://api.tavily.com/search",
+        {
+          api_key: apiKey,
+          query,
+          search_depth: "basic",
+          include_answer: false,
+          include_raw_content: false,
+          max_results: maxResults,
+        },
+        { headers: { "Content-Type": "application/json" }, timeout: 8000 }
+      );
 
-  const results: SearchResult[] = (res.data.results ?? [])
-    .map((r: { title?: string; url?: string; content?: string; score?: number }) => {
-      const cleanedContent = cleanText(r.content ?? "");
-      const deduplicatedContent = deduplicateSentences(cleanedContent);
+      const results: SearchResult[] = (res.data.results ?? [])
+        .map((r: { title?: string; url?: string; content?: string; score?: number }) => {
+          const cleanedContent = cleanText(r.content ?? "");
+          const deduplicatedContent = deduplicateSentences(cleanedContent);
 
-      return {
-        title: cleanText(r.title ?? "Untitled"),
-        url: r.url ?? "",
-        content: deduplicatedContent.slice(0, 300), // Limit to 300 chars
-        score: r.score ?? 0,
-      };
-    })
-    .filter((r: SearchResult) => r.content.length > 20); // Filter out empty results
+          return {
+            title: cleanText(r.title ?? "Untitled"),
+            url: r.url ?? "",
+            content: deduplicatedContent.slice(0, 300),
+            score: r.score ?? 0,
+          };
+        })
+        .filter((r: SearchResult) => r.content.length > 20);
 
-  return { results, query };
+      if (results.length > 0) return { results, query };
+    } catch {
+      // fall through to free fallback
+    }
+  }
+
+  // Free fallback: DuckDuckGo Instant Answer
+  try {
+    const res = await axios.get("https://api.duckduckgo.com/", {
+      params: { q: query, format: "json", no_html: 1, skip_disambig: 1 },
+      timeout: 8000,
+    });
+    const data = res.data ?? {};
+    const results: SearchResult[] = [];
+    if (data.AbstractText) {
+      results.push({
+        title: data.Heading || query,
+        url: data.AbstractURL || "",
+        content: cleanText(data.AbstractText).slice(0, 300),
+        score: 1,
+      });
+    }
+    for (const t of data.RelatedTopics ?? []) {
+      if (t.Text && results.length < maxResults) {
+        results.push({
+          title: cleanText(t.Text).slice(0, 80),
+          url: t.FirstURL || "",
+          content: cleanText(t.Text).slice(0, 300),
+          score: 0.5,
+        });
+      }
+    }
+    return { results: results.filter((r) => r.content.length > 20), query };
+  } catch {
+    return { results: [], query };
+  }
 }
 
 /**
