@@ -535,3 +535,4 @@ lg:  1024px — grille 2 colonnes profil/settings
 - Toutes les chaînes UI passent par `useT(language)`
 - Direction RTL prévue (`dir` dans `LANGUAGES`)
 - Dates localisées : `toLocaleDateString(language === "fr" ? "fr-FR" : "en-US")`
+
