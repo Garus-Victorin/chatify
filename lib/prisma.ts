@@ -5,9 +5,15 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 function getConnectionString(): string {
   const url = process.env.DATABASE_URL;
-  if (!url || url.includes("localhost") || url.includes("password@localhost")) {
+  if (!url) {
     throw new Error(
-      "DATABASE_URL is not configured. Please set it in .env.local with your real PostgreSQL connection string."
+      "DATABASE_URL is not configured. Please set it in .env or .env.local with your PostgreSQL connection string."
+    );
+  }
+  // In production, reject placeholder/localhost URLs
+  if (process.env.NODE_ENV === "production" && (url.includes("localhost") || url.includes("password@"))) {
+    throw new Error(
+      "DATABASE_URL must point to a real PostgreSQL instance in production."
     );
   }
   return url;
