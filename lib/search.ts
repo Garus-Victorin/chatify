@@ -47,6 +47,14 @@ function deduplicateSentences(text: string): string {
  * Search the web using Tavily API with cleaning and deduplication
  */
 export async function searchWeb(query: string, maxResults = 5): Promise<SearchResponse> {
+  const q = query.toLowerCase();
+  const isWeather = /météo|meteo|weather|température|temperature/.test(q);
+
+  if (isWeather) {
+    const w = await fetchWeather(query);
+    if (w) return { results: [w], query };
+  }
+
   const apiKey = process.env.TAVILY_API_KEY;
 
   if (apiKey) {
@@ -117,8 +125,49 @@ export async function searchWeb(query: string, maxResults = 5): Promise<SearchRe
 }
 
 /**
- * Extract URLs from text
+ * Extract a location from a weather query
  */
+function extractWeatherLocation(query: string): string | null {
+  const m = query.match(/(?:météo|meteo|weather|température|temperature).*(?:de|à|a|in|for|pour)\s+([a-zA-ZÀ-ÿ\s]+)/i);
+  if (m && m[1]) return m[1].trim().replace(/[?.!,]+$/, "");
+  const words = query.trim().split(/\s+/);
+  if (words.length > 0) {
+    const last = words[words.length - 1].replace(/[?.!,]+$/, "");
+    if (last.length > 2) return last;
+  }
+  return null;
+}
+
+/**
+ * Fetch current weather from wttr.in (free, no API key)
+ */
+async function fetchWeather(query: string): Promise<SearchResult | null> {
+  const loc = extractWeatherLocation(query);
+  if (!loc) return null;
+  try {
+    const res = await axios.get(`https://wttr.in/${encodeURIComponent(loc)}`, {
+      params: { format: "j1" },
+      timeout: 8000,
+      headers: { "User-Agent": "curl" },
+    });
+    const data = res.data ?? {};
+    const current = data.current_condition?.[0];
+    if (!current) return null;
+    const desc = current.weatherDesc?.[0]?.value ?? "N/A";
+    const temp = current.temp_C ?? "N/A";
+    const humidity = current.humidity ?? "N/A";
+    const wind = current.windspeedKmph ?? "N/A";
+    const content = `Météo actuelle à ${loc}: ${desc}, ${temp}°C, humidité ${humidity}%, vent ${wind} km/h.`;
+    return {
+      title: `Météo ${loc}`,
+      url: `https://wttr.in/${loc}`,
+      content: content.slice(0, 300),
+      score: 1,
+    };
+  } catch {
+    return null;
+  }
+}
 export function extractUrls(text: string): string[] {
   const regex = /https?:\/\/[^\s<>"')]+/gi;
   const matches = text.match(regex) ?? [];
