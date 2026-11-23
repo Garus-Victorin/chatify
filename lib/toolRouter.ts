@@ -1,10 +1,10 @@
 /**
- * Tool router — determines which plugin (if any) should handle a given input.
+ * Tool router -------- determines which plugin (if any) should handle a given input.
  *
  * Resolution order:
  *   1. Slash command parser  (/search, /calc, /run, /pdf)
  *   2. Heuristic trigger()   (each plugin's built-in trigger function)
- *   3. LLM classification    — disabled (heuristic + slash only)
+ *   3. LLM classification    -------- disabled (heuristic + slash only)
  *   4. null                  (fallback ? normal LLM response)
  */
 
@@ -55,10 +55,10 @@ function heuristicRoute(input: string, enabledPlugins: Plugin[]): Plugin | null 
   return null;
 }
 
-// --- LLM routing (disabled — heuristic + slash only) ---------------------------
+// --- LLM routing (disabled -------- heuristic + slash only) ---------------------------
 
 async function llmRoute(input: string, enabledPlugins: Plugin[]): Promise<Plugin | null> {
-  // LLM routing disabled — Groq removed; heuristic + slash commands only
+  // LLM routing disabled -------- Groq removed; heuristic + slash commands only
   return null;
 }
 
