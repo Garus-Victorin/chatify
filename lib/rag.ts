@@ -1,14 +1,14 @@
 /**
- * RAG pipeline — Hybrid retrieval-augmented generation.
+ * RAG pipeline -------- Hybrid retrieval-augmented generation.
  *
  * Flow:
- *   1. detectSearchIntent()     — Keyword-based classifier (YES/NO)
- *   2. generateEmbedding()      — embed the query
- *   3. multiQuerySearch()       — vector search in conversation history
- *   4. rerankResults()          — cross-encoder reranking (top 3)
- *   5. searchWeb() [optional]   — Tavily if needsSearch
- *   6. getOrCreateSummary()     — fetch/generate conversation summary
- *   7. buildContext()           — fuse all sources into system prompt
+ *   1. detectSearchIntent()     -------- Keyword-based classifier (YES/NO)
+ *   2. generateEmbedding()      -------- embed the query
+ *   3. multiQuerySearch()       -------- vector search in conversation history
+ *   4. rerankResults()          -------- cross-encoder reranking (top 3)
+ *   5. searchWeb() [optional]   -------- Tavily if needsSearch
+ *   6. getOrCreateSummary()     -------- fetch/generate conversation summary
+ *   7. buildContext()           -------- fuse all sources into system prompt
  *
  * Tavily is preserved as-is and remains the web search backbone.
  * Vector search adds long-term memory on top of it.
@@ -45,7 +45,7 @@ function keywordDetect(query: string): boolean {
     "today", "now", "current", "latest", "news", "price", "weather",
     "score", "stock", "2024", "2025", "recently", "just announced",
     "who won", "what happened", "live", "trending", "release date",
-    "actualité", "prix", "météo", "aujourd'hui", "récent",
+    "actualit----", "prix", "m----t----o", "aujourd'hui", "r----cent",
   ];
   return triggers.some((t) => q.includes(t));
 }
