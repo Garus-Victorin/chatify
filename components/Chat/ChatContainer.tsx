@@ -23,7 +23,7 @@ export default function ChatContainer({ onOpenSidebar }: ChatContainerProps) {
     sessions, activeSessionId, loading, searching, memoryEnabled,
     addMessage, updateLastAssistantMessage, setLoading, setSearching,
     react, pinMessage, personality, enabledPlugins, agentMode,
-    setAbortController, cancelStream, language,
+    setAbortController, cancelStream, language, selectedModel,
   } = useChatStore();
 
   const tr = useT(language);
@@ -244,7 +244,7 @@ export default function ChatContainer({ onOpenSidebar }: ChatContainerProps) {
         },
       },
       forceSearch,
-      { chatId: activeSessionId, memoryEnabled, personality, signal: ac.signal, fileData }
+      { chatId: activeSessionId, memoryEnabled, personality, signal: ac.signal, fileData, model: selectedModel }
     );
   };
 
