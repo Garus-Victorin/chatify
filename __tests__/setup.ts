@@ -1,3 +1,5 @@
+import { vi } from "vitest";
+
 // Global test setup
 // next/headers is aliased in vitest.config.ts — no need to mock here
 
