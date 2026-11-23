@@ -165,7 +165,7 @@ export async function multiQuerySearch(
     variants.map((v) => searchSimilarMessages(v, options))
   );
 
-  // Merge and deduplicate — keep highest similarity score per message
+  // Merge and deduplicate -------- keep highest similarity score per message
   const merged = new Map<string, ScoredMessage>();
   for (const results of allResults) {
     for (const msg of results) {
