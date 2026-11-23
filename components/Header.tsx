@@ -68,7 +68,7 @@ export default function Header({ chatTitle, onOpenSidebar }: Props) {
 
       <div className="flex items-center gap-3">
         <span className="text-[11px] font-medium hidden sm:block" style={{ color: "var(--color-text-muted)" }}>
-          LLaMA 3.3 · 70B
+          Kilo Gateway
         </span>
 
         <ThemeToggle />
