@@ -28,6 +28,7 @@ export const useThemeStore = create<ThemeState>()(
     {
       name: "chatify:theme",
       storage: createJSONStorage(() => localStorage),
+      skipHydration: true,
     }
   )
 );
