@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { XMarkIcon, PuzzlePieceIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, PuzzlePieceIcon, GlobeAltIcon, CalculatorIcon, CodeBracketIcon, DocumentTextIcon, BoltIcon } from "@heroicons/react/24/outline";
 import { useChatStore } from "@/store/chatStore";
 import { PLUGIN_META } from "@/lib/pluginMeta";
 import { useT } from "@/lib/i18n";
@@ -11,11 +11,18 @@ interface Props {
   onClose: () => void;
 }
 
+const PLUGIN_ICONS: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
+  "web-search": GlobeAltIcon,
+  "calculator": CalculatorIcon,
+  "code-interpreter": CodeBracketIcon,
+  "pdf": DocumentTextIcon,
+};
+
 const CATEGORY_LABELS: Record<string, string> = {
-  search:   "🔎 Recherche",
-  compute:  "🧮 Calcul",
-  document: "📄 Documents",
-  code:     "💻 Code",
+  search:   "Recherche",
+  compute:  "Calcul",
+  document: "Documents",
+  code:     "Code",
 };
 
 export default function PluginPanel({ open, onClose }: Props) {
@@ -70,7 +77,7 @@ export default function PluginPanel({ open, onClose }: Props) {
             <div className="px-4 py-3" style={{ borderBottom: "1px solid var(--color-border)" }}>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>🤖 {tr.agentMode}</p>
+                  <p className="text-xs font-semibold" style={{ color: "var(--color-text)" }}><BoltIcon className="w-3.5 h-3.5 inline mr-1" />{tr.agentMode}</p>
                   <p className="text-[10px] mt-0.5" style={{ color: "var(--color-text-muted)" }}>{tr.agentModeDesc}</p>
                 </div>
                 <button
@@ -107,7 +114,12 @@ export default function PluginPanel({ open, onClose }: Props) {
                             border: `1px solid ${enabled ? "rgba(56,189,248,0.3)" : "var(--color-border)"}`,
                           }}
                         >
-                          <span className="text-base shrink-0">{plugin.icon}</span>
+                          <span className="shrink-0">
+                            {(() => {
+                              const Icon = PLUGIN_ICONS[plugin.id];
+                              return Icon ? <Icon className="w-4 h-4" style={{ color: "var(--color-text-muted)" }} /> : null;
+                            })()}
+                          </span>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium"
                                style={{ color: enabled ? "var(--color-accent-hover)" : "var(--color-text)" }}>
